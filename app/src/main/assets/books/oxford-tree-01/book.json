@@ -1,0 +1,9 @@
+{
+  "id": "oxford-tree-01",
+  "title": "The Apple",
+  "level": "L1",
+  "coverAsset": "cover.png",
+  "pageCount": 3,
+  "tags": ["sample", "family", "fruit"],
+  "enabled": true
+}

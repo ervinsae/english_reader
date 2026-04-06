@@ -25,6 +25,8 @@ data class Book(
     val level: String,
     val coverAsset: String,
     val pageCount: Int,
+    val tags: List<String> = emptyList(),
+    val enabled: Boolean = true,
 )
 
 data class BookPage(

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dad",
+    "text": "Dad",
+    "meaningZh": "爸爸",
+    "phonetic": "/dæd/"
+  },
+  {
+    "id": "mum",
+    "text": "Mum",
+    "meaningZh": "妈妈",
+    "phonetic": "/mʌm/"
+  },
+  {
+    "id": "apple",
+    "text": "apple",
+    "meaningZh": "苹果",
+    "phonetic": "/ˈæpəl/"
+  },
+  {
+    "id": "red",
+    "text": "red",
+    "meaningZh": "红色的",
+    "phonetic": "/red/"
+  },
+  {
+    "id": "box",
+    "text": "box",
+    "meaningZh": "盒子",
+    "phonetic": "/bɒks/"
+  }
+]
