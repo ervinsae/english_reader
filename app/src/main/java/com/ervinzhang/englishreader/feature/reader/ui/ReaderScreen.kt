@@ -31,8 +31,11 @@ import com.ervinzhang.englishreader.core.audio.AudioPlayer
 import com.ervinzhang.englishreader.core.content.BookContent
 import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.model.PageWordRef
+import com.ervinzhang.englishreader.core.model.ReadingProgress
 import com.ervinzhang.englishreader.core.model.Word
+import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
 import com.ervinzhang.englishreader.core.ui.AssetImage
+import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,6 +43,8 @@ import kotlinx.coroutines.launch
 fun ReaderScreen(
     bookId: String,
     bookRepository: BookRepository,
+    readingProgressRepository: ReadingProgressRepository,
+    authRepository: AuthRepository,
     audioPlayer: AudioPlayer,
     onBack: () -> Unit,
     onOpenVocabulary: () -> Unit,
@@ -50,6 +55,8 @@ fun ReaderScreen(
             ReaderViewModel(
                 bookId = bookId,
                 bookRepository = bookRepository,
+                readingProgressRepository = readingProgressRepository,
+                authRepository = authRepository,
                 audioPlayer = audioPlayer,
             )
         },
@@ -210,6 +217,7 @@ private data class ReaderUiState(
     val bookContent: BookContent? = null,
     val currentPageIndex: Int = 0,
     val selectedWordId: String? = null,
+    val hasFinishedBook: Boolean = false,
     val errorMessage: String? = null,
 )
 
@@ -221,14 +229,18 @@ private data class ReaderWordUiModel(
 private class ReaderViewModel(
     private val bookId: String,
     private val bookRepository: BookRepository,
+    private val readingProgressRepository: ReadingProgressRepository,
+    private val authRepository: AuthRepository,
     private val audioPlayer: AudioPlayer,
 ) : ViewModel() {
     var uiState by mutableStateOf(ReaderUiState())
         private set
+    private var currentUserId: String? = null
 
     init {
         viewModelScope.launch {
             uiState = runCatching {
+                currentUserId = authRepository.getCurrentUser()?.id
                 val bookContent = bookRepository.getBookContent(bookId)
                 if (bookContent == null) {
                     ReaderUiState(
@@ -236,9 +248,29 @@ private class ReaderViewModel(
                         errorMessage = "未找到绘本：$bookId",
                     )
                 } else {
+                    val savedProgress = currentUserId?.let { userId ->
+                        readingProgressRepository.getProgress(userId = userId, bookId = bookId)
+                    }
+                    val initialPageIndex = savedProgress
+                        ?.currentPage
+                        ?.let { currentPage -> bookContent.pages.indexOfFirst { it.pageNo == currentPage } }
+                        ?.takeIf { it >= 0 }
+                        ?: 0
+                    val hasFinishedBook = savedProgress?.finished == true ||
+                        initialPageIndex == bookContent.pages.lastIndex
+
+                    if (currentUserId != null && hasFinishedBook && savedProgress?.finished != true) {
+                        saveReadingProgress(
+                            currentPage = bookContent.pages[initialPageIndex].pageNo,
+                            finished = true,
+                        )
+                    }
+
                     ReaderUiState(
                         isLoading = false,
                         bookContent = bookContent,
+                        currentPageIndex = initialPageIndex,
+                        hasFinishedBook = hasFinishedBook,
                     )
                 }
             }.getOrElse {
@@ -251,21 +283,11 @@ private class ReaderViewModel(
     }
 
     fun goToPreviousPage() {
-        val currentContent = uiState.bookContent ?: return
-        if (currentContent.pages.isEmpty()) return
-        uiState = uiState.copy(
-            currentPageIndex = (uiState.currentPageIndex - 1).coerceAtLeast(0),
-            selectedWordId = null,
-        )
+        updateCurrentPage(uiState.currentPageIndex - 1)
     }
 
     fun goToNextPage() {
-        val currentContent = uiState.bookContent ?: return
-        if (currentContent.pages.isEmpty()) return
-        uiState = uiState.copy(
-            currentPageIndex = (uiState.currentPageIndex + 1).coerceAtMost(currentContent.pages.lastIndex),
-            selectedWordId = null,
-        )
+        updateCurrentPage(uiState.currentPageIndex + 1)
     }
 
     fun selectWord(wordId: String) {
@@ -291,6 +313,47 @@ private class ReaderViewModel(
             ?.audioAsset
             ?: return
         audioPlayer.play(wordAudioAsset)
+    }
+
+    private fun updateCurrentPage(targetPageIndex: Int) {
+        val currentContent = uiState.bookContent ?: return
+        if (currentContent.pages.isEmpty()) return
+
+        val nextPageIndex = targetPageIndex.coerceIn(0, currentContent.pages.lastIndex)
+        if (nextPageIndex == uiState.currentPageIndex) return
+
+        val hasFinishedBook = uiState.hasFinishedBook || nextPageIndex == currentContent.pages.lastIndex
+        val currentPageNo = currentContent.pages[nextPageIndex].pageNo
+
+        uiState = uiState.copy(
+            currentPageIndex = nextPageIndex,
+            selectedWordId = null,
+            hasFinishedBook = hasFinishedBook,
+        )
+
+        saveReadingProgress(
+            currentPage = currentPageNo,
+            finished = hasFinishedBook,
+        )
+    }
+
+    private fun saveReadingProgress(
+        currentPage: Int,
+        finished: Boolean,
+    ) {
+        val userId = currentUserId ?: return
+
+        viewModelScope.launch {
+            readingProgressRepository.saveProgress(
+                ReadingProgress(
+                    userId = userId,
+                    bookId = bookId,
+                    currentPage = currentPage,
+                    finished = finished,
+                    updatedAt = System.currentTimeMillis(),
+                ),
+            )
+        }
     }
 
     override fun onCleared() {

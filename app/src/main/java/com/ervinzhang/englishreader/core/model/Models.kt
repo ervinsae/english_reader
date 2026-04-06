@@ -61,6 +61,17 @@ data class ReadingProgress(
     val updatedAt: Long,
 )
 
+data class BookshelfItem(
+    val bookId: String,
+    val title: String,
+    val coverAsset: String,
+    val level: String,
+    val pageCount: Int,
+    val readProgress: Int,
+    val lastReadPage: Int?,
+    val isFinished: Boolean,
+)
+
 data class VocabularyItem(
     val userId: String,
     val normalizedWord: String,

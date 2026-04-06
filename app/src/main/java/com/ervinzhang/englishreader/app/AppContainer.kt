@@ -9,6 +9,8 @@ import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.content.OfflineBookRepository
 import com.ervinzhang.englishreader.core.database.AppDatabase
 import com.ervinzhang.englishreader.core.datastore.SessionStore
+import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
+import com.ervinzhang.englishreader.core.reading.RoomReadingProgressRepository
 import com.ervinzhang.englishreader.feature.auth.data.AuthRepositoryImpl
 import com.ervinzhang.englishreader.feature.auth.data.FakeAuthRemoteDataSource
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
@@ -26,6 +28,9 @@ class AppContainer(
 
     val assetBookDataSource: AssetBookDataSource = AssetBookDataSource(application)
     val bookRepository: BookRepository = OfflineBookRepository(assetBookDataSource)
+    val readingProgressRepository: ReadingProgressRepository = RoomReadingProgressRepository(
+        database.readingProgressDao(),
+    )
 
     val authRepository: AuthRepository = AuthRepositoryImpl(
         remoteDataSource = FakeAuthRemoteDataSource(database),

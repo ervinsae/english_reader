@@ -107,6 +107,8 @@ fun AppNavHost(
         composable(Destinations.Bookshelf.route) {
             BookshelfScreen(
                 bookRepository = appContainer.bookRepository,
+                readingProgressRepository = appContainer.readingProgressRepository,
+                authRepository = appContainer.authRepository,
                 onOpenBook = { bookId ->
                     navController.navigate(Destinations.Reader.createRoute(bookId))
                 },
@@ -123,6 +125,8 @@ fun AppNavHost(
             ReaderScreen(
                 bookId = backStackEntry.arguments?.getString(Destinations.Reader.bookIdArg).orEmpty(),
                 bookRepository = appContainer.bookRepository,
+                readingProgressRepository = appContainer.readingProgressRepository,
+                authRepository = appContainer.authRepository,
                 audioPlayer = appContainer.audioPlayer,
                 onBack = { navController.popBackStack() },
                 onOpenVocabulary = { navController.navigate(Destinations.Vocabulary.route) },

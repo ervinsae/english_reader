@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
@@ -31,18 +32,31 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
 import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.model.Book
+import com.ervinzhang.englishreader.core.model.BookshelfItem
+import com.ervinzhang.englishreader.core.model.ReadingProgress
+import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
 import com.ervinzhang.englishreader.core.ui.AssetImage
+import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookshelfScreen(
     bookRepository: BookRepository,
+    readingProgressRepository: ReadingProgressRepository,
+    authRepository: AuthRepository,
     onOpenBook: (String) -> Unit,
     onOpenProfile: () -> Unit,
 ) {
     val viewModel: BookshelfViewModel = viewModel(
-        factory = SimpleViewModelFactory { BookshelfViewModel(bookRepository) },
+        factory = SimpleViewModelFactory {
+            BookshelfViewModel(
+                bookRepository = bookRepository,
+                readingProgressRepository = readingProgressRepository,
+                authRepository = authRepository,
+            )
+        },
     )
     val uiState = viewModel.uiState
 
@@ -91,8 +105,24 @@ fun BookshelfScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(uiState.books) { book ->
-                        BookCard(book = book, onClick = { onOpenBook(book.id) })
+                    if (uiState.recentBooks.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            RecentReadingSection(
+                                recentBooks = uiState.recentBooks,
+                                onOpenBook = onOpenBook,
+                            )
+                        }
+                    }
+
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Text(
+                            text = "全部绘本",
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+
+                    items(uiState.books, key = { it.bookId }) { book ->
+                        BookCard(book = book, onClick = { onOpenBook(book.bookId) })
                     }
                 }
             }
@@ -102,7 +132,7 @@ fun BookshelfScreen(
 
 @Composable
 private fun BookCard(
-    book: Book,
+    book: BookshelfItem,
     onClick: () -> Unit,
 ) {
     Card(
@@ -126,18 +156,56 @@ private fun BookCard(
             )
             Text(text = "分级：${book.level}")
             Text(text = "页数：${book.pageCount}")
+            Text(
+                text = buildProgressText(book),
+                modifier = Modifier.padding(top = 8.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun RecentReadingSection(
+    recentBooks: List<BookshelfItem>,
+    onOpenBook: (String) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "最近阅读",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        recentBooks.forEach { book ->
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onOpenBook(book.bookId) },
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = book.title,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = buildProgressText(book),
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
         }
     }
 }
 
 private data class BookshelfUiState(
     val isLoading: Boolean = true,
-    val books: List<Book> = emptyList(),
+    val books: List<BookshelfItem> = emptyList(),
+    val recentBooks: List<BookshelfItem> = emptyList(),
     val errorMessage: String? = null,
 )
 
 private class BookshelfViewModel(
     private val bookRepository: BookRepository,
+    private val readingProgressRepository: ReadingProgressRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
     var uiState by mutableStateOf(BookshelfUiState())
         private set
@@ -145,10 +213,24 @@ private class BookshelfViewModel(
     init {
         viewModelScope.launch {
             uiState = runCatching {
-                BookshelfUiState(
-                    isLoading = false,
-                    books = bookRepository.getBooks(),
-                )
+                val books = bookRepository.getBooks()
+                val currentUser = authRepository.getCurrentUser()
+
+                if (currentUser == null) {
+                    BookshelfUiState(
+                        isLoading = false,
+                        books = books.map { it.toBookshelfItem(progress = null) },
+                    )
+                } else {
+                    readingProgressRepository.observeAll(currentUser.id).collect { progressList ->
+                        uiState = BookshelfUiState(
+                            isLoading = false,
+                            books = books.mapWithProgress(progressList),
+                            recentBooks = books.mapRecent(progressList),
+                        )
+                    }
+                    uiState
+                }
             }.getOrElse {
                 BookshelfUiState(
                     isLoading = false,
@@ -156,5 +238,46 @@ private class BookshelfViewModel(
                 )
             }
         }
+    }
+}
+
+private fun List<Book>.mapWithProgress(progressList: List<ReadingProgress>): List<BookshelfItem> {
+    val progressByBookId = progressList.associateBy { it.bookId }
+    return map { book -> book.toBookshelfItem(progressByBookId[book.id]) }
+}
+
+private fun List<Book>.mapRecent(progressList: List<ReadingProgress>): List<BookshelfItem> {
+    val booksById = associateBy { it.id }
+    return progressList
+        .mapNotNull { progress -> booksById[progress.bookId]?.toBookshelfItem(progress) }
+        .take(3)
+}
+
+private fun Book.toBookshelfItem(progress: ReadingProgress?): BookshelfItem {
+    val safePageCount = pageCount.coerceAtLeast(1)
+    val lastReadPage = progress?.currentPage?.coerceIn(1, safePageCount)
+    val readProgress = when {
+        progress?.finished == true -> 100
+        lastReadPage == null -> 0
+        else -> (lastReadPage * 100) / safePageCount
+    }
+
+    return BookshelfItem(
+        bookId = id,
+        title = title,
+        coverAsset = coverAsset,
+        level = level,
+        pageCount = pageCount,
+        readProgress = readProgress,
+        lastReadPage = lastReadPage,
+        isFinished = progress?.finished == true,
+    )
+}
+
+private fun buildProgressText(book: BookshelfItem): String {
+    return when {
+        book.isFinished -> "已读完"
+        book.lastReadPage != null -> "进度：第 ${book.lastReadPage} / ${book.pageCount} 页 (${book.readProgress}%)"
+        else -> "未开始"
     }
 }
