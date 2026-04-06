@@ -7,17 +7,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.ervinzhang.englishreader.core.datastore.SessionStore
-import kotlinx.coroutines.flow.first
+import com.ervinzhang.englishreader.feature.auth.domain.AppStartDestination
+import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 
 @Composable
 fun SplashScreen(
-    sessionStore: SessionStore,
+    authRepository: AuthRepository,
     onLoggedIn: () -> Unit,
     onLoggedOut: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
-        if (sessionStore.isLoggedIn.first()) onLoggedIn() else onLoggedOut()
+        when (authRepository.getStartDestination()) {
+            AppStartDestination.BOOKSHELF -> onLoggedIn()
+            AppStartDestination.LOGIN -> onLoggedOut()
+        }
     }
 
     Box(

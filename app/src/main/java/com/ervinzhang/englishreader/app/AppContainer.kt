@@ -7,6 +7,9 @@ import com.ervinzhang.englishreader.core.audio.NoOpAudioPlayer
 import com.ervinzhang.englishreader.core.content.AssetBookDataSource
 import com.ervinzhang.englishreader.core.database.AppDatabase
 import com.ervinzhang.englishreader.core.datastore.SessionStore
+import com.ervinzhang.englishreader.feature.auth.data.AuthRepositoryImpl
+import com.ervinzhang.englishreader.feature.auth.data.FakeAuthRemoteDataSource
+import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 
 class AppContainer(
     application: Application,
@@ -20,6 +23,11 @@ class AppContainer(
     ).fallbackToDestructiveMigration().build()
 
     val assetBookDataSource: AssetBookDataSource = AssetBookDataSource(application)
+
+    val authRepository: AuthRepository = AuthRepositoryImpl(
+        remoteDataSource = FakeAuthRemoteDataSource(database),
+        sessionStore = sessionStore,
+    )
 
     val audioPlayer: AudioPlayer = NoOpAudioPlayer
 }

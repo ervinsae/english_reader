@@ -31,7 +31,7 @@ fun AppNavHost(
     ) {
         composable(Destinations.Splash.route) {
             SplashScreen(
-                sessionStore = appContainer.sessionStore,
+                authRepository = appContainer.authRepository,
                 onLoggedIn = {
                     navController.navigate(Destinations.Bookshelf.route) {
                         popUpTo(Destinations.Splash.route) { inclusive = true }
@@ -47,34 +47,58 @@ fun AppNavHost(
 
         composable(Destinations.Login.route) {
             LoginScreen(
-                sessionStore = appContainer.sessionStore,
+                authRepository = appContainer.authRepository,
                 onLogin = {
                     navController.navigate(Destinations.Bookshelf.route) {
                         popUpTo(Destinations.Login.route) { inclusive = true }
                     }
                 },
-                onNeedInvite = {
-                    navController.navigate(Destinations.Invite.route)
+                onNeedInvite = { phone ->
+                    navController.navigate(Destinations.Invite.createRoute(phone))
                 },
             )
         }
 
-        composable(Destinations.Invite.route) {
+        composable(
+            route = Destinations.Invite.route,
+            arguments = listOf(navArgument(Destinations.Invite.phoneArg) { type = NavType.StringType }),
+        ) { backStackEntry ->
             InviteScreen(
+                phone = backStackEntry.arguments?.getString(Destinations.Invite.phoneArg).orEmpty(),
+                authRepository = appContainer.authRepository,
+                onBack = { navController.popBackStack() },
                 onRegisterSuccess = {
-                    navController.navigate(Destinations.Nickname.route) {
-                        popUpTo(Destinations.Invite.route) { inclusive = true }
+                    navController.navigate(
+                        Destinations.Nickname.createRoute(Destinations.Nickname.postRegisterEntry),
+                    ) {
+                        popUpTo(Destinations.Login.route)
                     }
                 },
             )
         }
 
-        composable(Destinations.Nickname.route) {
+        composable(
+            route = Destinations.Nickname.route,
+            arguments = listOf(navArgument(Destinations.Nickname.entryPointArg) { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val entryPoint =
+                backStackEntry.arguments?.getString(Destinations.Nickname.entryPointArg).orEmpty()
             NicknameScreen(
-                sessionStore = appContainer.sessionStore,
+                authRepository = appContainer.authRepository,
+                entryPoint = entryPoint,
+                onBack = { navController.popBackStack() },
+                onSessionExpired = {
+                    navController.navigate(Destinations.Login.route) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                },
                 onComplete = {
-                    navController.navigate(Destinations.Bookshelf.route) {
-                        popUpTo(Destinations.Login.route) { inclusive = true }
+                    if (entryPoint == Destinations.Nickname.profileEntry) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(Destinations.Bookshelf.route) {
+                            popUpTo(Destinations.Login.route) { inclusive = true }
+                        }
                     }
                 },
             )
@@ -108,8 +132,13 @@ fun AppNavHost(
 
         composable(Destinations.Profile.route) {
             ProfileScreen(
-                sessionStore = appContainer.sessionStore,
+                authRepository = appContainer.authRepository,
                 onBack = { navController.popBackStack() },
+                onEditNickname = {
+                    navController.navigate(
+                        Destinations.Nickname.createRoute(Destinations.Nickname.profileEntry),
+                    )
+                },
                 onLogout = {
                     navController.navigate(Destinations.Login.route) {
                         popUpTo(navController.graph.id) { inclusive = true }

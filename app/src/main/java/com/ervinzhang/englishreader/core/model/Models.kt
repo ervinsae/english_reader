@@ -1,9 +1,22 @@
 package com.ervinzhang.englishreader.core.model
 
+enum class UserStatus {
+    ACTIVE,
+}
+
 data class User(
     val id: String,
     val phone: String,
     val nickname: String? = null,
+    val status: UserStatus = UserStatus.ACTIVE,
+    val createdAt: Long,
+    val updatedAt: Long,
+)
+
+data class Session(
+    val token: String,
+    val userId: String,
+    val expiredAt: Long,
 )
 
 data class Book(
