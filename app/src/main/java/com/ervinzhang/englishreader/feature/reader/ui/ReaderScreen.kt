@@ -29,10 +29,17 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -155,7 +162,17 @@ fun ReaderScreen(
 
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = currentPage.englishText)
+                            IndexedEnglishText(
+                                text = currentPage.englishText,
+                                wordRefs = currentPage.words,
+                                selectedWordId = uiState.selectedWordId,
+                                onWordTap = viewModel::selectWord,
+                            )
+                            Text(
+                                text = "点按英文中的标注单词查看释义",
+                                modifier = Modifier.padding(top = 8.dp),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
                             TextButton(
                                 onClick = viewModel::playSentenceAudio,
                                 enabled = currentPage.sentenceAudioAsset != null,
@@ -251,6 +268,67 @@ fun ReaderScreen(
             onAddToVocabulary = viewModel::addSelectedWordToVocabulary,
         )
     }
+}
+
+@Composable
+private fun IndexedEnglishText(
+    text: String,
+    wordRefs: List<PageWordRef>,
+    selectedWordId: String?,
+    onWordTap: (String) -> Unit,
+) {
+    var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+    val selectedRange = wordRefs
+        .firstOrNull { it.wordId == selectedWordId }
+        ?.normalizedRange(text.length)
+    val selectedBackgroundColor = MaterialTheme.colorScheme.primaryContainer
+    val selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+    val annotatedText = remember(text, wordRefs, selectedRange, selectedBackgroundColor, selectedTextColor) {
+        buildAnnotatedString {
+            append(text)
+            selectedRange?.let { range ->
+                addStyle(
+                    style = SpanStyle(
+                        background = selectedBackgroundColor,
+                        color = selectedTextColor,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    start = range.first,
+                    end = range.last + 1,
+                )
+            }
+        }
+    }
+
+    Text(
+        text = annotatedText,
+        style = MaterialTheme.typography.bodyLarge,
+        modifier = Modifier.pointerInput(wordRefs, textLayoutResult) {
+            detectTapGestures { tapOffset ->
+                val layoutResult = textLayoutResult ?: return@detectTapGestures
+                val characterOffset = layoutResult.getOffsetForPosition(tapOffset)
+                wordRefs
+                    .asSequence()
+                    .mapNotNull { ref -> ref.normalizedRange(text.length)?.let { range -> ref to range } }
+                    .filter { (_, range) -> characterOffset in range }
+                    .minByOrNull { (_, range) -> range.last - range.first }
+                    ?.first
+                    ?.wordId
+                    ?.let(onWordTap)
+            }
+        },
+        onTextLayout = { textLayoutResult = it },
+    )
+}
+
+private fun PageWordRef.normalizedRange(textLength: Int): IntRange? {
+    if (textLength <= 0) return null
+
+    val safeStart = startIndex.coerceIn(0, textLength)
+    val safeEndExclusive = endIndex.coerceIn(0, textLength)
+    if (safeEndExclusive <= safeStart) return null
+
+    return safeStart until safeEndExclusive
 }
 
 @Composable
