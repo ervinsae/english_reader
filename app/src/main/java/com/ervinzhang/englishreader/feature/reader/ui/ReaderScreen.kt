@@ -1,5 +1,9 @@
 package com.ervinzhang.englishreader.feature.reader.ui
 
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -115,14 +120,26 @@ fun ReaderScreen(
                 else -> {
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            AssetImage(
-                                assetPath = currentPage.imageAsset,
-                                contentDescription = "第 ${currentPage.pageNo} 页",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(220.dp),
-                                contentScale = ContentScale.FillBounds,
-                                fallbackText = "页面图片占位",
+                            ReaderPageTurnSurface(
+                                canGoToPreviousPage = uiState.currentPageIndex > 0,
+                                canGoToNextPage = uiState.currentPageIndex < bookContent.pages.lastIndex,
+                                onPreviousPage = viewModel::goToPreviousPage,
+                                onNextPage = viewModel::goToNextPage,
+                            ) {
+                                AssetImage(
+                                    assetPath = currentPage.imageAsset,
+                                    contentDescription = "第 ${currentPage.pageNo} 页",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp),
+                                    contentScale = ContentScale.FillBounds,
+                                    fallbackText = "页面图片占位",
+                                )
+                            }
+                            Text(
+                                text = "轻扫图片或点按左右区域翻页",
+                                modifier = Modifier.padding(top = 8.dp),
+                                style = MaterialTheme.typography.bodySmall,
                             )
                             Text(
                                 text = "第 ${currentPage.pageNo} / ${bookContent.pages.size} 页",
@@ -203,6 +220,55 @@ fun ReaderScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ReaderPageTurnSurface(
+    canGoToPreviousPage: Boolean,
+    canGoToNextPage: Boolean,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(canGoToPreviousPage, canGoToNextPage) {
+                detectTapGestures { offset ->
+                    val containerWidth = size.width.toFloat()
+                    val zoneWidth = containerWidth / 3f
+                    when {
+                        offset.x <= zoneWidth && canGoToPreviousPage -> onPreviousPage()
+                        offset.x >= containerWidth - zoneWidth && canGoToNextPage -> onNextPage()
+                    }
+                }
+            }
+            .pointerInput(canGoToPreviousPage, canGoToNextPage) {
+                var totalDragX = 0f
+                val swipeThreshold = viewConfiguration.touchSlop * 3
+
+                detectHorizontalDragGestures(
+                    onHorizontalDrag = { change, dragAmount ->
+                        totalDragX += dragAmount
+                        change.consume()
+                    },
+                    onDragEnd = {
+                        when {
+                            totalDragX <= -swipeThreshold && canGoToNextPage -> onNextPage()
+                            totalDragX >= swipeThreshold && canGoToPreviousPage -> onPreviousPage()
+                        }
+                        totalDragX = 0f
+                    },
+                    onDragCancel = {
+                        totalDragX = 0f
+                    },
+                )
+            },
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            content()
         }
     }
 }
