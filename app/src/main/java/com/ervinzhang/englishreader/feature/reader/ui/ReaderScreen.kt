@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +37,8 @@ import com.ervinzhang.englishreader.core.model.Word
 import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
 import com.ervinzhang.englishreader.core.ui.AssetImage
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import com.ervinzhang.englishreader.feature.vocabulary.data.AddVocabularyResult
+import com.ervinzhang.englishreader.feature.vocabulary.data.VocabularyRepository
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +47,7 @@ fun ReaderScreen(
     bookId: String,
     bookRepository: BookRepository,
     readingProgressRepository: ReadingProgressRepository,
+    vocabularyRepository: VocabularyRepository,
     authRepository: AuthRepository,
     audioPlayer: AudioPlayer,
     onBack: () -> Unit,
@@ -56,6 +60,7 @@ fun ReaderScreen(
                 bookId = bookId,
                 bookRepository = bookRepository,
                 readingProgressRepository = readingProgressRepository,
+                vocabularyRepository = vocabularyRepository,
                 authRepository = authRepository,
                 audioPlayer = audioPlayer,
             )
@@ -100,7 +105,7 @@ fun ReaderScreen(
                 }
 
                 uiState.errorMessage != null -> {
-                    Text(text = uiState.errorMessage)
+                    Text(text = uiState.errorMessage.orEmpty())
                 }
 
                 currentPage == null || bookContent == null -> {
@@ -148,7 +153,10 @@ fun ReaderScreen(
                                 Text(text = "当前页没有标注单词")
                             } else {
                                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    items(currentWords) { wordUiModel ->
+                                    items(
+                                        items = currentWords,
+                                        key = { item -> item.ref.wordId },
+                                    ) { wordUiModel ->
                                         TextButton(
                                             onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
                                         ) {
@@ -162,6 +170,15 @@ fun ReaderScreen(
                                 SelectedWordCard(
                                     word = selectedWord,
                                     onPlay = viewModel::playSelectedWordAudio,
+                                    onAddToVocabulary = viewModel::addSelectedWordToVocabulary,
+                                )
+                            }
+
+                            if (!uiState.vocabularyMessage.isNullOrBlank()) {
+                                Text(
+                                    text = uiState.vocabularyMessage,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
                         }
@@ -194,6 +211,7 @@ fun ReaderScreen(
 private fun SelectedWordCard(
     word: Word,
     onPlay: () -> Unit,
+    onAddToVocabulary: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -205,8 +223,13 @@ private fun SelectedWordCard(
                 Text(text = word.phonetic)
             }
             Text(text = word.meaningZh)
-            TextButton(onClick = onPlay, enabled = word.audioAsset != null) {
-                Text("播放单词")
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                TextButton(onClick = onPlay, enabled = word.audioAsset != null) {
+                    Text("播放单词")
+                }
+                TextButton(onClick = onAddToVocabulary) {
+                    Text("加入生词本")
+                }
             }
         }
     }
@@ -218,6 +241,7 @@ private data class ReaderUiState(
     val currentPageIndex: Int = 0,
     val selectedWordId: String? = null,
     val hasFinishedBook: Boolean = false,
+    val vocabularyMessage: String? = null,
     val errorMessage: String? = null,
 )
 
@@ -230,6 +254,7 @@ private class ReaderViewModel(
     private val bookId: String,
     private val bookRepository: BookRepository,
     private val readingProgressRepository: ReadingProgressRepository,
+    private val vocabularyRepository: VocabularyRepository,
     private val authRepository: AuthRepository,
     private val audioPlayer: AudioPlayer,
 ) : ViewModel() {
@@ -293,7 +318,30 @@ private class ReaderViewModel(
     fun selectWord(wordId: String) {
         uiState = uiState.copy(
             selectedWordId = if (uiState.selectedWordId == wordId) null else wordId,
+            vocabularyMessage = null,
         )
+    }
+
+    fun addSelectedWordToVocabulary() {
+        val userId = currentUserId ?: run {
+            uiState = uiState.copy(vocabularyMessage = "请先登录后再加入生词本")
+            return
+        }
+        val selectedWordId = uiState.selectedWordId ?: return
+        val selectedWord = uiState.bookContent?.words?.get(selectedWordId) ?: return
+
+        viewModelScope.launch {
+            val result = vocabularyRepository.addWord(
+                userId = userId,
+                word = selectedWord,
+            )
+            uiState = uiState.copy(
+                vocabularyMessage = when (result) {
+                    AddVocabularyResult.Added -> "已加入生词本"
+                    AddVocabularyResult.AlreadyExists -> "该单词已在生词本中"
+                },
+            )
+        }
     }
 
     fun playSentenceAudio() {
@@ -329,6 +377,7 @@ private class ReaderViewModel(
             currentPageIndex = nextPageIndex,
             selectedWordId = null,
             hasFinishedBook = hasFinishedBook,
+            vocabularyMessage = null,
         )
 
         saveReadingProgress(

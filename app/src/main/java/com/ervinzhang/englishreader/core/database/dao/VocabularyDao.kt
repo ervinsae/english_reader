@@ -16,6 +16,9 @@ interface VocabularyDao {
     @Delete
     suspend fun delete(item: VocabularyEntity)
 
+    @Query("DELETE FROM vocabulary WHERE userId = :userId AND normalizedWord = :normalizedWord")
+    suspend fun deleteByNormalizedWord(userId: String, normalizedWord: String): Int
+
     @Query("SELECT * FROM vocabulary WHERE userId = :userId ORDER BY createdAt DESC")
     fun observeAll(userId: String): Flow<List<VocabularyEntity>>
 

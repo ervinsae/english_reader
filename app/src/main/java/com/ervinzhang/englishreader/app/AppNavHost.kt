@@ -126,6 +126,7 @@ fun AppNavHost(
                 bookId = backStackEntry.arguments?.getString(Destinations.Reader.bookIdArg).orEmpty(),
                 bookRepository = appContainer.bookRepository,
                 readingProgressRepository = appContainer.readingProgressRepository,
+                vocabularyRepository = appContainer.vocabularyRepository,
                 authRepository = appContainer.authRepository,
                 audioPlayer = appContainer.audioPlayer,
                 onBack = { navController.popBackStack() },
@@ -134,7 +135,12 @@ fun AppNavHost(
         }
 
         composable(Destinations.Vocabulary.route) {
-            VocabularyScreen(onBack = { navController.popBackStack() })
+            VocabularyScreen(
+                vocabularyRepository = appContainer.vocabularyRepository,
+                authRepository = appContainer.authRepository,
+                audioPlayer = appContainer.audioPlayer,
+                onBack = { navController.popBackStack() },
+            )
         }
 
         composable(Destinations.Profile.route) {
