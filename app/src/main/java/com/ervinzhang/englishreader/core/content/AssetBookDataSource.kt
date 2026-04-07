@@ -101,7 +101,7 @@ class AssetBookDataSource(
                 val wordJson = wordsJson.getJSONObject(index)
                 add(
                     Word(
-                        id = wordJson.getString(WORD_ID_KEY),
+                        id = wordJson.getString(ID_KEY),
                         text = wordJson.getString(TEXT_KEY),
                         meaningZh = wordJson.getString(MEANING_ZH_KEY),
                         phonetic = wordJson.optStringOrNull(PHONETIC_KEY),
@@ -164,6 +164,7 @@ class AssetBookDataSource(
         const val WORDS_FILE_NAME = "words.json"
         const val DEFAULT_COVER_ASSET = "cover.png"
 
+        const val ID_KEY = "id"
         const val BOOK_ID_KEY = "id"
         const val TITLE_KEY = "title"
         const val LEVEL_KEY = "level"
