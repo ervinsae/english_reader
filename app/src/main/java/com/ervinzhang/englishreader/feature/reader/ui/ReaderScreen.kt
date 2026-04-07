@@ -2,6 +2,7 @@ package com.ervinzhang.englishreader.feature.reader.ui
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +14,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -174,21 +179,35 @@ fun ReaderScreen(
                                         items = currentWords,
                                         key = { item -> item.ref.wordId },
                                     ) { wordUiModel ->
-                                        TextButton(
+                                        val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
+                                        OutlinedButton(
                                             onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
+                                            shape = RoundedCornerShape(20.dp),
+                                            border = BorderStroke(
+                                                width = if (isSelected) 2.dp else 1.dp,
+                                                color = if (isSelected) {
+                                                    MaterialTheme.colorScheme.primary
+                                                } else {
+                                                    MaterialTheme.colorScheme.outlineVariant
+                                                },
+                                            ),
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                containerColor = if (isSelected) {
+                                                    MaterialTheme.colorScheme.primaryContainer
+                                                } else {
+                                                    MaterialTheme.colorScheme.surface
+                                                },
+                                                contentColor = if (isSelected) {
+                                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                                } else {
+                                                    MaterialTheme.colorScheme.onSurface
+                                                },
+                                            ),
                                         ) {
                                             Text(wordUiModel.ref.text)
                                         }
                                     }
                                 }
-                            }
-
-                            if (selectedWord != null) {
-                                SelectedWordCard(
-                                    word = selectedWord,
-                                    onPlay = viewModel::playSelectedWordAudio,
-                                    onAddToVocabulary = viewModel::addSelectedWordToVocabulary,
-                                )
                             }
 
                             if (!uiState.vocabularyMessage.isNullOrBlank()) {
@@ -221,6 +240,16 @@ fun ReaderScreen(
                 }
             }
         }
+    }
+
+    if (selectedWord != null) {
+        SelectedWordBottomSheet(
+            word = selectedWord,
+            vocabularyMessage = uiState.vocabularyMessage,
+            onDismiss = viewModel::dismissSelectedWord,
+            onPlay = viewModel::playSelectedWordAudio,
+            onAddToVocabulary = viewModel::addSelectedWordToVocabulary,
+        )
     }
 }
 
@@ -273,29 +302,58 @@ private fun ReaderPageTurnSurface(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SelectedWordCard(
+private fun SelectedWordBottomSheet(
     word: Word,
+    vocabularyMessage: String?,
+    onDismiss: () -> Unit,
     onPlay: () -> Unit,
     onAddToVocabulary: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text(text = word.text)
+            Text(
+                text = word.text,
+                style = MaterialTheme.typography.headlineSmall,
+            )
             if (!word.phonetic.isNullOrBlank()) {
-                Text(text = word.phonetic)
+                Text(
+                    text = word.phonetic,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
-            Text(text = word.meaningZh)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(
+                text = word.meaningZh,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            if (!vocabularyMessage.isNullOrBlank()) {
+                Text(
+                    text = vocabularyMessage,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 TextButton(onClick = onPlay, enabled = word.audioAsset != null) {
                     Text("播放单词")
                 }
-                TextButton(onClick = onAddToVocabulary) {
+                Button(onClick = onAddToVocabulary) {
                     Text("加入生词本")
                 }
+            }
+            TextButton(onClick = onDismiss) {
+                Text("关闭")
             }
         }
     }
@@ -386,6 +444,10 @@ private class ReaderViewModel(
             selectedWordId = if (uiState.selectedWordId == wordId) null else wordId,
             vocabularyMessage = null,
         )
+    }
+
+    fun dismissSelectedWord() {
+        uiState = uiState.copy(selectedWordId = null)
     }
 
     fun addSelectedWordToVocabulary() {
