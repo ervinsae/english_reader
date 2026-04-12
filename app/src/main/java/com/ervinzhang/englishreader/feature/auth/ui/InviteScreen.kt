@@ -1,28 +1,41 @@
 package com.ervinzhang.englishreader.feature.auth.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
+import com.ervinzhang.englishreader.core.ui.StorybookBackdrop
+import com.ervinzhang.englishreader.core.ui.StorybookCard
+import com.ervinzhang.englishreader.core.ui.StorybookPrimaryButton
+import com.ervinzhang.englishreader.core.ui.StorybookTag
+import com.ervinzhang.englishreader.core.ui.StorybookTextField
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import com.ervinzhang.englishreader.feature.auth.domain.RegistrationResult
 import kotlinx.coroutines.channels.Channel
@@ -53,9 +66,13 @@ fun InviteScreen(
     val uiState = viewModel.uiState
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { Text("邀请码注册") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                ),
                 navigationIcon = {
                     TextButton(onClick = onBack) {
                         Text("返回")
@@ -64,32 +81,136 @@ fun InviteScreen(
             )
         },
     ) { innerPadding ->
-        Column(
+        StorybookBackdrop(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding),
         ) {
-            Text(text = "手机号 $phone 尚未注册，请输入邀请码完成注册")
-            OutlinedTextField(
-                value = uiState.inviteCode,
-                onValueChange = viewModel::onInviteCodeChanged,
-                label = { Text("邀请码") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = uiState.errorMessage != null,
-                supportingText = {
-                    Text(uiState.errorMessage ?: "本地测试可使用 TREE-2026-AB12 / TREE-2026-CD34")
-                },
-            )
-            Button(
-                onClick = viewModel::submit,
-                enabled = !uiState.isSubmitting,
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Text(if (uiState.isSubmitting) "注册中..." else "完成注册")
+                StorybookTag(text = "Invite Screen")
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = "把邀请码贴进这张入场卡",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = "手机号 $phone 还没有注册。输入邀请口令后，沿用现有流程继续补填昵称。",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                StorybookCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp),
+                    ) {
+                        StorybookTag(
+                            text = "Phone Ready",
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        )
+                        Text(
+                            text = phone,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text = "邀请码验证通过后，会直接进入昵称补填页，不新增任何路由。",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        InvitationDots()
+                    }
+                }
+
+                StorybookCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        StorybookTextField(
+                            value = uiState.inviteCode,
+                            onValueChange = viewModel::onInviteCodeChanged,
+                            label = "邀请码",
+                            supportingText = uiState.errorMessage
+                                ?: "本地测试可使用 TREE-2026-AB12 或 TREE-2026-CD34",
+                            isError = uiState.errorMessage != null,
+                            keyboardType = KeyboardType.Ascii,
+                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            shape = MaterialTheme.shapes.large,
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                            ) {
+                                Text(
+                                    text = "测试邀请码",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                StorybookTag(
+                                    text = "TREE-2026-AB12",
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.72f),
+                                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                )
+                                StorybookTag(
+                                    text = "TREE-2026-CD34",
+                                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                                )
+                            }
+                        }
+                        StorybookPrimaryButton(
+                            text = if (uiState.isSubmitting) "注册中..." else "完成注册",
+                            onClick = viewModel::submit,
+                            enabled = !uiState.isSubmitting,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun InvitationDots() {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        repeat(3) { index ->
+            Box(
+                modifier = Modifier
+                    .padding(start = (index * 44).dp)
+                    .size(if (index == 1) 54.dp else 38.dp)
+                    .background(
+                        color = when (index) {
+                            0 -> MaterialTheme.colorScheme.secondaryContainer
+                            1 -> MaterialTheme.colorScheme.primaryContainer
+                            else -> MaterialTheme.colorScheme.tertiaryContainer
+                        },
+                        shape = CircleShape,
+                    ),
+            )
         }
     }
 }

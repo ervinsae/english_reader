@@ -13,12 +13,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +39,7 @@ import com.ervinzhang.englishreader.core.ui.StorybookBackdrop
 import com.ervinzhang.englishreader.core.ui.StorybookCard
 import com.ervinzhang.englishreader.core.ui.StorybookPrimaryButton
 import com.ervinzhang.englishreader.core.ui.StorybookTag
+import com.ervinzhang.englishreader.core.ui.StorybookTextField
 import com.ervinzhang.englishreader.feature.auth.domain.AuthActionResult
 import com.ervinzhang.englishreader.feature.auth.domain.AuthError
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
@@ -221,45 +219,6 @@ fun LoginScreen(
             }
         }
     }
-}
-
-@Composable
-private fun StorybookTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    supportingText: String,
-    isError: Boolean,
-    keyboardType: KeyboardType,
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true,
-        isError = isError,
-        shape = MaterialTheme.shapes.large,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.16f),
-            focusedBorderColor = MaterialTheme.colorScheme.secondary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            errorBorderColor = MaterialTheme.colorScheme.error,
-        ),
-        supportingText = {
-            Text(
-                text = supportingText,
-                color = if (isError) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
-        },
-    )
 }
 
 private data class LoginUiState(
