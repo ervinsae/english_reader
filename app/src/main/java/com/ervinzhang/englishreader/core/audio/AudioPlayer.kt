@@ -2,11 +2,10 @@ package com.ervinzhang.englishreader.core.audio
 
 import android.content.Context
 import android.media.AudioAttributes
-import android.media.MediaDataSource
 import android.media.MediaPlayer
 import android.os.SystemClock
 import android.speech.tts.TextToSpeech
-import java.io.ByteArrayInputStream
+import java.io.File
 import java.util.Locale
 
 interface AudioPlayer {
@@ -35,9 +34,7 @@ class AndroidAudioPlayer(
         stopMediaPlayback()
         textToSpeech?.stop()
 
-        val audioBytes = runCatching {
-            appContext.assets.open(assetPath).use { input -> input.readBytes() }
-        }.getOrNull() ?: return
+        val cachedAudioFile = cacheAssetToFile(assetPath) ?: return
 
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -46,7 +43,7 @@ class AndroidAudioPlayer(
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build(),
             )
-            setDataSource(ByteArrayMediaDataSource(audioBytes))
+            setDataSource(cachedAudioFile.absolutePath)
             setOnPreparedListener { it.start() }
             setOnCompletionListener { completedPlayer ->
                 completedPlayer.release()
@@ -127,6 +124,21 @@ class AndroidAudioPlayer(
         }
     }
 
+    private fun cacheAssetToFile(assetPath: String): File? {
+        val targetDirectory = File(appContext.cacheDir, "storybook-audio").apply { mkdirs() }
+        val fileName = assetPath.replace('/', '_')
+        val targetFile = File(targetDirectory, fileName)
+
+        return runCatching {
+            if (!targetFile.exists() || targetFile.length() == 0L) {
+                appContext.assets.open(assetPath).use { input ->
+                    targetFile.outputStream().use { output -> input.copyTo(output) }
+                }
+            }
+            targetFile
+        }.getOrNull()
+    }
+
     private fun stopMediaPlayback() {
         mediaPlayer?.runCatching {
             setOnPreparedListener(null)
@@ -137,24 +149,4 @@ class AndroidAudioPlayer(
         mediaPlayer?.release()
         mediaPlayer = null
     }
-}
-
-private class ByteArrayMediaDataSource(
-    data: ByteArray,
-) : MediaDataSource() {
-    private val input = ByteArrayInputStream(data)
-    private val bytes = data
-
-    override fun getSize(): Long = bytes.size.toLong()
-
-    override fun readAt(position: Long, buffer: ByteArray, offset: Int, size: Int): Int {
-        if (position >= bytes.size) return -1
-
-        input.reset()
-        input.skip(position)
-        val bytesToRead = minOf(size, bytes.size - position.toInt())
-        return input.read(buffer, offset, bytesToRead)
-    }
-
-    override fun close() = Unit
 }

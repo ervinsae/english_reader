@@ -23,7 +23,8 @@
         "startIndex": 74,
         "endIndex": 81
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/001.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -49,7 +50,8 @@
         "startIndex": 111,
         "endIndex": 118
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/002.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -75,7 +77,8 @@
         "startIndex": 145,
         "endIndex": 149
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/003.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -101,7 +104,8 @@
         "startIndex": 121,
         "endIndex": 130
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/004.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -121,7 +125,8 @@
         "startIndex": 129,
         "endIndex": 136
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/005.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -147,7 +152,8 @@
         "startIndex": 78,
         "endIndex": 86
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/006.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -173,7 +179,8 @@
         "startIndex": 144,
         "endIndex": 147
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/007.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -199,7 +206,8 @@
         "startIndex": 91,
         "endIndex": 98
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/008.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -225,7 +233,8 @@
         "startIndex": 96,
         "endIndex": 102
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/009.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -251,7 +260,8 @@
         "startIndex": 143,
         "endIndex": 147
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/010.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -277,7 +287,8 @@
         "startIndex": 72,
         "endIndex": 81
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/011.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -297,7 +308,8 @@
         "startIndex": 117,
         "endIndex": 131
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/012.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -323,7 +335,8 @@
         "startIndex": 142,
         "endIndex": 156
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/013.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -349,7 +362,8 @@
         "startIndex": 96,
         "endIndex": 102
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/014.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -369,7 +383,8 @@
         "startIndex": 83,
         "endIndex": 90
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/015.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -395,7 +410,8 @@
         "startIndex": 127,
         "endIndex": 134
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/016.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -421,7 +437,8 @@
         "startIndex": 136,
         "endIndex": 141
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/017.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -447,7 +464,8 @@
         "startIndex": 4,
         "endIndex": 11
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/018.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -473,7 +491,8 @@
         "startIndex": 131,
         "endIndex": 137
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/019.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -499,7 +518,8 @@
         "startIndex": 149,
         "endIndex": 152
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/020.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -525,7 +545,8 @@
         "startIndex": 129,
         "endIndex": 132
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/021.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -551,7 +572,8 @@
         "startIndex": 154,
         "endIndex": 160
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/022.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -583,7 +605,8 @@
         "startIndex": 103,
         "endIndex": 114
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/023.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -615,7 +638,8 @@
         "startIndex": 164,
         "endIndex": 170
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/024.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -641,7 +665,8 @@
         "startIndex": 106,
         "endIndex": 113
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/025.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -667,7 +692,8 @@
         "startIndex": 106,
         "endIndex": 113
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/026.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -693,7 +719,8 @@
         "startIndex": 134,
         "endIndex": 140
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/027.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -719,7 +746,8 @@
         "startIndex": 107,
         "endIndex": 113
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/028.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -745,7 +773,8 @@
         "startIndex": 112,
         "endIndex": 121
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/029.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -771,7 +800,8 @@
         "startIndex": 142,
         "endIndex": 146
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/030.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -797,7 +827,8 @@
         "startIndex": 107,
         "endIndex": 114
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/031.m4a"
   },
   {
     "bookId": "oxford-chinese-adventure-stage-07",
@@ -817,6 +848,7 @@
         "startIndex": 156,
         "endIndex": 162
       }
-    ]
+    ],
+    "sentenceAudioAsset": "audio/sentences/032.m4a"
   }
 ]
