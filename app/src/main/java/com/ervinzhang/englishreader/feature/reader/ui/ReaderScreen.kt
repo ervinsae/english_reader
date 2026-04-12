@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -107,6 +108,31 @@ fun ReaderScreen(
                     }
                 },
             )
+        },
+        bottomBar = {
+            if (!uiState.isLoading && uiState.errorMessage == null && currentPage != null && bookContent != null) {
+                Surface(shadowElevation = 4.dp, tonalElevation = 2.dp) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Button(
+                            onClick = viewModel::goToPreviousPage,
+                            enabled = uiState.currentPageIndex > 0,
+                        ) {
+                            Text("上一页")
+                        }
+                        Button(
+                            onClick = viewModel::goToNextPage,
+                            enabled = uiState.currentPageIndex < bookContent.pages.lastIndex,
+                        ) {
+                            Text("下一页")
+                        }
+                    }
+                }
+            }
         },
     ) { innerPadding ->
         val scrollState = rememberScrollState()
@@ -236,24 +262,6 @@ fun ReaderScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Button(
-                            onClick = viewModel::goToPreviousPage,
-                            enabled = uiState.currentPageIndex > 0,
-                        ) {
-                            Text("上一页")
-                        }
-                        Button(
-                            onClick = viewModel::goToNextPage,
-                            enabled = uiState.currentPageIndex < bookContent.pages.lastIndex,
-                        ) {
-                            Text("下一页")
                         }
                     }
                 }

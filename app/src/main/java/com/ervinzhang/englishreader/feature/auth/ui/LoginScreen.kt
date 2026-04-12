@@ -1,28 +1,47 @@
 package com.ervinzhang.englishreader.feature.auth.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
+import com.ervinzhang.englishreader.core.ui.StorybookBackdrop
+import com.ervinzhang.englishreader.core.ui.StorybookCard
+import com.ervinzhang.englishreader.core.ui.StorybookPrimaryButton
+import com.ervinzhang.englishreader.core.ui.StorybookTag
 import com.ervinzhang.englishreader.feature.auth.domain.AuthActionResult
 import com.ervinzhang.englishreader.feature.auth.domain.AuthError
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
@@ -54,58 +73,193 @@ fun LoginScreen(
     val uiState = viewModel.uiState
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("手机号登录") })
-        },
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = WindowInsets(0.dp),
     ) { innerPadding ->
-        Column(
+        StorybookBackdrop(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding),
         ) {
-            Text(text = "第一版验证码固定为 123456")
-            OutlinedTextField(
-                value = uiState.phone,
-                onValueChange = viewModel::onPhoneChanged,
-                label = { Text("手机号") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = uiState.phoneError != null,
-                supportingText = {
-                    Text(uiState.phoneError ?: "请输入 11 位手机号")
-                },
-            )
-            OutlinedTextField(
-                value = uiState.code,
-                onValueChange = viewModel::onCodeChanged,
-                label = { Text("测试验证码") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                isError = uiState.codeError != null,
-                supportingText = {
-                    Text(uiState.codeError ?: "点击获取验证码后，输入固定测试码")
-                },
-            )
-            TextButton(
-                onClick = viewModel::sendCode,
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp, vertical = 28.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                Text("获取验证码")
-            }
-            if (uiState.message != null) {
-                Text(text = uiState.message)
-            }
-            Button(
-                onClick = viewModel::submit,
-                enabled = !uiState.isSubmitting,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(if (uiState.isSubmitting) "处理中..." else "登录 / 下一步")
+                StorybookTag(text = "欢迎回来")
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        text = "打开今天的英语绘本冒险",
+                        style = MaterialTheme.typography.displayMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        text = "沿用 Stitch 的温暖纸张质感，用手机号继续进入你的故事书架。",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+
+                StorybookCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(
+                                text = "故事准备好了",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                            Text(
+                                text = "输入手机号和验证码，马上继续阅读。",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            repeat(3) { index ->
+                                Spacer(
+                                    modifier = Modifier
+                                        .size(if (index == 1) 56.dp else 42.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            when (index) {
+                                                0 -> MaterialTheme.colorScheme.secondaryContainer
+                                                1 -> MaterialTheme.colorScheme.primaryContainer
+                                                else -> MaterialTheme.colorScheme.tertiaryContainer
+                                            },
+                                        ),
+                                )
+                            }
+                        }
+                    }
+                }
+
+                StorybookCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        StorybookTag(
+                            text = "测试验证码 123456",
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        )
+                        StorybookTextField(
+                            value = uiState.phone,
+                            onValueChange = viewModel::onPhoneChanged,
+                            label = "手机号",
+                            supportingText = uiState.phoneError ?: "请输入 11 位手机号",
+                            isError = uiState.phoneError != null,
+                            keyboardType = KeyboardType.Phone,
+                        )
+                        StorybookTextField(
+                            value = uiState.code,
+                            onValueChange = viewModel::onCodeChanged,
+                            label = "测试验证码",
+                            supportingText = uiState.codeError ?: "点击获取验证码后，输入固定测试码",
+                            isError = uiState.codeError != null,
+                            keyboardType = KeyboardType.Number,
+                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            shape = MaterialTheme.shapes.large,
+                        ) {
+                            TextButton(
+                                onClick = viewModel::sendCode,
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(
+                                    text = "获取验证码",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                )
+                            }
+                        }
+                        if (uiState.message != null) {
+                            Text(
+                                text = uiState.message,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                        StorybookPrimaryButton(
+                            text = if (uiState.isSubmitting) "处理中..." else "登录 / 下一步",
+                            onClick = viewModel::submit,
+                            enabled = !uiState.isSubmitting,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "进入后仍沿用现有邀请与注册流程，不新增路由。",
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
             }
         }
     }
+}
+
+@Composable
+private fun StorybookTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    supportingText: String,
+    isError: Boolean,
+    keyboardType: KeyboardType,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true,
+        isError = isError,
+        shape = MaterialTheme.shapes.large,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.16f),
+            focusedBorderColor = MaterialTheme.colorScheme.secondary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+        ),
+        supportingText = {
+            Text(
+                text = supportingText,
+                color = if (isError) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
+            )
+        },
+    )
 }
 
 private data class LoginUiState(
