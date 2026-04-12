@@ -96,16 +96,28 @@ class AndroidAudioPlayer(
         if (status != TextToSpeech.SUCCESS) return
 
         val tts = textToSpeech ?: return
-        val languageResult = tts.setLanguage(Locale.US)
-        if (languageResult == TextToSpeech.LANG_MISSING_DATA || languageResult == TextToSpeech.LANG_NOT_SUPPORTED) {
-            return
-        }
-
+        val selectedLocale = chooseAvailableLocale(tts) ?: return
+        tts.language = selectedLocale
         tts.setSpeechRate(0.95f)
+        tts.setPitch(1.0f)
         isTtsReady = true
         pendingSpeech?.let { queuedText ->
             pendingSpeech = null
             speak(queuedText)
+        }
+    }
+
+    private fun chooseAvailableLocale(tts: TextToSpeech): Locale? {
+        val preferredLocales = listOf(
+            Locale.US,
+            Locale.UK,
+            Locale.ENGLISH,
+            Locale.getDefault(),
+        ).distinct()
+
+        return preferredLocales.firstOrNull { locale ->
+            val result = tts.isLanguageAvailable(locale)
+            result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED
         }
     }
 
