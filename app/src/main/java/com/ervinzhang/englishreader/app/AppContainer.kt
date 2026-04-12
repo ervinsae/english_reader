@@ -2,8 +2,8 @@ package com.ervinzhang.englishreader.app
 
 import android.app.Application
 import androidx.room.Room
+import com.ervinzhang.englishreader.core.audio.AndroidAudioPlayer
 import com.ervinzhang.englishreader.core.audio.AudioPlayer
-import com.ervinzhang.englishreader.core.audio.NoOpAudioPlayer
 import com.ervinzhang.englishreader.core.content.AssetBookDataSource
 import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.content.OfflineBookRepository
@@ -42,5 +42,5 @@ class AppContainer(
         sessionStore = sessionStore,
     )
 
-    val audioPlayer: AudioPlayer = NoOpAudioPlayer
+    val audioPlayer: AudioPlayer = AndroidAudioPlayer(application)
 }

@@ -203,7 +203,7 @@ fun ReaderScreen(
                             )
                             TextButton(
                                 onClick = viewModel::playSentenceAudio,
-                                enabled = currentPage.sentenceAudioAsset != null,
+                                enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
                             ) {
                                 Text("播放整句")
                             }
@@ -433,7 +433,10 @@ private fun SelectedWordBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                TextButton(onClick = onPlay, enabled = word.audioAsset != null) {
+                TextButton(
+                    onClick = onPlay,
+                    enabled = word.audioAsset != null || word.text.isNotBlank(),
+                ) {
                     Text("播放单词")
                 }
                 Button(onClick = onAddToVocabulary) {
@@ -561,22 +564,34 @@ private class ReaderViewModel(
     }
 
     fun playSentenceAudio() {
-        val sentenceAudioAsset = uiState.bookContent
+        val currentPage = uiState.bookContent
             ?.pages
             ?.getOrNull(uiState.currentPageIndex)
-            ?.sentenceAudioAsset
             ?: return
-        audioPlayer.play(sentenceAudioAsset)
+
+        val sentenceAudioAsset = currentPage.sentenceAudioAsset
+        if (sentenceAudioAsset != null) {
+            audioPlayer.play(sentenceAudioAsset)
+            return
+        }
+
+        audioPlayer.speak(currentPage.englishText)
     }
 
     fun playSelectedWordAudio() {
         val selectedWordId = uiState.selectedWordId ?: return
-        val wordAudioAsset = uiState.bookContent
+        val selectedWord = uiState.bookContent
             ?.words
             ?.get(selectedWordId)
-            ?.audioAsset
             ?: return
-        audioPlayer.play(wordAudioAsset)
+
+        val wordAudioAsset = selectedWord.audioAsset
+        if (wordAudioAsset != null) {
+            audioPlayer.play(wordAudioAsset)
+            return
+        }
+
+        audioPlayer.speak(selectedWord.text)
     }
 
     private fun updateCurrentPage(targetPageIndex: Int) {

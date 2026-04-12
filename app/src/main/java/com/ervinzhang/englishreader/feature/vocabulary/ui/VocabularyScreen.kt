@@ -278,7 +278,7 @@ private fun VocabularyItemCard(
     StorybookCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = item.audioAsset != null, onClick = onPlayWord),
+            .clickable(enabled = item.audioAsset != null || item.word.isNotBlank(), onClick = onPlayWord),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
@@ -331,7 +331,7 @@ private fun VocabularyItemCard(
                 ) {
                     TextButton(
                         onClick = onPlayWord,
-                        enabled = item.audioAsset != null,
+                        enabled = item.audioAsset != null || item.word.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
@@ -411,8 +411,13 @@ private class VocabularyViewModel(
     }
 
     fun playWordAudio(item: VocabularyItem) {
-        val audioAsset = item.audioAsset ?: return
-        audioPlayer.play(audioAsset)
+        val audioAsset = item.audioAsset
+        if (audioAsset != null) {
+            audioPlayer.play(audioAsset)
+            return
+        }
+
+        audioPlayer.speak(item.word)
     }
 
     fun deleteWord(item: VocabularyItem) {
