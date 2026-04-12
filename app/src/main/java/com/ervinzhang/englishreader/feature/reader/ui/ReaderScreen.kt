@@ -476,6 +476,7 @@ private class ReaderViewModel(
     var uiState by mutableStateOf(ReaderUiState())
         private set
     private var currentUserId: String? = null
+    private var shouldAutoPlaySentenceOnPageChange: Boolean = false
 
     init {
         viewModelScope.launch {
@@ -531,6 +532,7 @@ private class ReaderViewModel(
     }
 
     fun selectWord(wordId: String) {
+        shouldAutoPlaySentenceOnPageChange = false
         uiState = uiState.copy(
             selectedWordId = if (uiState.selectedWordId == wordId) null else wordId,
             vocabularyMessage = null,
@@ -564,21 +566,12 @@ private class ReaderViewModel(
     }
 
     fun playSentenceAudio() {
-        val currentPage = uiState.bookContent
-            ?.pages
-            ?.getOrNull(uiState.currentPageIndex)
-            ?: return
-
-        val sentenceAudioAsset = currentPage.sentenceAudioAsset
-        if (sentenceAudioAsset != null) {
-            audioPlayer.play(sentenceAudioAsset)
-            return
-        }
-
-        audioPlayer.speak(currentPage.englishText)
+        shouldAutoPlaySentenceOnPageChange = true
+        playCurrentPageSentenceAudio()
     }
 
     fun playSelectedWordAudio() {
+        shouldAutoPlaySentenceOnPageChange = false
         val selectedWordId = uiState.selectedWordId ?: return
         val selectedWord = uiState.bookContent
             ?.words
@@ -601,6 +594,9 @@ private class ReaderViewModel(
         val nextPageIndex = targetPageIndex.coerceIn(0, currentContent.pages.lastIndex)
         if (nextPageIndex == uiState.currentPageIndex) return
 
+        val resumeSentencePlayback = shouldAutoPlaySentenceOnPageChange
+        audioPlayer.stop()
+
         val hasFinishedBook = uiState.hasFinishedBook || nextPageIndex == currentContent.pages.lastIndex
         val currentPageNo = currentContent.pages[nextPageIndex].pageNo
 
@@ -615,6 +611,25 @@ private class ReaderViewModel(
             currentPage = currentPageNo,
             finished = hasFinishedBook,
         )
+
+        if (resumeSentencePlayback) {
+            playCurrentPageSentenceAudio()
+        }
+    }
+
+    private fun playCurrentPageSentenceAudio() {
+        val currentPage = uiState.bookContent
+            ?.pages
+            ?.getOrNull(uiState.currentPageIndex)
+            ?: return
+
+        val sentenceAudioAsset = currentPage.sentenceAudioAsset
+        if (sentenceAudioAsset != null) {
+            audioPlayer.play(sentenceAudioAsset)
+            return
+        }
+
+        audioPlayer.speak(currentPage.englishText)
     }
 
     private fun saveReadingProgress(
