@@ -1,0 +1,410 @@
+[
+  {
+    "id": "gran",
+    "text": "Gran",
+    "meaningZh": "奶奶",
+    "phonetic": "/ɡræn/"
+  },
+  {
+    "id": "birthday",
+    "text": "birthday",
+    "meaningZh": "生日",
+    "phonetic": "/ˈbɜːθdeɪ/"
+  },
+  {
+    "id": "present",
+    "text": "present",
+    "meaningZh": "礼物",
+    "phonetic": "/ˈprez(ə)nt/"
+  },
+  {
+    "id": "funny",
+    "text": "funny",
+    "meaningZh": "有趣的",
+    "phonetic": "/ˈfʌni/"
+  },
+  {
+    "id": "shape",
+    "text": "shape",
+    "meaningZh": "形状",
+    "phonetic": "/ʃeɪp/"
+  },
+  {
+    "id": "laughed",
+    "text": "laughed",
+    "meaningZh": "笑了",
+    "phonetic": "/lɑːft/"
+  },
+  {
+    "id": "chinese",
+    "text": "Chinese",
+    "meaningZh": "中国的",
+    "phonetic": "/ˌtʃaɪˈniːz/"
+  },
+  {
+    "id": "vase",
+    "text": "vase",
+    "meaningZh": "花瓶",
+    "phonetic": "/vɑːz/"
+  },
+  {
+    "id": "safe",
+    "text": "safe",
+    "meaningZh": "安全的",
+    "phonetic": "/seɪf/"
+  },
+  {
+    "id": "surprise",
+    "text": "surprise",
+    "meaningZh": "惊喜",
+    "phonetic": "/səˈpraɪz/"
+  },
+  {
+    "id": "fireworks",
+    "text": "fireworks",
+    "meaningZh": "烟花",
+    "phonetic": "/ˈfaɪəwɜːks/"
+  },
+  {
+    "id": "dangerous",
+    "text": "dangerous",
+    "meaningZh": "危险的",
+    "phonetic": "/ˈdeɪndʒərəs/"
+  },
+  {
+    "id": "careful",
+    "text": "careful",
+    "meaningZh": "小心的",
+    "phonetic": "/ˈkeəfəl/"
+  },
+  {
+    "id": "excited",
+    "text": "excited",
+    "meaningZh": "兴奋的",
+    "phonetic": "/ɪkˈsaɪtɪd/"
+  },
+  {
+    "id": "beautiful",
+    "text": "beautiful",
+    "meaningZh": "美丽的",
+    "phonetic": "/ˈbjuːtɪfəl/"
+  },
+  {
+    "id": "firework",
+    "text": "firework",
+    "meaningZh": "烟花",
+    "phonetic": "/ˈfaɪəwɜːk/"
+  },
+  {
+    "id": "floppy",
+    "text": "Floppy",
+    "meaningZh": "弗洛皮",
+    "phonetic": "/ˈflɒpi/"
+  },
+  {
+    "id": "loud_bang",
+    "text": "loud bang",
+    "meaningZh": "巨响",
+    "phonetic": "/laʊd bæŋ/"
+  },
+  {
+    "id": "hid",
+    "text": "hid",
+    "meaningZh": "躲藏",
+    "phonetic": "/hɪd/"
+  },
+  {
+    "id": "birthday_cake",
+    "text": "birthday cake",
+    "meaningZh": "生日蛋糕",
+    "phonetic": "/ˈbɜːθdeɪ keɪk/"
+  },
+  {
+    "id": "candles",
+    "text": "candles",
+    "meaningZh": "蜡烛",
+    "phonetic": "/ˈkændəlz/"
+  },
+  {
+    "id": "broken",
+    "text": "broken",
+    "meaningZh": "打碎的",
+    "phonetic": "/ˈbrəʊkən/"
+  },
+  {
+    "id": "floor",
+    "text": "floor",
+    "meaningZh": "地板",
+    "phonetic": "/flɔː/"
+  },
+  {
+    "id": "upset",
+    "text": "upset",
+    "meaningZh": "难过的",
+    "phonetic": "/ʌpˈset/"
+  },
+  {
+    "id": "mend",
+    "text": "mend",
+    "meaningZh": "修补",
+    "phonetic": "/mend/"
+  },
+  {
+    "id": "key",
+    "text": "key",
+    "meaningZh": "钥匙",
+    "phonetic": "/kiː/"
+  },
+  {
+    "id": "magic",
+    "text": "magic",
+    "meaningZh": "魔法",
+    "phonetic": "/ˈmædʒɪk/"
+  },
+  {
+    "id": "adventure",
+    "text": "adventure",
+    "meaningZh": "冒险",
+    "phonetic": "/ədˈventʃə(r)/"
+  },
+  {
+    "id": "china",
+    "text": "China",
+    "meaningZh": "中国",
+    "phonetic": "/ˈtʃaɪnə/"
+  },
+  {
+    "id": "forbidden_city",
+    "text": "Forbidden City",
+    "meaningZh": "紫禁城",
+    "phonetic": "/fəˌbɪdən ˈsɪti/"
+  },
+  {
+    "id": "emperor",
+    "text": "Emperor",
+    "meaningZh": "皇帝",
+    "phonetic": "/ˈempərə(r)/"
+  },
+  {
+    "id": "allowed",
+    "text": "allowed",
+    "meaningZh": "被允许的",
+    "phonetic": "/əˈlaʊd/"
+  },
+  {
+    "id": "fierce",
+    "text": "fierce",
+    "meaningZh": "凶猛的",
+    "phonetic": "/fɪəs/"
+  },
+  {
+    "id": "growled",
+    "text": "growled",
+    "meaningZh": "低吼",
+    "phonetic": "/ɡraʊld/"
+  },
+  {
+    "id": "barked",
+    "text": "barked",
+    "meaningZh": "吠叫",
+    "phonetic": "/bɑːkt/"
+  },
+  {
+    "id": "worried",
+    "text": "worried",
+    "meaningZh": "担心的",
+    "phonetic": "/ˈwʌrid/"
+  },
+  {
+    "id": "grabbed",
+    "text": "grabbed",
+    "meaningZh": "抓住",
+    "phonetic": "/ɡræbd/"
+  },
+  {
+    "id": "soldiers",
+    "text": "soldiers",
+    "meaningZh": "士兵",
+    "phonetic": "/ˈsəʊldʒəz/"
+  },
+  {
+    "id": "prison",
+    "text": "prison",
+    "meaningZh": "监狱",
+    "phonetic": "/ˈprɪzən/"
+  },
+  {
+    "id": "twins",
+    "text": "twins",
+    "meaningZh": "双胞胎",
+    "phonetic": "/twɪnz/"
+  },
+  {
+    "id": "exactly",
+    "text": "exactly",
+    "meaningZh": "完全一样地",
+    "phonetic": "/ɪɡˈzæktli/"
+  },
+  {
+    "id": "hooray",
+    "text": "Hooray",
+    "meaningZh": "好耶",
+    "phonetic": "/hʊˈreɪ/"
+  },
+  {
+    "id": "football",
+    "text": "football",
+    "meaningZh": "足球",
+    "phonetic": "/ˈfʊtbɔːl/"
+  },
+  {
+    "id": "kicked",
+    "text": "kicked",
+    "meaningZh": "踢了",
+    "phonetic": "/kɪkt/"
+  },
+  {
+    "id": "leg",
+    "text": "leg",
+    "meaningZh": "腿",
+    "phonetic": "/leɡ/"
+  },
+  {
+    "id": "grating",
+    "text": "grating",
+    "meaningZh": "格栅",
+    "phonetic": "/ˈɡreɪtɪŋ/"
+  },
+  {
+    "id": "lost",
+    "text": "lost",
+    "meaningZh": "丢失的",
+    "phonetic": "/lɒst/"
+  },
+  {
+    "id": "cry",
+    "text": "cry",
+    "meaningZh": "哭",
+    "phonetic": "/kraɪ/"
+  },
+  {
+    "id": "steps",
+    "text": "steps",
+    "meaningZh": "台阶",
+    "phonetic": "/steps/"
+  },
+  {
+    "id": "cellar",
+    "text": "cellar",
+    "meaningZh": "地窖",
+    "phonetic": "/ˈselə(r)/"
+  },
+  {
+    "id": "cobwebs",
+    "text": "cobwebs",
+    "meaningZh": "蜘蛛网",
+    "phonetic": "/ˈkɒbwebz/"
+  },
+  {
+    "id": "dust",
+    "text": "dust",
+    "meaningZh": "灰尘",
+    "phonetic": "/dʌst/"
+  },
+  {
+    "id": "giant_vases",
+    "text": "giant vases",
+    "meaningZh": "大花瓶",
+    "phonetic": "/ˈdʒaɪənt ˈvɑːzɪz/"
+  },
+  {
+    "id": "giant_vase",
+    "text": "giant vase",
+    "meaningZh": "大花瓶",
+    "phonetic": "/ˈdʒaɪənt vɑːz/"
+  },
+  {
+    "id": "servants",
+    "text": "servants",
+    "meaningZh": "仆人",
+    "phonetic": "/ˈsɜːvənts/"
+  },
+  {
+    "id": "gunpowder",
+    "text": "gunpowder",
+    "meaningZh": "火药",
+    "phonetic": "/ˈɡʌnˌpaʊdə(r)/"
+  },
+  {
+    "id": "palace",
+    "text": "palace",
+    "meaningZh": "宫殿",
+    "phonetic": "/ˈpæləs/"
+  },
+  {
+    "id": "frightened",
+    "text": "frightened",
+    "meaningZh": "害怕的",
+    "phonetic": "/ˈfraɪtnd/"
+  },
+  {
+    "id": "blow_up",
+    "text": "blow up",
+    "meaningZh": "炸毁",
+    "phonetic": "/bləʊ ʌp/"
+  },
+  {
+    "id": "pleased",
+    "text": "pleased",
+    "meaningZh": "高兴的",
+    "phonetic": "/pliːzd/"
+  },
+  {
+    "id": "firework_party",
+    "text": "firework party",
+    "meaningZh": "烟花派对",
+    "phonetic": "/ˈfaɪəwɜːk ˈpɑːti/"
+  },
+  {
+    "id": "sky",
+    "text": "sky",
+    "meaningZh": "天空",
+    "phonetic": "/skaɪ/"
+  },
+  {
+    "id": "gasped",
+    "text": "gasped",
+    "meaningZh": "倒吸一口气",
+    "phonetic": "/ɡɑːspt/"
+  },
+  {
+    "id": "wish",
+    "text": "wish",
+    "meaningZh": "希望",
+    "phonetic": "/wɪʃ/"
+  },
+  {
+    "id": "glow",
+    "text": "glow",
+    "meaningZh": "发光",
+    "phonetic": "/ɡləʊ/"
+  },
+  {
+    "id": "small",
+    "text": "small",
+    "meaningZh": "小的",
+    "phonetic": "/smɔːl/"
+  },
+  {
+    "id": "chinese_writing",
+    "text": "Chinese writing",
+    "meaningZh": "中文字样",
+    "phonetic": "/ˌtʃaɪˈniːz ˈraɪtɪŋ/"
+  },
+  {
+    "id": "notice",
+    "text": "notice",
+    "meaningZh": "注意到",
+    "phonetic": "/ˈnəʊtɪs/"
+  }
+]

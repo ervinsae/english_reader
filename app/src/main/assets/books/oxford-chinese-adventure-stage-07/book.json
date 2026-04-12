@@ -1,0 +1,14 @@
+{
+  "id": "oxford-chinese-adventure-stage-07",
+  "title": "Chinese Adventure",
+  "level": "Stage 07",
+  "coverAsset": "cover.png",
+  "pageCount": 32,
+  "tags": [
+    "oxford",
+    "stage-07",
+    "picture-book",
+    "adventure"
+  ],
+  "enabled": true
+}
