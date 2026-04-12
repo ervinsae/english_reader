@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="88dp"
+        android:height="88dp"
+        android:gravity="center"
+        android:top="6dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp" />
+            <solid android:color="@color/icon_shadow" />
+        </shape>
+    </item>
+
+    <item
+        android:width="84dp"
+        android:height="84dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp" />
+            <solid android:color="@color/icon_bg_cream" />
+        </shape>
+    </item>
+
+    <item
+        android:left="40dp"
+        android:top="54dp"
+        android:right="67dp"
+        android:bottom="64dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" />
+            <solid android:color="@color/icon_sage" />
+        </shape>
+    </item>
+
+    <item
+        android:left="66dp"
+        android:top="54dp"
+        android:right="41dp"
+        android:bottom="64dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" />
+            <solid android:color="@color/icon_forest" />
+        </shape>
+    </item>
+
+    <item
+        android:left="61dp"
+        android:top="50dp"
+        android:right="61dp"
+        android:bottom="52dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/icon_bg_cream" />
+        </shape>
+    </item>
+
+    <item
+        android:width="26dp"
+        android:height="26dp"
+        android:gravity="top|center_horizontal"
+        android:top="36dp"
+        android:drawable="@drawable/ic_launcher_sparkle" />
+</layer-list>
