@@ -1,63 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="88dp"
-        android:height="88dp"
-        android:gravity="center"
-        android:top="6dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="24dp" />
-            <solid android:color="@color/icon_shadow" />
-        </shape>
-    </item>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
 
-    <item
-        android:width="84dp"
-        android:height="84dp"
-        android:gravity="center">
-        <shape android:shape="rectangle">
-            <corners android:radius="24dp" />
-            <solid android:color="@color/icon_bg_cream" />
-        </shape>
-    </item>
+    <path
+        android:fillColor="@color/icon_shadow"
+        android:pathData="M23,34
+            C23,29 27,25 32,25
+            C39,25 48,28 54,35
+            C60,28 69,25 76,25
+            C81,25 85,29 85,34
+            L85,73
+            C85,77 82,80 78,80
+            C70,80 61,82.5 54,87
+            C47,82.5 38,80 30,80
+            C26,80 23,77 23,73 Z" />
 
-    <item
-        android:left="40dp"
-        android:top="54dp"
-        android:right="67dp"
-        android:bottom="64dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="12dp" />
-            <solid android:color="@color/icon_sage" />
-        </shape>
-    </item>
+    <path
+        android:fillColor="@color/icon_bg_cream"
+        android:pathData="M27,30
+            C27,27.8 28.8,26 31,26
+            C38.2,26 46.4,28.8 52,34.4
+            L52,77
+            C46.3,73.9 39.1,72 32,72
+            C29.2,72 27,69.8 27,67 Z" />
 
-    <item
-        android:left="66dp"
-        android:top="54dp"
-        android:right="41dp"
-        android:bottom="64dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="12dp" />
-            <solid android:color="@color/icon_forest" />
-        </shape>
-    </item>
+    <path
+        android:fillColor="@color/icon_sage"
+        android:pathData="M29,31.5
+            C29,30.1 30.1,29 31.5,29
+            C37.6,29 44.6,31.4 49,35.7
+            L49,72.8
+            C44.2,70.6 38.8,69.4 33.6,69.4
+            C31,69.4 29,67.4 29,64.8 Z" />
 
-    <item
-        android:left="61dp"
-        android:top="50dp"
-        android:right="61dp"
-        android:bottom="52dp">
-        <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
-            <solid android:color="@color/icon_bg_cream" />
-        </shape>
-    </item>
+    <path
+        android:fillColor="@color/icon_bg_cream"
+        android:pathData="M81,30
+            C81,27.8 79.2,26 77,26
+            C69.8,26 61.6,28.8 56,34.4
+            L56,77
+            C61.7,73.9 68.9,72 76,72
+            C78.8,72 81,69.8 81,67 Z" />
 
-    <item
-        android:width="26dp"
-        android:height="26dp"
-        android:gravity="top|center_horizontal"
-        android:top="36dp"
-        android:drawable="@drawable/ic_launcher_sparkle" />
-</layer-list>
+    <path
+        android:fillColor="@color/icon_forest"
+        android:pathData="M79,31.5
+            C79,30.1 77.9,29 76.5,29
+            C70.4,29 63.4,31.4 59,35.7
+            L59,72.8
+            C63.8,70.6 69.2,69.4 74.4,69.4
+            C77,69.4 79,67.4 79,64.8 Z" />
+
+    <path
+        android:fillColor="@color/icon_shadow"
+        android:pathData="M53,34 h2 v44 h-2 z" />
+
+    <path
+        android:fillColor="@color/icon_bg_cream"
+        android:pathData="M54,19
+            L55.8,24.2 L61,26 L55.8,27.8 L54,33
+            L52.2,27.8 L47,26 L52.2,24.2 Z" />
+
+    <path
+        android:fillColor="@color/icon_bg_cream"
+        android:pathData="M43,24
+            L44.1,27.1 L47.2,28.2 L44.1,29.3 L43,32.4
+            L41.9,29.3 L38.8,28.2 L41.9,27.1 Z" />
+
+    <path
+        android:fillColor="@color/icon_bg_cream"
+        android:pathData="M66,24
+            L67.1,27.1 L70.2,28.2 L67.1,29.3 L66,32.4
+            L64.9,29.3 L61.8,28.2 L64.9,27.1 Z" />
+</vector>
