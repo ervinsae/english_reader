@@ -574,6 +574,7 @@ private class ReaderViewModel(
         private set
     private var currentUserId: String? = null
     private var shouldAutoPlaySentenceOnPageChange: Boolean = false
+    private var hasTriggeredInitialAutoPlay: Boolean = false
 
     init {
         viewModelScope.launch {
@@ -617,7 +618,19 @@ private class ReaderViewModel(
                     errorMessage = "绘本内容加载失败",
                 )
             }
+
+            triggerInitialAutoPlayIfNeeded()
         }
+    }
+
+    private fun triggerInitialAutoPlayIfNeeded() {
+        if (hasTriggeredInitialAutoPlay) return
+        val currentContent = uiState.bookContent ?: return
+        if (currentContent.pages.isEmpty()) return
+
+        hasTriggeredInitialAutoPlay = true
+        shouldAutoPlaySentenceOnPageChange = true
+        playCurrentPageSentenceAudio()
     }
 
     fun goToPreviousPage() {
