@@ -10,12 +10,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -158,121 +159,117 @@ fun ReaderScreen(
                 }
 
                 else -> {
-                    BoxWithConstraints(
+                    val scrollState = rememberScrollState()
+
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
+                            .verticalScroll(scrollState)
                             .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        val readerImageHeight = maxHeight * 0.68f
-
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(28.dp),
+                            tonalElevation = 2.dp,
+                            shadowElevation = 8.dp,
+                            color = MaterialTheme.colorScheme.surface,
                         ) {
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(readerImageHeight),
-                                shape = RoundedCornerShape(28.dp),
-                                tonalElevation = 2.dp,
-                                shadowElevation = 8.dp,
-                                color = MaterialTheme.colorScheme.surface,
+                            ReaderPageTurnSurface(
+                                modifier = Modifier.fillMaxWidth(),
+                                canGoToPreviousPage = uiState.currentPageIndex > 0,
+                                canGoToNextPage = uiState.currentPageIndex < bookContent.pages.lastIndex,
+                                onPreviousPage = viewModel::goToPreviousPage,
+                                onNextPage = viewModel::goToNextPage,
                             ) {
-                                ReaderPageTurnSurface(
-                                    modifier = Modifier.fillMaxSize(),
-                                    canGoToPreviousPage = uiState.currentPageIndex > 0,
-                                    canGoToNextPage = uiState.currentPageIndex < bookContent.pages.lastIndex,
-                                    onPreviousPage = viewModel::goToPreviousPage,
-                                    onNextPage = viewModel::goToNextPage,
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp),
+                                    contentAlignment = Alignment.Center,
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .padding(8.dp),
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        AssetImage(
-                                            assetPath = currentPage.imageAsset,
-                                            contentDescription = "第 ${currentPage.pageNo} 页",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Fit,
-                                            filterQuality = FilterQuality.High,
-                                            fallbackText = "页面图片占位",
-                                        )
-                                    }
+                                    AssetImage(
+                                        assetPath = currentPage.imageAsset,
+                                        contentDescription = "第 ${currentPage.pageNo} 页",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        contentScale = ContentScale.Fit,
+                                        matchAssetAspectRatio = true,
+                                        filterQuality = FilterQuality.High,
+                                        fallbackText = "页面图片占位",
+                                    )
                                 }
                             }
+                        }
 
-                            Surface(
-                                modifier = Modifier.fillMaxWidth(),
-                                shape = RoundedCornerShape(24.dp),
-                                tonalElevation = 1.dp,
-                                color = MaterialTheme.colorScheme.surface,
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            tonalElevation = 1.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-                                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    IndexedEnglishText(
-                                        text = currentPage.englishText,
-                                        wordRefs = currentPage.words,
-                                        selectedWordId = uiState.selectedWordId,
-                                        onWordTap = viewModel::selectWord,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        textAlign = TextAlign.Center,
-                                    )
-                                    SentencePlaybackControl(
-                                        isPlaying = uiState.isSentencePlaybackActive,
-                                        isPaused = uiState.isSentencePlaybackPaused,
-                                        enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
-                                        onToggle = viewModel::toggleSentencePlayback,
-                                    )
+                                IndexedEnglishText(
+                                    text = currentPage.englishText,
+                                    wordRefs = currentPage.words,
+                                    selectedWordId = uiState.selectedWordId,
+                                    onWordTap = viewModel::selectWord,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                )
+                                SentencePlaybackControl(
+                                    isPlaying = uiState.isSentencePlaybackActive,
+                                    isPaused = uiState.isSentencePlaybackPaused,
+                                    enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
+                                    onToggle = viewModel::toggleSentencePlayback,
+                                )
 
-                                    if (currentWords.isNotEmpty()) {
-                                        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                            items(
-                                                items = currentWords,
-                                                key = { item -> item.ref.wordId },
-                                            ) { wordUiModel ->
-                                                val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
-                                                OutlinedButton(
-                                                    onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
-                                                    shape = RoundedCornerShape(20.dp),
-                                                    border = BorderStroke(
-                                                        width = if (isSelected) 2.dp else 1.dp,
-                                                        color = if (isSelected) {
-                                                            MaterialTheme.colorScheme.primary
-                                                        } else {
-                                                            MaterialTheme.colorScheme.outlineVariant
-                                                        },
-                                                    ),
-                                                    colors = ButtonDefaults.outlinedButtonColors(
-                                                        containerColor = if (isSelected) {
-                                                            MaterialTheme.colorScheme.primaryContainer
-                                                        } else {
-                                                            MaterialTheme.colorScheme.surface
-                                                        },
-                                                        contentColor = if (isSelected) {
-                                                            MaterialTheme.colorScheme.onPrimaryContainer
-                                                        } else {
-                                                            MaterialTheme.colorScheme.onSurface
-                                                        },
-                                                    ),
-                                                ) {
-                                                    Text(wordUiModel.ref.text)
-                                                }
+                                if (currentWords.isNotEmpty()) {
+                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        items(
+                                            items = currentWords,
+                                            key = { item -> item.ref.wordId },
+                                        ) { wordUiModel ->
+                                            val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
+                                            OutlinedButton(
+                                                onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
+                                                shape = RoundedCornerShape(20.dp),
+                                                border = BorderStroke(
+                                                    width = if (isSelected) 2.dp else 1.dp,
+                                                    color = if (isSelected) {
+                                                        MaterialTheme.colorScheme.primary
+                                                    } else {
+                                                        MaterialTheme.colorScheme.outlineVariant
+                                                    },
+                                                ),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    containerColor = if (isSelected) {
+                                                        MaterialTheme.colorScheme.primaryContainer
+                                                    } else {
+                                                        MaterialTheme.colorScheme.surface
+                                                    },
+                                                    contentColor = if (isSelected) {
+                                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                                    } else {
+                                                        MaterialTheme.colorScheme.onSurface
+                                                    },
+                                                ),
+                                            ) {
+                                                Text(wordUiModel.ref.text)
                                             }
                                         }
                                     }
+                                }
 
-                                    if (!uiState.vocabularyMessage.isNullOrBlank()) {
-                                        Text(
-                                            text = uiState.vocabularyMessage,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                        )
-                                    }
+                                if (!uiState.vocabularyMessage.isNullOrBlank()) {
+                                    Text(
+                                        text = uiState.vocabularyMessage,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
                                 }
                             }
                         }
