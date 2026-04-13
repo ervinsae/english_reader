@@ -11,12 +11,16 @@ import java.util.Locale
 interface AudioPlayer {
     fun play(assetPath: String)
     fun speak(text: String)
+    fun pause(): Boolean
+    fun resume(): Boolean
     fun stop()
 }
 
 object NoOpAudioPlayer : AudioPlayer {
     override fun play(assetPath: String) = Unit
     override fun speak(text: String) = Unit
+    override fun pause(): Boolean = false
+    override fun resume(): Boolean = false
     override fun stop() = Unit
 }
 
@@ -29,8 +33,16 @@ class AndroidAudioPlayer(
     private var textToSpeech: TextToSpeech? = null
     private var isTtsReady = false
     private var pendingSpeech: String? = null
+    private var currentAssetPath: String? = null
+    private var pausedAssetPath: String? = null
+    private var pausedAssetPositionMs: Int = 0
+    private var pausedSpeechText: String? = null
+    private var activeSpeechText: String? = null
 
     override fun play(assetPath: String) {
+        clearPausedState()
+        currentAssetPath = assetPath
+        activeSpeechText = null
         stopMediaPlayback()
         textToSpeech?.stop()
 
@@ -46,12 +58,18 @@ class AndroidAudioPlayer(
             setDataSource(cachedAudioFile.absolutePath)
             setOnPreparedListener { it.start() }
             setOnCompletionListener { completedPlayer ->
+                clearPausedState()
+                activeSpeechText = null
+                currentAssetPath = null
                 completedPlayer.release()
                 if (mediaPlayer === completedPlayer) {
                     mediaPlayer = null
                 }
             }
             setOnErrorListener { failedPlayer, _, _ ->
+                clearPausedState()
+                activeSpeechText = null
+                currentAssetPath = null
                 failedPlayer.release()
                 if (mediaPlayer === failedPlayer) {
                     mediaPlayer = null
@@ -66,6 +84,9 @@ class AndroidAudioPlayer(
         val normalizedText = text.trim()
         if (normalizedText.isBlank()) return
 
+        clearPausedState()
+        currentAssetPath = null
+        activeSpeechText = normalizedText
         stopMediaPlayback()
 
         val tts = ensureTextToSpeech()
@@ -84,7 +105,60 @@ class AndroidAudioPlayer(
         )
     }
 
+    override fun pause(): Boolean {
+        val currentPlayer = mediaPlayer
+        if (currentPlayer != null) {
+            return runCatching {
+                if (currentPlayer.isPlaying) {
+                    pausedAssetPositionMs = currentPlayer.currentPosition
+                    pausedAssetPath = currentAssetPath
+                    currentPlayer.pause()
+                    true
+                } else {
+                    false
+                }
+            }.getOrDefault(false)
+        }
+
+        val currentSpeech = activeSpeechText
+        if (!currentSpeech.isNullOrBlank()) {
+            pausedSpeechText = currentSpeech
+            textToSpeech?.stop()
+            activeSpeechText = null
+            return true
+        }
+
+        return false
+    }
+
+    override fun resume(): Boolean {
+        val currentPlayer = mediaPlayer
+        val assetPath = pausedAssetPath
+        if (currentPlayer != null && !assetPath.isNullOrBlank()) {
+            return runCatching {
+                currentPlayer.seekTo(pausedAssetPositionMs)
+                currentPlayer.start()
+                clearPausedState()
+                true
+            }.getOrElse {
+                false
+            }
+        }
+
+        val speechText = pausedSpeechText
+        if (!speechText.isNullOrBlank()) {
+            pausedSpeechText = null
+            speak(speechText)
+            return true
+        }
+
+        return false
+    }
+
     override fun stop() {
+        clearPausedState()
+        activeSpeechText = null
+        currentAssetPath = null
         stopMediaPlayback()
         textToSpeech?.stop()
     }
@@ -148,5 +222,11 @@ class AndroidAudioPlayer(
         }
         mediaPlayer?.release()
         mediaPlayer = null
+    }
+
+    private fun clearPausedState() {
+        pausedAssetPath = null
+        pausedAssetPositionMs = 0
+        pausedSpeechText = null
     }
 }

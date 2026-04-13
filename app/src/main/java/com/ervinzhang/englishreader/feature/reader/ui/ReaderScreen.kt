@@ -1,25 +1,22 @@
 package com.ervinzhang.englishreader.feature.reader.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -34,13 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -111,156 +112,182 @@ fun ReaderScreen(
         },
         bottomBar = {
             if (!uiState.isLoading && uiState.errorMessage == null && currentPage != null && bookContent != null) {
-                Surface(shadowElevation = 4.dp, tonalElevation = 2.dp) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Button(
-                            onClick = viewModel::goToPreviousPage,
-                            enabled = uiState.currentPageIndex > 0,
-                        ) {
-                            Text("上一页")
-                        }
-                        Button(
-                            onClick = viewModel::goToNextPage,
-                            enabled = uiState.currentPageIndex < bookContent.pages.lastIndex,
-                        ) {
-                            Text("下一页")
-                        }
-                    }
-                }
+                ReaderPageNavigationBar(
+                    currentPageNo = currentPage.pageNo,
+                    totalPages = bookContent.pages.size,
+                    canGoToPreviousPage = uiState.currentPageIndex > 0,
+                    canGoToNextPage = uiState.currentPageIndex < bookContent.pages.lastIndex,
+                    onPreviousPage = viewModel::goToPreviousPage,
+                    onNextPage = viewModel::goToNextPage,
+                )
             }
         },
     ) { innerPadding ->
-        val scrollState = rememberScrollState()
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .verticalScroll(scrollState)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(innerPadding),
         ) {
             when {
                 uiState.isLoading -> {
-                    Text(text = "正在加载绘本内容...")
+                    Text(
+                        text = "正在加载绘本内容...",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(24.dp),
+                    )
                 }
 
                 uiState.errorMessage != null -> {
-                    Text(text = uiState.errorMessage.orEmpty())
+                    Text(
+                        text = uiState.errorMessage.orEmpty(),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(24.dp),
+                    )
                 }
 
                 currentPage == null || bookContent == null -> {
-                    Text(text = "未找到当前绘本内容")
+                    Text(
+                        text = "未找到当前绘本内容",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(24.dp),
+                    )
                 }
 
                 else -> {
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            shape = RoundedCornerShape(28.dp),
+                            tonalElevation = 2.dp,
+                            shadowElevation = 8.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                        ) {
                             ReaderPageTurnSurface(
+                                modifier = Modifier.fillMaxSize(),
                                 canGoToPreviousPage = uiState.currentPageIndex > 0,
                                 canGoToNextPage = uiState.currentPageIndex < bookContent.pages.lastIndex,
                                 onPreviousPage = viewModel::goToPreviousPage,
                                 onNextPage = viewModel::goToNextPage,
                             ) {
-                                AssetImage(
-                                    assetPath = currentPage.imageAsset,
-                                    contentDescription = "第 ${currentPage.pageNo} 页",
+                                Box(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(220.dp),
-                                    contentScale = ContentScale.FillBounds,
-                                    fallbackText = "页面图片占位",
+                                        .fillMaxSize()
+                                        .padding(12.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    AssetImage(
+                                        assetPath = currentPage.imageAsset,
+                                        contentDescription = "第 ${currentPage.pageNo} 页",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Fit,
+                                        filterQuality = FilterQuality.High,
+                                        fallbackText = "页面图片占位",
+                                    )
+                                }
+                            }
+                        }
+
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(28.dp),
+                            tonalElevation = 1.dp,
+                            color = MaterialTheme.colorScheme.surface,
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                                verticalArrangement = Arrangement.spacedBy(14.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                IndexedEnglishText(
+                                    text = currentPage.englishText,
+                                    wordRefs = currentPage.words,
+                                    selectedWordId = uiState.selectedWordId,
+                                    onWordTap = viewModel::selectWord,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                )
+                                Text(
+                                    text = "点按句子里的标注单词查看释义；轻扫图片或点按左右区域翻页。",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = TextAlign.Center,
+                                )
+                                SentencePlaybackControl(
+                                    isPlaying = uiState.isSentencePlaybackActive,
+                                    isPaused = uiState.isSentencePlaybackPaused,
+                                    enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
+                                    onToggle = viewModel::toggleSentencePlayback,
                                 )
                             }
-                            Text(
-                                text = "轻扫图片或点按左右区域翻页",
-                                modifier = Modifier.padding(top = 8.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            Text(
-                                text = "第 ${currentPage.pageNo} / ${bookContent.pages.size} 页",
-                                modifier = Modifier.padding(top = 12.dp),
-                            )
                         }
-                    }
 
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            IndexedEnglishText(
-                                text = currentPage.englishText,
-                                wordRefs = currentPage.words,
-                                selectedWordId = uiState.selectedWordId,
-                                onWordTap = viewModel::selectWord,
-                            )
-                            Text(
-                                text = "点按英文中的标注单词查看释义",
-                                modifier = Modifier.padding(top = 8.dp),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                            TextButton(
-                                onClick = viewModel::playSentenceAudio,
-                                enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
-                            ) {
-                                Text("播放整句")
-                            }
-                        }
-                    }
-
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            tonalElevation = 1.dp,
+                            color = MaterialTheme.colorScheme.surface,
                         ) {
-                            Text(text = "页内单词")
-                            if (currentWords.isEmpty()) {
-                                Text(text = "当前页没有标注单词")
-                            } else {
-                                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    items(
-                                        items = currentWords,
-                                        key = { item -> item.ref.wordId },
-                                    ) { wordUiModel ->
-                                        val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
-                                        OutlinedButton(
-                                            onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
-                                            shape = RoundedCornerShape(20.dp),
-                                            border = BorderStroke(
-                                                width = if (isSelected) 2.dp else 1.dp,
-                                                color = if (isSelected) {
-                                                    MaterialTheme.colorScheme.primary
-                                                } else {
-                                                    MaterialTheme.colorScheme.outlineVariant
-                                                },
-                                            ),
-                                            colors = ButtonDefaults.outlinedButtonColors(
-                                                containerColor = if (isSelected) {
-                                                    MaterialTheme.colorScheme.primaryContainer
-                                                } else {
-                                                    MaterialTheme.colorScheme.surface
-                                                },
-                                                contentColor = if (isSelected) {
-                                                    MaterialTheme.colorScheme.onPrimaryContainer
-                                                } else {
-                                                    MaterialTheme.colorScheme.onSurface
-                                                },
-                                            ),
-                                        ) {
-                                            Text(wordUiModel.ref.text)
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Text(text = "页内单词")
+                                if (currentWords.isEmpty()) {
+                                    Text(text = "当前页没有标注单词")
+                                } else {
+                                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        items(
+                                            items = currentWords,
+                                            key = { item -> item.ref.wordId },
+                                        ) { wordUiModel ->
+                                            val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
+                                            OutlinedButton(
+                                                onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
+                                                shape = RoundedCornerShape(20.dp),
+                                                border = BorderStroke(
+                                                    width = if (isSelected) 2.dp else 1.dp,
+                                                    color = if (isSelected) {
+                                                        MaterialTheme.colorScheme.primary
+                                                    } else {
+                                                        MaterialTheme.colorScheme.outlineVariant
+                                                    },
+                                                ),
+                                                colors = ButtonDefaults.outlinedButtonColors(
+                                                    containerColor = if (isSelected) {
+                                                        MaterialTheme.colorScheme.primaryContainer
+                                                    } else {
+                                                        MaterialTheme.colorScheme.surface
+                                                    },
+                                                    contentColor = if (isSelected) {
+                                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                                    } else {
+                                                        MaterialTheme.colorScheme.onSurface
+                                                    },
+                                                ),
+                                            ) {
+                                                Text(wordUiModel.ref.text)
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            if (!uiState.vocabularyMessage.isNullOrBlank()) {
-                                Text(
-                                    text = uiState.vocabularyMessage,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
+                                if (!uiState.vocabularyMessage.isNullOrBlank()) {
+                                    Text(
+                                        text = uiState.vocabularyMessage,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                }
                             }
                         }
                     }
@@ -286,6 +313,8 @@ private fun IndexedEnglishText(
     wordRefs: List<PageWordRef>,
     selectedWordId: String?,
     onWordTap: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
     val selectedRange = wordRefs
@@ -312,8 +341,9 @@ private fun IndexedEnglishText(
 
     Text(
         text = annotatedText,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.pointerInput(wordRefs, textLayoutResult) {
+        style = MaterialTheme.typography.headlineSmall,
+        textAlign = textAlign,
+        modifier = modifier.pointerInput(wordRefs, textLayoutResult) {
             detectTapGestures { tapOffset ->
                 val layoutResult = textLayoutResult ?: return@detectTapGestures
                 val characterOffset = layoutResult.getOffsetForPosition(tapOffset)
@@ -343,6 +373,7 @@ private fun PageWordRef.normalizedRange(textLength: Int): IntRange? {
 
 @Composable
 private fun ReaderPageTurnSurface(
+    modifier: Modifier = Modifier,
     canGoToPreviousPage: Boolean,
     canGoToNextPage: Boolean,
     onPreviousPage: () -> Unit,
@@ -350,8 +381,7 @@ private fun ReaderPageTurnSurface(
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .pointerInput(canGoToPreviousPage, canGoToNextPage) {
                 detectTapGestures { offset ->
                     val containerWidth = size.width.toFloat()
@@ -384,8 +414,90 @@ private fun ReaderPageTurnSurface(
                 )
             },
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxSize()) {
             content()
+        }
+    }
+}
+
+@Composable
+private fun SentencePlaybackControl(
+    isPlaying: Boolean,
+    isPaused: Boolean,
+    enabled: Boolean,
+    onToggle: () -> Unit,
+) {
+    val buttonColor = if (isPlaying) Color(0xFF1FB28A) else MaterialTheme.colorScheme.primary
+    val symbol = if (isPlaying) "⏸" else "▶"
+    val label = when {
+        isPlaying -> "暂停朗读"
+        isPaused -> "继续朗读"
+        else -> "播放朗读"
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Button(
+            onClick = onToggle,
+            enabled = enabled,
+            shape = RoundedCornerShape(999.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+            modifier = Modifier.size(88.dp),
+        ) {
+            Text(
+                text = symbol,
+                style = MaterialTheme.typography.headlineMedium,
+            )
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ReaderPageNavigationBar(
+    currentPageNo: Int,
+    totalPages: Int,
+    canGoToPreviousPage: Boolean,
+    canGoToNextPage: Boolean,
+    onPreviousPage: () -> Unit,
+    onNextPage: () -> Unit,
+) {
+    Surface(shadowElevation = 6.dp, tonalElevation = 2.dp) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            OutlinedButton(
+                onClick = onPreviousPage,
+                enabled = canGoToPreviousPage,
+                shape = RoundedCornerShape(999.dp),
+            ) {
+                Text("‹ 上一页")
+            }
+            Text(
+                text = "Page $currentPageNo · $totalPages",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+            )
+            OutlinedButton(
+                onClick = onNextPage,
+                enabled = canGoToNextPage,
+                shape = RoundedCornerShape(999.dp),
+            ) {
+                Text("下一页 ›")
+            }
         }
     }
 }
@@ -454,6 +566,8 @@ private data class ReaderUiState(
     val isLoading: Boolean = true,
     val bookContent: BookContent? = null,
     val currentPageIndex: Int = 0,
+    val isSentencePlaybackActive: Boolean = false,
+    val isSentencePlaybackPaused: Boolean = false,
     val selectedWordId: String? = null,
     val hasFinishedBook: Boolean = false,
     val vocabularyMessage: String? = null,
@@ -533,8 +647,11 @@ private class ReaderViewModel(
 
     fun selectWord(wordId: String) {
         shouldAutoPlaySentenceOnPageChange = false
+        audioPlayer.stop()
         uiState = uiState.copy(
             selectedWordId = if (uiState.selectedWordId == wordId) null else wordId,
+            isSentencePlaybackActive = false,
+            isSentencePlaybackPaused = false,
             vocabularyMessage = null,
         )
     }
@@ -565,13 +682,46 @@ private class ReaderViewModel(
         }
     }
 
+    fun toggleSentencePlayback() {
+        when {
+            uiState.isSentencePlaybackActive -> pauseSentencePlayback()
+            uiState.isSentencePlaybackPaused -> resumeSentencePlayback()
+            else -> playSentenceAudio()
+        }
+    }
+
     fun playSentenceAudio() {
         shouldAutoPlaySentenceOnPageChange = true
         playCurrentPageSentenceAudio()
     }
 
+    fun pauseSentencePlayback() {
+        shouldAutoPlaySentenceOnPageChange = false
+        val paused = audioPlayer.pause()
+        uiState = uiState.copy(
+            isSentencePlaybackActive = false,
+            isSentencePlaybackPaused = paused,
+        )
+    }
+
+    fun resumeSentencePlayback() {
+        shouldAutoPlaySentenceOnPageChange = true
+        val resumed = audioPlayer.resume()
+        uiState = uiState.copy(
+            isSentencePlaybackActive = resumed,
+            isSentencePlaybackPaused = false,
+        )
+        if (!resumed) {
+            playCurrentPageSentenceAudio()
+        }
+    }
+
     fun playSelectedWordAudio() {
         shouldAutoPlaySentenceOnPageChange = false
+        uiState = uiState.copy(
+            isSentencePlaybackActive = false,
+            isSentencePlaybackPaused = false,
+        )
         val selectedWordId = uiState.selectedWordId ?: return
         val selectedWord = uiState.bookContent
             ?.words
@@ -602,6 +752,8 @@ private class ReaderViewModel(
 
         uiState = uiState.copy(
             currentPageIndex = nextPageIndex,
+            isSentencePlaybackActive = resumeSentencePlayback,
+            isSentencePlaybackPaused = false,
             selectedWordId = null,
             hasFinishedBook = hasFinishedBook,
             vocabularyMessage = null,
@@ -622,6 +774,11 @@ private class ReaderViewModel(
             ?.pages
             ?.getOrNull(uiState.currentPageIndex)
             ?: return
+
+        uiState = uiState.copy(
+            isSentencePlaybackActive = true,
+            isSentencePlaybackPaused = false,
+        )
 
         val sentenceAudioAsset = currentPage.sentenceAudioAsset
         if (sentenceAudioAsset != null) {
