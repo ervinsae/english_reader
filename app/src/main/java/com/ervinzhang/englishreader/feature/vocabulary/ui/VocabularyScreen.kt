@@ -37,6 +37,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
 import com.ervinzhang.englishreader.core.audio.AudioPlayer
+import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.model.VocabularyItem
 import com.ervinzhang.englishreader.core.ui.StorybookBackdrop
 import com.ervinzhang.englishreader.core.ui.StorybookCard
@@ -55,6 +56,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VocabularyScreen(
     vocabularyRepository: VocabularyRepository,
+    bookRepository: BookRepository,
     authRepository: AuthRepository,
     audioPlayer: AudioPlayer,
     onBack: () -> Unit,
@@ -63,6 +65,7 @@ fun VocabularyScreen(
         factory = SimpleViewModelFactory {
             VocabularyViewModel(
                 vocabularyRepository = vocabularyRepository,
+                bookRepository = bookRepository,
                 authRepository = authRepository,
                 audioPlayer = audioPlayer,
             )
@@ -377,13 +380,19 @@ private data class VocabularyUiState(
 
 private class VocabularyViewModel(
     private val vocabularyRepository: VocabularyRepository,
+    private val bookRepository: BookRepository,
     private val authRepository: AuthRepository,
     private val audioPlayer: AudioPlayer,
 ) : ViewModel() {
     var uiState by mutableStateOf(VocabularyUiState())
         private set
+    private var fallbackAudioAssetsByWord: Map<String, String> = emptyMap()
 
     init {
+        viewModelScope.launch {
+            fallbackAudioAssetsByWord = loadFallbackAudioAssets()
+        }
+
         viewModelScope.launch {
             uiState = runCatching {
                 val currentUser = authRepository.getCurrentUser()
@@ -411,7 +420,7 @@ private class VocabularyViewModel(
     }
 
     fun playWordAudio(item: VocabularyItem) {
-        val audioAsset = item.audioAsset
+        val audioAsset = item.audioAsset ?: fallbackAudioAssetsByWord[item.normalizedWord]
         if (audioAsset != null) {
             audioPlayer.play(audioAsset)
             return
@@ -426,8 +435,28 @@ private class VocabularyViewModel(
         }
     }
 
+    private suspend fun loadFallbackAudioAssets(): Map<String, String> {
+        val result = linkedMapOf<String, String>()
+        for (book in bookRepository.getBooks()) {
+            val content = bookRepository.getBookContent(book.id) ?: continue
+            for (word in content.words.values) {
+                val audioAsset = word.audioAsset ?: continue
+                result.putIfAbsent(normalizeWord(word.text), audioAsset)
+            }
+        }
+        return result
+    }
+
     override fun onCleared() {
         audioPlayer.stop()
         super.onCleared()
     }
+}
+
+private fun normalizeWord(raw: String): String {
+    val trimmed = raw.trim()
+    val normalized = trimmed
+        .lowercase(Locale.ROOT)
+        .replace(Regex("^[^\\p{L}\\p{N}]+|[^\\p{L}\\p{N}]+$"), "")
+    return normalized.ifBlank { trimmed.lowercase(Locale.ROOT) }
 }

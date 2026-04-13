@@ -137,6 +137,7 @@ fun AppNavHost(
         composable(Destinations.Vocabulary.route) {
             VocabularyScreen(
                 vocabularyRepository = appContainer.vocabularyRepository,
+                bookRepository = appContainer.bookRepository,
                 authRepository = appContainer.authRepository,
                 audioPlayer = appContainer.audioPlayer,
                 onBack = { navController.popBackStack() },

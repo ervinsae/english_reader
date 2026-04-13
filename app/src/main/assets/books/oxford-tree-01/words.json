@@ -3,30 +3,35 @@
     "id": "dad",
     "text": "Dad",
     "meaningZh": "爸爸",
-    "phonetic": "/dæd/"
+    "phonetic": "/dæd/",
+    "audioAsset": "audio/words/dad.m4a"
   },
   {
     "id": "mum",
     "text": "Mum",
     "meaningZh": "妈妈",
-    "phonetic": "/mʌm/"
+    "phonetic": "/mʌm/",
+    "audioAsset": "audio/words/mum.m4a"
   },
   {
     "id": "apple",
     "text": "apple",
     "meaningZh": "苹果",
-    "phonetic": "/ˈæpəl/"
+    "phonetic": "/ˈæpəl/",
+    "audioAsset": "audio/words/apple.m4a"
   },
   {
     "id": "red",
     "text": "red",
     "meaningZh": "红色的",
-    "phonetic": "/red/"
+    "phonetic": "/red/",
+    "audioAsset": "audio/words/red.m4a"
   },
   {
     "id": "box",
     "text": "box",
     "meaningZh": "盒子",
-    "phonetic": "/bɒks/"
+    "phonetic": "/bɒks/",
+    "audioAsset": "audio/words/box.m4a"
   }
 ]
