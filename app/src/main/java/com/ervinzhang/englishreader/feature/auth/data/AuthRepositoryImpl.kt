@@ -9,6 +9,7 @@ import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import com.ervinzhang.englishreader.feature.auth.domain.LoginResult
 import com.ervinzhang.englishreader.feature.auth.domain.NicknameUpdateResult
 import com.ervinzhang.englishreader.feature.auth.domain.RegistrationResult
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
@@ -70,6 +71,7 @@ class AuthRepositoryImpl(
         return remoteDataSource.getUser(session.userId)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun observeCurrentUser(): Flow<User?> {
         return sessionStore.session.transformLatest { session ->
             when {

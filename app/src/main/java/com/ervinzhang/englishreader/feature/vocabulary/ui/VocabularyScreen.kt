@@ -281,7 +281,7 @@ private fun VocabularyItemCard(
     StorybookCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = item.audioAsset != null || item.word.isNotBlank(), onClick = onPlayWord),
+            .clickable(enabled = item.audioUri != null || item.word.isNotBlank(), onClick = onPlayWord),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
@@ -334,7 +334,7 @@ private fun VocabularyItemCard(
                 ) {
                     TextButton(
                         onClick = onPlayWord,
-                        enabled = item.audioAsset != null || item.word.isNotBlank(),
+                        enabled = item.audioUri != null || item.word.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
@@ -386,11 +386,11 @@ private class VocabularyViewModel(
 ) : ViewModel() {
     var uiState by mutableStateOf(VocabularyUiState())
         private set
-    private var fallbackAudioAssetsByWord: Map<String, String> = emptyMap()
+    private var fallbackAudioUrisByWord: Map<String, String> = emptyMap()
 
     init {
         viewModelScope.launch {
-            fallbackAudioAssetsByWord = loadFallbackAudioAssets()
+            fallbackAudioUrisByWord = loadFallbackAudioUris()
         }
 
         viewModelScope.launch {
@@ -420,9 +420,9 @@ private class VocabularyViewModel(
     }
 
     fun playWordAudio(item: VocabularyItem) {
-        val audioAsset = item.audioAsset ?: fallbackAudioAssetsByWord[item.normalizedWord]
-        if (audioAsset != null) {
-            audioPlayer.play(audioAsset)
+        val audioUri = item.audioUri ?: fallbackAudioUrisByWord[item.normalizedWord]
+        if (audioUri != null) {
+            audioPlayer.play(audioUri)
             return
         }
 
@@ -435,13 +435,13 @@ private class VocabularyViewModel(
         }
     }
 
-    private suspend fun loadFallbackAudioAssets(): Map<String, String> {
+    private suspend fun loadFallbackAudioUris(): Map<String, String> {
         val result = linkedMapOf<String, String>()
         for (book in bookRepository.getBooks()) {
             val content = bookRepository.getBookContent(book.id) ?: continue
             for (word in content.words.values) {
-                val audioAsset = word.audioAsset ?: continue
-                result.putIfAbsent(normalizeWord(word.text), audioAsset)
+                val audioUri = word.audioUri ?: continue
+                result.putIfAbsent(normalizeWord(word.text), audioUri)
             }
         }
         return result

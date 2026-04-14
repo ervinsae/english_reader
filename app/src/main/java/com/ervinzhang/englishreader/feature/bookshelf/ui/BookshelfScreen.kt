@@ -38,11 +38,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
 import com.ervinzhang.englishreader.core.content.BookRepository
+import com.ervinzhang.englishreader.core.content.BookPackageSyncManager
 import com.ervinzhang.englishreader.core.model.Book
 import com.ervinzhang.englishreader.core.model.BookshelfItem
 import com.ervinzhang.englishreader.core.model.ReadingProgress
 import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
-import com.ervinzhang.englishreader.core.ui.AssetImage
+import com.ervinzhang.englishreader.core.ui.ContentImage
 import com.ervinzhang.englishreader.core.ui.ProgressCaterpillar
 import com.ervinzhang.englishreader.core.ui.StorybookBackdrop
 import com.ervinzhang.englishreader.core.ui.StorybookCard
@@ -57,6 +58,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookshelfScreen(
     bookRepository: BookRepository,
+    bookPackageSyncManager: BookPackageSyncManager,
     readingProgressRepository: ReadingProgressRepository,
     authRepository: AuthRepository,
     onOpenBook: (String) -> Unit,
@@ -66,6 +68,7 @@ fun BookshelfScreen(
         factory = SimpleViewModelFactory {
             BookshelfViewModel(
                 bookRepository = bookRepository,
+                bookPackageSyncManager = bookPackageSyncManager,
                 readingProgressRepository = readingProgressRepository,
                 authRepository = authRepository,
             )
@@ -89,6 +92,12 @@ fun BookshelfScreen(
                     }
                 },
                 actions = {
+                    TextButton(
+                        onClick = viewModel::syncContentPackages,
+                        enabled = !uiState.isSyncing,
+                    ) {
+                        Text(if (uiState.isSyncing) "同步中" else "同步内容")
+                    }
                     TextButton(onClick = onOpenProfile) {
                         Text("我的")
                     }
@@ -151,6 +160,22 @@ fun BookshelfScreen(
                             }
                         }
 
+                        uiState.syncMessage?.let { syncMessage ->
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                StorybookCard(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                ) {
+                                    Text(
+                                        text = syncMessage,
+                                        modifier = Modifier.padding(18.dp),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
+                            }
+                        }
+
                         item(span = { GridItemSpan(maxLineSpan) }) {
                             StorybookSectionTitle(title = "绘本书架")
                         }
@@ -208,8 +233,8 @@ private fun FeaturedBookCard(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AssetImage(
-                assetPath = book.coverAsset,
+            ContentImage(
+                contentUri = book.coverUri,
                 contentDescription = "${book.title} 封面",
                 modifier = Modifier
                     .weight(0.42f)
@@ -269,8 +294,8 @@ private fun BookCard(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            AssetImage(
-                assetPath = book.coverAsset,
+            ContentImage(
+                contentUri = book.coverUri,
                 contentDescription = "${book.title} 封面",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -361,6 +386,8 @@ private fun RecentReadingSection(
 
 private data class BookshelfUiState(
     val isLoading: Boolean = true,
+    val isSyncing: Boolean = false,
+    val syncMessage: String? = null,
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
@@ -369,41 +396,67 @@ private data class BookshelfUiState(
 
 private class BookshelfViewModel(
     private val bookRepository: BookRepository,
+    private val bookPackageSyncManager: BookPackageSyncManager,
     private val readingProgressRepository: ReadingProgressRepository,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
     var uiState by mutableStateOf(BookshelfUiState())
         private set
+    private var currentUserName: String? = null
+    private var currentBooks: List<Book> = emptyList()
+    private var latestProgressList: List<ReadingProgress> = emptyList()
 
     init {
         viewModelScope.launch {
-            uiState = runCatching {
-                val books = bookRepository.getBooks()
-                val currentUser = authRepository.getCurrentUser()
-
-                if (currentUser == null) {
-                    BookshelfUiState(
-                        isLoading = false,
-                        books = books.map { it.toBookshelfItem(progress = null) },
-                    )
-                } else {
+            val currentUser = authRepository.getCurrentUser()
+            runCatching {
+                currentUserName = currentUser?.nickname
+                refreshBooks(syncMessage = null)
+                if (currentUser != null) {
                     readingProgressRepository.observeAll(currentUser.id).collect { progressList ->
-                        uiState = BookshelfUiState(
-                            isLoading = false,
-                            userName = currentUser.nickname,
-                            books = books.mapWithProgress(progressList),
-                            recentBooks = books.mapRecent(progressList),
-                        )
+                        latestProgressList = progressList
+                        publishUiState()
                     }
-                    uiState
                 }
-            }.getOrElse {
-                BookshelfUiState(
+            }.onFailure {
+                uiState = BookshelfUiState(
                     isLoading = false,
-                    errorMessage = "内置绘本加载失败",
+                    syncMessage = uiState.syncMessage,
+                    errorMessage = "绘本内容加载失败",
                 )
             }
         }
+    }
+
+    fun syncContentPackages() {
+        viewModelScope.launch {
+            uiState = uiState.copy(isSyncing = true, syncMessage = null, errorMessage = null)
+            val result = runCatching { bookPackageSyncManager.sync() }
+            result.onSuccess { syncResult ->
+                refreshBooks(syncMessage = syncResult.summary)
+            }.onFailure {
+                uiState = uiState.copy(
+                    isSyncing = false,
+                    syncMessage = "内容同步失败，请检查远程目录配置或本地导入包",
+                )
+            }
+        }
+    }
+
+    private suspend fun refreshBooks(syncMessage: String?) {
+        currentBooks = bookRepository.getBooks()
+        publishUiState(syncMessage = syncMessage)
+    }
+
+    private fun publishUiState(syncMessage: String? = uiState.syncMessage) {
+        uiState = BookshelfUiState(
+            isLoading = false,
+            isSyncing = false,
+            syncMessage = syncMessage,
+            userName = currentUserName,
+            books = currentBooks.mapWithProgress(latestProgressList),
+            recentBooks = currentBooks.mapRecent(latestProgressList),
+        )
     }
 }
 
@@ -432,7 +485,7 @@ private fun Book.toBookshelfItem(progress: ReadingProgress?): BookshelfItem {
     return BookshelfItem(
         bookId = id,
         title = title,
-        coverAsset = coverAsset,
+        coverUri = coverUri,
         level = level,
         pageCount = pageCount,
         readProgress = readProgress,

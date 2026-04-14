@@ -107,6 +107,7 @@ fun AppNavHost(
         composable(Destinations.Bookshelf.route) {
             BookshelfScreen(
                 bookRepository = appContainer.bookRepository,
+                bookPackageSyncManager = appContainer.bookPackageSyncManager,
                 readingProgressRepository = appContainer.readingProgressRepository,
                 authRepository = appContainer.authRepository,
                 onOpenBook = { bookId ->

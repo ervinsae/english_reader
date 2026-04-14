@@ -15,6 +15,6 @@ data class VocabularyEntity(
     val word: String,
     val meaningZh: String,
     val phonetic: String? = null,
-    val audioAsset: String? = null,
+    val audioUri: String? = null,
     val createdAt: Long,
 )

@@ -52,6 +52,16 @@ android {
     }
 }
 
+ksp {
+    arg("room.generateKotlin", "true")
+}
+
+afterEvaluate {
+    tasks.withType<org.gradle.api.tasks.compile.JavaCompile>().configureEach {
+        options.isFork = false
+    }
+}
+
 dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.09.00")
 

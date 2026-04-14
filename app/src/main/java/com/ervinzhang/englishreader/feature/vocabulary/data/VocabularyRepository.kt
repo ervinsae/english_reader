@@ -38,7 +38,7 @@ class RoomVocabularyRepository(
                 word = word.text.trim(),
                 meaningZh = word.meaningZh,
                 phonetic = word.phonetic,
-                audioAsset = word.audioAsset,
+                audioUri = word.audioUri,
                 createdAt = System.currentTimeMillis(),
             ),
         )
@@ -60,7 +60,7 @@ private fun VocabularyEntity.toModel(): VocabularyItem {
         word = word,
         meaningZh = meaningZh,
         phonetic = phonetic,
-        audioAsset = audioAsset,
+        audioUri = audioUri,
         createdAt = createdAt,
     )
 }

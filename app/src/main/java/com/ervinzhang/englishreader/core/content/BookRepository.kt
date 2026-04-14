@@ -13,10 +13,11 @@ data class BookContent(
 interface BookRepository {
     suspend fun getBooks(): List<Book>
     suspend fun getBookContent(bookId: String): BookContent?
+    suspend fun refresh()
 }
 
 class OfflineBookRepository(
-    private val assetBookDataSource: AssetBookDataSource,
+    private val contentSources: List<BookContentSource>,
 ) : BookRepository {
     private var cachedContent: Map<String, BookContent>? = null
 
@@ -29,13 +30,21 @@ class OfflineBookRepository(
 
     override suspend fun getBookContent(bookId: String): BookContent? = loadContent()[bookId]
 
+    override suspend fun refresh() {
+        cachedContent = null
+    }
+
     private suspend fun loadContent(): Map<String, BookContent> {
         cachedContent?.let { return it }
 
-        val loadedContent = assetBookDataSource
-            .loadBookContents()
-            .filter { it.book.enabled }
-            .associateBy { it.book.id }
+        val loadedContent = linkedMapOf<String, BookContent>()
+        contentSources.forEach { source ->
+            source.loadBookContents()
+                .filter { it.book.enabled }
+                .forEach { content ->
+                    loadedContent.putIfAbsent(content.book.id, content)
+                }
+        }
 
         cachedContent = loadedContent
         return loadedContent

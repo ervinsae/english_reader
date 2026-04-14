@@ -23,7 +23,7 @@ data class Book(
     val id: String,
     val title: String,
     val level: String,
-    val coverAsset: String,
+    val coverUri: String,
     val pageCount: Int,
     val tags: List<String> = emptyList(),
     val enabled: Boolean = true,
@@ -32,9 +32,9 @@ data class Book(
 data class BookPage(
     val bookId: String,
     val pageNo: Int,
-    val imageAsset: String,
+    val imageUri: String,
     val englishText: String,
-    val sentenceAudioAsset: String? = null,
+    val sentenceAudioUri: String? = null,
     val words: List<PageWordRef> = emptyList(),
 )
 
@@ -50,7 +50,7 @@ data class Word(
     val text: String,
     val meaningZh: String,
     val phonetic: String? = null,
-    val audioAsset: String? = null,
+    val audioUri: String? = null,
 )
 
 data class ReadingProgress(
@@ -64,7 +64,7 @@ data class ReadingProgress(
 data class BookshelfItem(
     val bookId: String,
     val title: String,
-    val coverAsset: String,
+    val coverUri: String,
     val level: String,
     val pageCount: Int,
     val readProgress: Int,
@@ -78,6 +78,6 @@ data class VocabularyItem(
     val word: String,
     val meaningZh: String,
     val phonetic: String? = null,
-    val audioAsset: String? = null,
+    val audioUri: String? = null,
     val createdAt: Long,
 )

@@ -56,7 +56,7 @@ import com.ervinzhang.englishreader.core.model.PageWordRef
 import com.ervinzhang.englishreader.core.model.ReadingProgress
 import com.ervinzhang.englishreader.core.model.Word
 import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
-import com.ervinzhang.englishreader.core.ui.AssetImage
+import com.ervinzhang.englishreader.core.ui.ContentImage
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import com.ervinzhang.englishreader.feature.vocabulary.data.AddVocabularyResult
 import com.ervinzhang.englishreader.feature.vocabulary.data.VocabularyRepository
@@ -113,7 +113,7 @@ fun ReaderScreen(
             )
         },
         bottomBar = {
-            if (!uiState.isLoading && uiState.errorMessage == null && currentPage != null && bookContent != null) {
+            if (!uiState.isLoading && uiState.errorMessage == null && currentPage != null) {
                 ReaderPageNavigationBar(
                     currentPageNo = currentPage.pageNo,
                     totalPages = bookContent.pages.size,
@@ -149,7 +149,7 @@ fun ReaderScreen(
                     )
                 }
 
-                currentPage == null || bookContent == null -> {
+                currentPage == null -> {
                     Text(
                         text = "未找到当前绘本内容",
                         modifier = Modifier
@@ -188,8 +188,8 @@ fun ReaderScreen(
                                         .padding(8.dp),
                                     contentAlignment = Alignment.Center,
                                 ) {
-                                    AssetImage(
-                                        assetPath = currentPage.imageAsset,
+                                    ContentImage(
+                                        contentUri = currentPage.imageUri,
                                         contentDescription = "第 ${currentPage.pageNo} 页",
                                         modifier = Modifier.fillMaxWidth(),
                                         contentScale = ContentScale.Fit,
@@ -223,7 +223,7 @@ fun ReaderScreen(
                                 SentencePlaybackControl(
                                     isPlaying = uiState.isSentencePlaybackActive,
                                     isPaused = uiState.isSentencePlaybackPaused,
-                                    enabled = currentPage.sentenceAudioAsset != null || currentPage.englishText.isNotBlank(),
+                                    enabled = currentPage.sentenceAudioUri != null || currentPage.englishText.isNotBlank(),
                                     onToggle = viewModel::toggleSentencePlayback,
                                 )
 
@@ -530,7 +530,7 @@ private fun SelectedWordBottomSheet(
             ) {
                 TextButton(
                     onClick = onPlay,
-                    enabled = word.audioAsset != null || word.text.isNotBlank(),
+                    enabled = word.audioUri != null || word.text.isNotBlank(),
                 ) {
                     Text("播放单词")
                 }
@@ -724,9 +724,9 @@ private class ReaderViewModel(
             ?.get(selectedWordId)
             ?: return
 
-        val wordAudioAsset = selectedWord.audioAsset
-        if (wordAudioAsset != null) {
-            audioPlayer.play(wordAudioAsset)
+        val wordAudioUri = selectedWord.audioUri
+        if (wordAudioUri != null) {
+            audioPlayer.play(wordAudioUri)
             return
         }
 
@@ -776,9 +776,9 @@ private class ReaderViewModel(
             isSentencePlaybackPaused = false,
         )
 
-        val sentenceAudioAsset = currentPage.sentenceAudioAsset
-        if (sentenceAudioAsset != null) {
-            audioPlayer.play(sentenceAudioAsset)
+        val sentenceAudioUri = currentPage.sentenceAudioUri
+        if (sentenceAudioUri != null) {
+            audioPlayer.play(sentenceAudioUri)
             return
         }
 

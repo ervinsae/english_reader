@@ -10,6 +10,8 @@
 ## 目录
 - `specs/`：需求与架构文档
 - `app/`：Android 应用代码
+- `docs/content-packages.md`：内容包规范、目录配置、导入方式
+- `tools/package_content_package.py`：标准内容包 zip 打包脚本
 
 ## 当前骨架包含
 - Jetpack Compose

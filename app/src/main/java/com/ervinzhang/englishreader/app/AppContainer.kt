@@ -5,7 +5,13 @@ import androidx.room.Room
 import com.ervinzhang.englishreader.core.audio.AndroidAudioPlayer
 import com.ervinzhang.englishreader.core.audio.AudioPlayer
 import com.ervinzhang.englishreader.core.content.AssetBookDataSource
+import com.ervinzhang.englishreader.core.content.BookPackageSyncManager
 import com.ervinzhang.englishreader.core.content.BookRepository
+import com.ervinzhang.englishreader.core.content.DefaultRemoteContentCatalogSource
+import com.ervinzhang.englishreader.core.content.HttpBookPackageDownloader
+import com.ervinzhang.englishreader.core.content.LocalBookPackageDataSource
+import com.ervinzhang.englishreader.core.content.LocalBookPackageInstaller
+import com.ervinzhang.englishreader.core.content.LocalBookPackageStorage
 import com.ervinzhang.englishreader.core.content.OfflineBookRepository
 import com.ervinzhang.englishreader.core.database.AppDatabase
 import com.ervinzhang.englishreader.core.datastore.SessionStore
@@ -28,8 +34,31 @@ class AppContainer(
         "english_reader.db",
     ).fallbackToDestructiveMigration().build()
 
+    val localBookPackageStorage: LocalBookPackageStorage = LocalBookPackageStorage(application)
     val assetBookDataSource: AssetBookDataSource = AssetBookDataSource(application)
-    val bookRepository: BookRepository = OfflineBookRepository(assetBookDataSource)
+    val localBookPackageDataSource: LocalBookPackageDataSource = LocalBookPackageDataSource(
+        packageStorage = localBookPackageStorage,
+    )
+    val bookRepository: BookRepository = OfflineBookRepository(
+        contentSources = listOf(localBookPackageDataSource, assetBookDataSource),
+    )
+    val bookPackageInstaller: LocalBookPackageInstaller = LocalBookPackageInstaller(
+        packageStorage = localBookPackageStorage,
+    )
+    val remoteContentCatalogSource: DefaultRemoteContentCatalogSource = DefaultRemoteContentCatalogSource(
+        context = application,
+        packageStorage = localBookPackageStorage,
+    )
+    val bookPackageDownloader: HttpBookPackageDownloader = HttpBookPackageDownloader(
+        packageStorage = localBookPackageStorage,
+    )
+    val bookPackageSyncManager: BookPackageSyncManager = BookPackageSyncManager(
+        bookRepository = bookRepository,
+        packageStorage = localBookPackageStorage,
+        packageInstaller = bookPackageInstaller,
+        remoteContentCatalogSource = remoteContentCatalogSource,
+        bookPackageDownloader = bookPackageDownloader,
+    )
     val readingProgressRepository: ReadingProgressRepository = RoomReadingProgressRepository(
         database.readingProgressDao(),
     )

@@ -5,11 +5,12 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.SystemClock
 import android.speech.tts.TextToSpeech
+import com.ervinzhang.englishreader.core.content.ContentUri
 import java.io.File
 import java.util.Locale
 
 interface AudioPlayer {
-    fun play(assetPath: String)
+    fun play(contentUri: String)
     fun speak(text: String)
     fun pause(): Boolean
     fun resume(): Boolean
@@ -17,7 +18,7 @@ interface AudioPlayer {
 }
 
 object NoOpAudioPlayer : AudioPlayer {
-    override fun play(assetPath: String) = Unit
+    override fun play(contentUri: String) = Unit
     override fun speak(text: String) = Unit
     override fun pause(): Boolean = false
     override fun resume(): Boolean = false
@@ -33,20 +34,20 @@ class AndroidAudioPlayer(
     private var textToSpeech: TextToSpeech? = null
     private var isTtsReady = false
     private var pendingSpeech: String? = null
-    private var currentAssetPath: String? = null
-    private var pausedAssetPath: String? = null
-    private var pausedAssetPositionMs: Int = 0
+    private var currentContentUri: String? = null
+    private var pausedContentUri: String? = null
+    private var pausedContentPositionMs: Int = 0
     private var pausedSpeechText: String? = null
     private var activeSpeechText: String? = null
 
-    override fun play(assetPath: String) {
+    override fun play(contentUri: String) {
         clearPausedState()
-        currentAssetPath = assetPath
+        currentContentUri = contentUri
         activeSpeechText = null
         stopMediaPlayback()
         textToSpeech?.stop()
 
-        val cachedAudioFile = cacheAssetToFile(assetPath) ?: return
+        val playbackFile = resolvePlaybackFile(contentUri) ?: return
 
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
@@ -55,12 +56,12 @@ class AndroidAudioPlayer(
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build(),
             )
-            setDataSource(cachedAudioFile.absolutePath)
+            setDataSource(playbackFile.absolutePath)
             setOnPreparedListener { it.start() }
             setOnCompletionListener { completedPlayer ->
                 clearPausedState()
                 activeSpeechText = null
-                currentAssetPath = null
+                currentContentUri = null
                 completedPlayer.release()
                 if (mediaPlayer === completedPlayer) {
                     mediaPlayer = null
@@ -69,7 +70,7 @@ class AndroidAudioPlayer(
             setOnErrorListener { failedPlayer, _, _ ->
                 clearPausedState()
                 activeSpeechText = null
-                currentAssetPath = null
+                currentContentUri = null
                 failedPlayer.release()
                 if (mediaPlayer === failedPlayer) {
                     mediaPlayer = null
@@ -85,7 +86,7 @@ class AndroidAudioPlayer(
         if (normalizedText.isBlank()) return
 
         clearPausedState()
-        currentAssetPath = null
+        currentContentUri = null
         activeSpeechText = normalizedText
         stopMediaPlayback()
 
@@ -110,8 +111,8 @@ class AndroidAudioPlayer(
         if (currentPlayer != null) {
             return runCatching {
                 if (currentPlayer.isPlaying) {
-                    pausedAssetPositionMs = currentPlayer.currentPosition
-                    pausedAssetPath = currentAssetPath
+                    pausedContentPositionMs = currentPlayer.currentPosition
+                    pausedContentUri = currentContentUri
                     currentPlayer.pause()
                     true
                 } else {
@@ -133,10 +134,10 @@ class AndroidAudioPlayer(
 
     override fun resume(): Boolean {
         val currentPlayer = mediaPlayer
-        val assetPath = pausedAssetPath
-        if (currentPlayer != null && !assetPath.isNullOrBlank()) {
+        val contentUri = pausedContentUri
+        if (currentPlayer != null && !contentUri.isNullOrBlank()) {
             return runCatching {
-                currentPlayer.seekTo(pausedAssetPositionMs)
+                currentPlayer.seekTo(pausedContentPositionMs)
                 currentPlayer.start()
                 clearPausedState()
                 true
@@ -158,7 +159,7 @@ class AndroidAudioPlayer(
     override fun stop() {
         clearPausedState()
         activeSpeechText = null
-        currentAssetPath = null
+        currentContentUri = null
         stopMediaPlayback()
         textToSpeech?.stop()
     }
@@ -198,14 +199,20 @@ class AndroidAudioPlayer(
         }
     }
 
-    private fun cacheAssetToFile(assetPath: String): File? {
+    private fun resolvePlaybackFile(contentUri: String): File? {
+        ContentUri.asFile(contentUri)?.let { file ->
+            if (file.exists() && file.length() > 0L) {
+                return file
+            }
+        }
+
         val targetDirectory = File(appContext.cacheDir, "storybook-audio").apply { mkdirs() }
-        val fileName = assetPath.replace('/', '_')
+        val fileName = ContentUri.cacheKey(contentUri)
         val targetFile = File(targetDirectory, fileName)
 
         return runCatching {
             if (!targetFile.exists() || targetFile.length() == 0L) {
-                appContext.assets.open(assetPath).use { input ->
+                ContentUri.open(appContext, contentUri).use { input ->
                     targetFile.outputStream().use { output -> input.copyTo(output) }
                 }
             }
@@ -225,8 +232,8 @@ class AndroidAudioPlayer(
     }
 
     private fun clearPausedState() {
-        pausedAssetPath = null
-        pausedAssetPositionMs = 0
+        pausedContentUri = null
+        pausedContentPositionMs = 0
         pausedSpeechText = null
     }
 }

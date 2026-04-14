@@ -19,12 +19,13 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.ervinzhang.englishreader.core.content.ContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun AssetImage(
-    assetPath: String,
+fun ContentImage(
+    contentUri: String,
     contentDescription: String,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
@@ -33,10 +34,10 @@ fun AssetImage(
     fallbackText: String = "图片加载失败",
 ) {
     val context = LocalContext.current
-    val imageBitmap = produceState<ImageBitmap?>(initialValue = null, assetPath, context) {
+    val imageBitmap = produceState<ImageBitmap?>(initialValue = null, contentUri, context) {
         value = withContext(Dispatchers.IO) {
             runCatching {
-                context.assets.open(assetPath).use { inputStream ->
+                ContentUri.open(context, contentUri).use { inputStream ->
                     BitmapFactory.decodeStream(
                         inputStream,
                         null,
@@ -75,4 +76,25 @@ fun AssetImage(
             )
         }
     }
+}
+
+@Composable
+fun AssetImage(
+    assetPath: String,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    matchAssetAspectRatio: Boolean = false,
+    filterQuality: FilterQuality = FilterQuality.Low,
+    fallbackText: String = "图片加载失败",
+) {
+    ContentImage(
+        contentUri = assetPath,
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = contentScale,
+        matchAssetAspectRatio = matchAssetAspectRatio,
+        filterQuality = filterQuality,
+        fallbackText = fallbackText,
+    )
 }
