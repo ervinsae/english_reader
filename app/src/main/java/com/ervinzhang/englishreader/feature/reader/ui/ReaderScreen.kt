@@ -60,6 +60,7 @@ import com.ervinzhang.englishreader.core.ui.ContentImage
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import com.ervinzhang.englishreader.feature.vocabulary.data.AddVocabularyResult
 import com.ervinzhang.englishreader.feature.vocabulary.data.VocabularyRepository
+import java.util.Locale
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +95,13 @@ fun ReaderScreen(
         ?.words
         .orEmpty()
         .map { ReaderWordUiModel(ref = it, word = bookContent?.words?.get(it.wordId)) }
-    val selectedWord = currentWords.firstOrNull { it.ref.wordId == uiState.selectedWordId }?.word
+    val tappableWords = remember(currentPage, bookContent) {
+        buildTappableWords(
+            page = currentPage,
+            bookContent = bookContent,
+        )
+    }
+    val selectedWord = tappableWords.firstOrNull { it.key == uiState.selectedWordId }?.word
 
     Scaffold(
         topBar = {
@@ -214,7 +221,7 @@ fun ReaderScreen(
                             ) {
                                 IndexedEnglishText(
                                     text = currentPage.englishText,
-                                    wordRefs = currentPage.words,
+                                    tappableWords = tappableWords,
                                     selectedWordId = uiState.selectedWordId,
                                     onWordTap = viewModel::selectWord,
                                     modifier = Modifier.fillMaxWidth(),
@@ -293,19 +300,19 @@ fun ReaderScreen(
 @Composable
 private fun IndexedEnglishText(
     text: String,
-    wordRefs: List<PageWordRef>,
+    tappableWords: List<ReaderTappableWord>,
     selectedWordId: String?,
     onWordTap: (String) -> Unit,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Start,
 ) {
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
-    val selectedRange = wordRefs
-        .firstOrNull { it.wordId == selectedWordId }
-        ?.normalizedRange(text.length)
+    val selectedRange = tappableWords
+        .firstOrNull { it.key == selectedWordId }
+        ?.range
     val selectedBackgroundColor = MaterialTheme.colorScheme.primaryContainer
     val selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-    val annotatedText = remember(text, wordRefs, selectedRange, selectedBackgroundColor, selectedTextColor) {
+    val annotatedText = remember(text, tappableWords, selectedRange, selectedBackgroundColor, selectedTextColor) {
         buildAnnotatedString {
             append(text)
             selectedRange?.let { range ->
@@ -326,22 +333,69 @@ private fun IndexedEnglishText(
         text = annotatedText,
         style = MaterialTheme.typography.headlineSmall,
         textAlign = textAlign,
-        modifier = modifier.pointerInput(wordRefs, textLayoutResult) {
+        modifier = modifier.pointerInput(tappableWords, textLayoutResult) {
             detectTapGestures { tapOffset ->
                 val layoutResult = textLayoutResult ?: return@detectTapGestures
                 val characterOffset = layoutResult.getOffsetForPosition(tapOffset)
-                wordRefs
+                tappableWords
                     .asSequence()
-                    .mapNotNull { ref -> ref.normalizedRange(text.length)?.let { range -> ref to range } }
-                    .filter { (_, range) -> characterOffset in range }
-                    .minByOrNull { (_, range) -> range.last - range.first }
-                    ?.first
-                    ?.wordId
+                    .filter { word -> characterOffset in word.range }
+                    .minByOrNull { word -> word.range.last - word.range.first }
+                    ?.key
                     ?.let(onWordTap)
             }
         },
         onTextLayout = { textLayoutResult = it },
     )
+}
+
+private fun buildTappableWords(
+    page: com.ervinzhang.englishreader.core.model.BookPage?,
+    bookContent: BookContent?,
+): List<ReaderTappableWord> {
+    if (page == null || bookContent == null) return emptyList()
+
+    val text = page.englishText
+    if (text.isBlank()) return emptyList()
+
+    val knownWordsByNormalized = bookContent.words.values.associateBy { it.text.toNormalizedWord() }
+    val pageWordEntries = page.words.mapNotNull { ref ->
+        val range = ref.normalizedRange(text.length) ?: return@mapNotNull null
+        val word = bookContent.words[ref.wordId] ?: return@mapNotNull null
+        ReaderTappableWord(
+            key = ref.wordId,
+            range = range,
+            word = word,
+        )
+    }
+    val occupiedKeys = pageWordEntries.map { it.key }.toHashSet()
+    val occupiedRanges = pageWordEntries.map { it.range }
+
+    val fallbackEntries = WORD_TOKEN_REGEX.findAll(text).mapNotNull { match ->
+        val range = match.range
+        if (occupiedRanges.any { existing -> range.first >= existing.first && range.last <= existing.last }) {
+            return@mapNotNull null
+        }
+        val rawWord = match.value
+        val normalizedWord = rawWord.toNormalizedWord()
+        if (normalizedWord.isBlank()) return@mapNotNull null
+
+        val mappedWord = knownWordsByNormalized[normalizedWord] ?: Word(
+            id = "token:$normalizedWord:${range.first}:${range.last}",
+            text = rawWord,
+            meaningZh = "暂无释义",
+        )
+        val key = mappedWord.id.ifBlank { "token:$normalizedWord:${range.first}:${range.last}" }
+        if (!occupiedKeys.add(key)) return@mapNotNull null
+
+        ReaderTappableWord(
+            key = key,
+            range = range,
+            word = if (mappedWord.text == rawWord) mappedWord else mappedWord.copy(text = rawWord),
+        )
+    }.toList()
+
+    return (pageWordEntries + fallbackEntries).sortedBy { it.range.first }
 }
 
 private fun PageWordRef.normalizedRange(textLength: Int): IntRange? {
@@ -353,6 +407,17 @@ private fun PageWordRef.normalizedRange(textLength: Int): IntRange? {
 
     return safeStart until safeEndExclusive
 }
+
+private fun String.toNormalizedWord(): String {
+    val trimmed = trim()
+    val normalized = trimmed
+        .lowercase(Locale.ROOT)
+        .replace(EDGE_PUNCTUATION_REGEX, "")
+    return normalized.ifBlank { trimmed.lowercase(Locale.ROOT) }
+}
+
+private val WORD_TOKEN_REGEX = Regex("[\\p{L}\\p{N}]+(?:['’-][\\p{L}\\p{N}]+)*")
+private val EDGE_PUNCTUATION_REGEX = Regex("^[^\\p{L}\\p{N}]+|[^\\p{L}\\p{N}]+$")
 
 @Composable
 private fun ReaderPageTurnSurface(
@@ -562,6 +627,12 @@ private data class ReaderWordUiModel(
     val word: Word?,
 )
 
+private data class ReaderTappableWord(
+    val key: String,
+    val range: IntRange,
+    val word: Word,
+)
+
 private class ReaderViewModel(
     private val bookId: String,
     private val bookRepository: BookRepository,
@@ -662,7 +733,9 @@ private class ReaderViewModel(
             return
         }
         val selectedWordId = uiState.selectedWordId ?: return
-        val selectedWord = uiState.bookContent?.words?.get(selectedWordId) ?: return
+        val selectedWord = uiState.bookContent?.words?.get(selectedWordId)
+            ?: currentSelectedWordFromPage()
+            ?: return
 
         viewModelScope.launch {
             val result = vocabularyRepository.addWord(
@@ -722,6 +795,7 @@ private class ReaderViewModel(
         val selectedWord = uiState.bookContent
             ?.words
             ?.get(selectedWordId)
+            ?: currentSelectedWordFromPage()
             ?: return
 
         val wordAudioUri = selectedWord.audioUri
@@ -731,6 +805,15 @@ private class ReaderViewModel(
         }
 
         audioPlayer.speak(selectedWord.text)
+    }
+
+    private fun currentSelectedWordFromPage(): Word? {
+        val bookContent = uiState.bookContent ?: return null
+        val currentPage = bookContent.pages.getOrNull(uiState.currentPageIndex) ?: return null
+        return buildTappableWords(
+            page = currentPage,
+            bookContent = bookContent,
+        ).firstOrNull { it.key == uiState.selectedWordId }?.word
     }
 
     private fun updateCurrentPage(targetPageIndex: Int) {
