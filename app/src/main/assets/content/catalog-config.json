@@ -1,4 +1,4 @@
 {
-  "catalogUrl": "https://s3.aqura-tech.com/english-reader/catalog/catalog.json",
+  "catalogUrl": "https://s3.aqura-tech.com/english-reader/chapter1/catalog.json",
   "autoSyncOnLaunch": false
 }
