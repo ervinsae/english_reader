@@ -1,4 +1,4 @@
 {
-  "catalogUrl": "https://minio.aqura-tech.com/english-reader/catalog/catalog.json",
+  "catalogUrl": "https://s3.aqura-tech.com/english-reader/catalog/catalog.json",
   "autoSyncOnLaunch": false
 }
