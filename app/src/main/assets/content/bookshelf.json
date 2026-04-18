@@ -5,7 +5,7 @@
       "title": "Chinese Adventure",
       "level": "Stage 07",
       "pageCount": 32,
-      "coverAsset": "books/oxford-chinese-adventure-stage-07/cover.png",
+      "coverUri": "https://s3.aqura-tech.com/english-reader/books/oxford-chinese-adventure-stage-07/cover.png",
       "tags": [
         "oxford",
         "stage-07",
@@ -14,21 +14,27 @@
       ],
       "package": {
         "version": "2026.04.14",
-        "downloadUrl": "https://s3.aqura-tech.com/english-reader/chapter1/package.zip",
+        "downloadUrl": "https://s3.aqura-tech.com/english-reader/books/oxford-chinese-adventure-stage-07/package.zip",
         "sha256": "f90a9746527bc0fa1b6d51d2a48df4b4b087401f0969142736a956d359ffeada"
       }
     },
     {
-      "bookId": "oxford-tree-01",
-      "title": "The Apple",
-      "level": "L1",
-      "pageCount": 3,
-      "coverAsset": "books/oxford-tree-01/cover.png",
+      "bookId": "oxford-a-good-trick",
+      "title": "A Good Trick",
+      "level": "First Words",
+      "pageCount": 8,
+      "coverUri": "https://s3.aqura-tech.com/english-reader/books/oxford-a-good-trick/cover.png",
       "tags": [
-        "sample",
-        "family",
-        "fruit"
-      ]
+        "oxford",
+        "reading-tree",
+        "first-words",
+        "picture-book"
+      ],
+      "package": {
+        "version": "2026.04.18",
+        "downloadUrl": "https://s3.aqura-tech.com/english-reader/books/oxford-a-good-trick/package.zip",
+        "sha256": "106d86359412cbef2d7d11db5e54c6539cabb5072c0cd6994d744586bf9c139c"
+      }
     }
   ]
 }

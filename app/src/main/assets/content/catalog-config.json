@@ -1,5 +1,5 @@
 {
-  "bookshelfUrl": "https://s3.aqura-tech.com/english-reader/chapter1/bookshelf.json",
-  "catalogUrl": "https://s3.aqura-tech.com/english-reader/chapter1/catalog.json",
+  "bookshelfUrl": "https://s3.aqura-tech.com/english-reader/catalog/bookshelf.json",
+  "catalogUrl": "https://s3.aqura-tech.com/english-reader/catalog/catalog.json",
   "autoSyncOnLaunch": false
 }
