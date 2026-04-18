@@ -1,0 +1,105 @@
+[
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 1,
+    "imageAsset": "pages/001.png",
+    "englishText": "A rug,",
+    "words": [
+      {
+        "wordId": "rug",
+        "text": "rug",
+        "startIndex": 2,
+        "endIndex": 5
+      }
+    ]
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 2,
+    "imageAsset": "pages/002.png",
+    "englishText": "a sheet,",
+    "words": [
+      {
+        "wordId": "sheet",
+        "text": "sheet",
+        "startIndex": 2,
+        "endIndex": 7
+      }
+    ]
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 3,
+    "imageAsset": "pages/003.png",
+    "englishText": "",
+    "words": []
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 4,
+    "imageAsset": "pages/004.png",
+    "englishText": "a big box,",
+    "words": [
+      {
+        "wordId": "big",
+        "text": "big",
+        "startIndex": 2,
+        "endIndex": 5
+      },
+      {
+        "wordId": "box",
+        "text": "box",
+        "startIndex": 6,
+        "endIndex": 9
+      }
+    ]
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 5,
+    "imageAsset": "pages/005.png",
+    "englishText": "",
+    "words": []
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 6,
+    "imageAsset": "pages/006.png",
+    "englishText": "a little box,",
+    "words": [
+      {
+        "wordId": "little",
+        "text": "little",
+        "startIndex": 2,
+        "endIndex": 8
+      },
+      {
+        "wordId": "box",
+        "text": "box",
+        "startIndex": 9,
+        "endIndex": 12
+      }
+    ]
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 7,
+    "imageAsset": "pages/007.png",
+    "englishText": "",
+    "words": []
+  },
+  {
+    "bookId": "oxford-a-good-trick",
+    "pageNo": 8,
+    "imageAsset": "pages/008.png",
+    "englishText": "Kipper.",
+    "words": [
+      {
+        "wordId": "kipper",
+        "text": "Kipper",
+        "startIndex": 0,
+        "endIndex": 6
+      }
+    ]
+  }
+]
