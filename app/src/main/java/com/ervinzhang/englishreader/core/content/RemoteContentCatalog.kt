@@ -126,7 +126,10 @@ class DefaultRemoteContentCatalogSource(
 class HttpBookPackageDownloader(
     private val packageStorage: LocalBookPackageStorage,
 ) {
-    suspend fun download(remoteBookPackage: RemoteBookPackage): File? = withContext(Dispatchers.IO) {
+    suspend fun download(
+        remoteBookPackage: RemoteBookPackage,
+        onProgress: suspend (Int) -> Unit = {},
+    ): File? = withContext(Dispatchers.IO) {
         val targetFile = packageStorage.downloadArchiveFile(
             bookId = remoteBookPackage.bookId,
             version = remoteBookPackage.version,
@@ -140,9 +143,35 @@ class HttpBookPackageDownloader(
         connection.instanceFollowRedirects = true
 
         runCatching {
+            val contentLength = connection.contentLengthLong.takeIf { it > 0L }
+            var downloadedBytes = 0L
+            var lastPercent = -1
+
             connection.inputStream.use { input ->
                 targetFile.parentFile?.mkdirs()
-                targetFile.outputStream().use { output -> input.copyTo(output) }
+                targetFile.outputStream().use { output ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    while (true) {
+                        val bytesRead = input.read(buffer)
+                        if (bytesRead <= 0) break
+                        output.write(buffer, 0, bytesRead)
+                        if (contentLength != null) {
+                            downloadedBytes += bytesRead
+                            val percent = ((downloadedBytes * 100) / contentLength)
+                                .toInt()
+                                .coerceIn(0, 100)
+                            if (percent != lastPercent) {
+                                lastPercent = percent
+                                onProgress(percent)
+                            }
+                        }
+                    }
+                    output.flush()
+                }
+            }
+
+            if (contentLength == null) {
+                onProgress(100)
             }
 
             if (!remoteBookPackage.sha256.isNullOrBlank()) {
@@ -154,7 +183,9 @@ class HttpBookPackageDownloader(
             }
 
             targetFile
-        }.getOrNull()
+        }.getOrNull().also {
+            connection.disconnect()
+        }
     }
 
     private fun File.sha256(): String {

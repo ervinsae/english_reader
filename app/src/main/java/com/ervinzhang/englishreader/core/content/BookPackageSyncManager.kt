@@ -37,14 +37,13 @@ class BookPackageSyncManager(
     private val bookPackageDownloader: HttpBookPackageDownloader,
 ) {
     suspend fun sync(
-        onStatus: suspend (String) -> Unit = {},
+        onProgress: suspend (Int) -> Unit = {},
     ): ContentSyncResult = withContext(Dispatchers.IO) {
         val issues = mutableListOf<String>()
+        onProgress(0)
 
-        onStatus("正在检查本地导入内容包…")
         val installedFromInbox = packageStorage.listInboxArchives()
             .map { archive ->
-                onStatus("正在导入本地内容包：${archive.name}")
                 packageInstaller.installFromArchive(
                     archiveFile = archive,
                     source = SOURCE_INBOX,
@@ -53,44 +52,59 @@ class BookPackageSyncManager(
             }
             .countSuccessful(issues)
 
-        onStatus("正在读取远程目录…")
+        onProgress(5)
         val catalog = runCatching { remoteContentCatalogSource.fetchCatalog() }
             .getOrElse {
                 issues += "远程目录读取失败"
                 null
             }
 
+        val pendingPackages = catalog?.packages.orEmpty()
+            .filterNot { remotePackage ->
+                packageStorage.isInstalled(remotePackage.bookId, remotePackage.version)
+            }
+
         var downloadedFromCatalog = 0
-        catalog?.packages.orEmpty().forEach { remotePackage ->
-            if (packageStorage.isInstalled(remotePackage.bookId, remotePackage.version)) {
-                return@forEach
-            }
+        if (pendingPackages.isEmpty()) {
+            onProgress(100)
+        } else {
+            val totalPackages = pendingPackages.size
+            pendingPackages.forEachIndexed { index, remotePackage ->
+                val segmentStart = (index * 100) / totalPackages
+                val segmentEnd = ((index + 1) * 100) / totalPackages
+                val downloadStart = maxOf(segmentStart, 5)
+                val downloadEnd = maxOf(downloadStart, segmentStart + ((segmentEnd - segmentStart) * 9 / 10))
 
-            onStatus("正在下载《${remotePackage.title}》内容包，首次同步可能需要几分钟…")
-            val archiveFile = bookPackageDownloader.download(remotePackage)
-            if (archiveFile == null) {
-                issues += "远程包 ${remotePackage.bookId} 下载失败"
-                return@forEach
-            }
+                val archiveFile = bookPackageDownloader.download(remotePackage) { percent ->
+                    val mapped = downloadStart + ((downloadEnd - downloadStart) * percent / 100)
+                    onProgress(mapped.coerceIn(0, 99))
+                }
+                if (archiveFile == null) {
+                    issues += "远程包 ${remotePackage.bookId} 下载失败"
+                    return@forEachIndexed
+                }
 
-            onStatus("正在安装《${remotePackage.title}》内容包…")
-            when (
-                val result = packageInstaller.installFromArchive(
-                    archiveFile = archiveFile,
-                    source = SOURCE_REMOTE,
-                    deleteArchiveOnSuccess = true,
-                )
-            ) {
-                is BookPackageInstallResult.Success -> downloadedFromCatalog += 1
-                is BookPackageInstallResult.Failure -> issues += "远程包 ${result.archiveName} 安装失败"
+                onProgress((segmentStart + ((segmentEnd - segmentStart) * 95 / 100)).coerceIn(0, 99))
+                when (
+                    val result = packageInstaller.installFromArchive(
+                        archiveFile = archiveFile,
+                        source = SOURCE_REMOTE,
+                        deleteArchiveOnSuccess = true,
+                    )
+                ) {
+                    is BookPackageInstallResult.Success -> downloadedFromCatalog += 1
+                    is BookPackageInstallResult.Failure -> issues += "远程包 ${result.archiveName} 安装失败"
+                }
+
+                onProgress(segmentEnd.coerceIn(0, 100))
             }
         }
 
         if (installedFromInbox > 0 || downloadedFromCatalog > 0) {
-            onStatus("正在刷新书架内容…")
             bookRepository.refresh()
         }
 
+        onProgress(100)
         ContentSyncResult(
             installedFromInbox = installedFromInbox,
             downloadedFromCatalog = downloadedFromCatalog,

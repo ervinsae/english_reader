@@ -98,7 +98,13 @@ fun BookshelfScreen(
                         onClick = viewModel::syncContentPackages,
                         enabled = !uiState.isSyncing,
                     ) {
-                        Text(if (uiState.isSyncing) "同步中" else "同步内容")
+                        Text(
+                            if (uiState.isSyncing) {
+                                "同步中：${uiState.syncProgressPercent}%"
+                            } else {
+                                "同步内容"
+                            },
+                        )
                     }
                     TextButton(onClick = onOpenProfile) {
                         Text("我的")
@@ -159,22 +165,6 @@ fun BookshelfScreen(
                                     recentBooks = uiState.recentBooks,
                                     onOpenBook = onOpenBook,
                                 )
-                            }
-                        }
-
-                        uiState.syncMessage?.let { syncMessage ->
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                StorybookCard(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                                ) {
-                                    Text(
-                                        text = syncMessage,
-                                        modifier = Modifier.padding(18.dp),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                    )
-                                }
                             }
                         }
 
@@ -389,7 +379,7 @@ private fun RecentReadingSection(
 private data class BookshelfUiState(
     val isLoading: Boolean = true,
     val isSyncing: Boolean = false,
-    val syncMessage: String? = null,
+    val syncProgressPercent: Int = 0,
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
@@ -413,7 +403,7 @@ private class BookshelfViewModel(
             val currentUser = authRepository.getCurrentUser()
             runCatching {
                 currentUserName = currentUser?.nickname
-                refreshBooks(syncMessage = null)
+                refreshBooks()
                 if (currentUser != null) {
                     readingProgressRepository.observeAll(currentUser.id).collect { progressList ->
                         latestProgressList = progressList
@@ -423,7 +413,7 @@ private class BookshelfViewModel(
             }.onFailure {
                 uiState = BookshelfUiState(
                     isLoading = false,
-                    syncMessage = uiState.syncMessage,
+                    syncProgressPercent = uiState.syncProgressPercent,
                     errorMessage = "绘本内容加载失败",
                 )
             }
@@ -434,37 +424,37 @@ private class BookshelfViewModel(
         viewModelScope.launch {
             uiState = uiState.copy(
                 isSyncing = true,
-                syncMessage = "正在准备同步内容…",
+                syncProgressPercent = 0,
                 errorMessage = null,
             )
             val result = runCatching {
-                bookPackageSyncManager.sync { status ->
+                bookPackageSyncManager.sync { progress ->
                     withContext(Dispatchers.Main) {
-                        uiState = uiState.copy(syncMessage = status)
+                        uiState = uiState.copy(syncProgressPercent = progress.coerceIn(0, 100))
                     }
                 }
             }
-            result.onSuccess { syncResult ->
-                refreshBooks(syncMessage = syncResult.summary)
+            result.onSuccess {
+                refreshBooks()
             }.onFailure {
                 uiState = uiState.copy(
                     isSyncing = false,
-                    syncMessage = "内容同步失败，请检查远程目录配置或本地导入包",
+                    syncProgressPercent = 0,
                 )
             }
         }
     }
 
-    private suspend fun refreshBooks(syncMessage: String?) {
+    private suspend fun refreshBooks() {
         currentBooks = bookRepository.getBooks()
-        publishUiState(syncMessage = syncMessage)
+        publishUiState()
     }
 
-    private fun publishUiState(syncMessage: String? = uiState.syncMessage) {
+    private fun publishUiState() {
         uiState = BookshelfUiState(
             isLoading = false,
             isSyncing = false,
-            syncMessage = syncMessage,
+            syncProgressPercent = 0,
             userName = currentUserName,
             books = currentBooks.mapWithProgress(latestProgressList),
             recentBooks = currentBooks.mapRecent(latestProgressList),
