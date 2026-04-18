@@ -127,6 +127,7 @@ fun AppNavHost(
                 bookId = backStackEntry.arguments?.getString(Destinations.Reader.bookIdArg).orEmpty(),
                 bookRepository = appContainer.bookRepository,
                 readingProgressRepository = appContainer.readingProgressRepository,
+                dictionaryRepository = appContainer.dictionaryRepository,
                 vocabularyRepository = appContainer.vocabularyRepository,
                 authRepository = appContainer.authRepository,
                 audioPlayer = appContainer.audioPlayer,

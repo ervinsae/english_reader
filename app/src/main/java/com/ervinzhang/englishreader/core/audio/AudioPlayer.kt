@@ -8,6 +8,13 @@ import android.speech.tts.TextToSpeech
 import com.ervinzhang.englishreader.core.content.ContentUri
 import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 interface AudioPlayer {
     fun play(contentUri: String)
@@ -29,8 +36,10 @@ class AndroidAudioPlayer(
     context: Context,
 ) : AudioPlayer, TextToSpeech.OnInitListener {
     private val appContext = context.applicationContext
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     private var mediaPlayer: MediaPlayer? = null
+    private var playbackLoadJob: Job? = null
     private var textToSpeech: TextToSpeech? = null
     private var isTtsReady = false
     private var pendingSpeech: String? = null
@@ -46,38 +55,41 @@ class AndroidAudioPlayer(
         activeSpeechText = null
         stopMediaPlayback()
         textToSpeech?.stop()
+        playbackLoadJob?.cancel()
+        playbackLoadJob = scope.launch {
+            val playbackFile = withContext(Dispatchers.IO) { resolvePlaybackFile(contentUri) } ?: return@launch
+            if (currentContentUri != contentUri) return@launch
 
-        val playbackFile = resolvePlaybackFile(contentUri) ?: return
-
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build(),
-            )
-            setDataSource(playbackFile.absolutePath)
-            setOnPreparedListener { it.start() }
-            setOnCompletionListener { completedPlayer ->
-                clearPausedState()
-                activeSpeechText = null
-                currentContentUri = null
-                completedPlayer.release()
-                if (mediaPlayer === completedPlayer) {
-                    mediaPlayer = null
+            mediaPlayer = MediaPlayer().apply {
+                setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build(),
+                )
+                setDataSource(playbackFile.absolutePath)
+                setOnPreparedListener { it.start() }
+                setOnCompletionListener { completedPlayer ->
+                    clearPausedState()
+                    activeSpeechText = null
+                    currentContentUri = null
+                    completedPlayer.release()
+                    if (mediaPlayer === completedPlayer) {
+                        mediaPlayer = null
+                    }
                 }
-            }
-            setOnErrorListener { failedPlayer, _, _ ->
-                clearPausedState()
-                activeSpeechText = null
-                currentContentUri = null
-                failedPlayer.release()
-                if (mediaPlayer === failedPlayer) {
-                    mediaPlayer = null
+                setOnErrorListener { failedPlayer, _, _ ->
+                    clearPausedState()
+                    activeSpeechText = null
+                    currentContentUri = null
+                    failedPlayer.release()
+                    if (mediaPlayer === failedPlayer) {
+                        mediaPlayer = null
+                    }
+                    true
                 }
-                true
+                prepareAsync()
             }
-            prepareAsync()
         }
     }
 
@@ -160,6 +172,8 @@ class AndroidAudioPlayer(
         clearPausedState()
         activeSpeechText = null
         currentContentUri = null
+        playbackLoadJob?.cancel()
+        playbackLoadJob = null
         stopMediaPlayback()
         textToSpeech?.stop()
     }
@@ -221,6 +235,8 @@ class AndroidAudioPlayer(
     }
 
     private fun stopMediaPlayback() {
+        playbackLoadJob?.cancel()
+        playbackLoadJob = null
         mediaPlayer?.runCatching {
             setOnPreparedListener(null)
             setOnCompletionListener(null)
@@ -235,5 +251,12 @@ class AndroidAudioPlayer(
         pausedContentUri = null
         pausedContentPositionMs = 0
         pausedSpeechText = null
+    }
+
+    fun shutdown() {
+        stop()
+        textToSpeech?.shutdown()
+        textToSpeech = null
+        scope.cancel()
     }
 }

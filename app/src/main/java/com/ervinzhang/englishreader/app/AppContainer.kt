@@ -20,6 +20,9 @@ import com.ervinzhang.englishreader.core.reading.RoomReadingProgressRepository
 import com.ervinzhang.englishreader.feature.auth.data.AuthRepositoryImpl
 import com.ervinzhang.englishreader.feature.auth.data.FakeAuthRemoteDataSource
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import com.ervinzhang.englishreader.feature.dictionary.data.CachedDictionaryRepository
+import com.ervinzhang.englishreader.feature.dictionary.data.DictionaryRepository
+import com.ervinzhang.englishreader.feature.dictionary.data.PublicDictionaryRemoteDataSource
 import com.ervinzhang.englishreader.feature.vocabulary.data.RoomVocabularyRepository
 import com.ervinzhang.englishreader.feature.vocabulary.data.VocabularyRepository
 
@@ -61,6 +64,10 @@ class AppContainer(
     )
     val readingProgressRepository: ReadingProgressRepository = RoomReadingProgressRepository(
         database.readingProgressDao(),
+    )
+    val dictionaryRepository: DictionaryRepository = CachedDictionaryRepository(
+        cacheDao = database.dictionaryCacheDao(),
+        remoteDataSource = PublicDictionaryRemoteDataSource(),
     )
     val vocabularyRepository: VocabularyRepository = RoomVocabularyRepository(
         database.vocabularyDao(),

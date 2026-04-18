@@ -19,7 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -54,13 +56,17 @@ import com.ervinzhang.englishreader.core.content.BookContent
 import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.model.PageWordRef
 import com.ervinzhang.englishreader.core.model.ReadingProgress
+import com.ervinzhang.englishreader.core.model.UNKNOWN_MEANING_PLACEHOLDER
 import com.ervinzhang.englishreader.core.model.Word
+import com.ervinzhang.englishreader.core.model.needsLookupFallback
+import com.ervinzhang.englishreader.core.model.normalizeWord
 import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
 import com.ervinzhang.englishreader.core.ui.ContentImage
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import com.ervinzhang.englishreader.feature.dictionary.data.DictionaryRepository
 import com.ervinzhang.englishreader.feature.vocabulary.data.AddVocabularyResult
 import com.ervinzhang.englishreader.feature.vocabulary.data.VocabularyRepository
-import java.util.Locale
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +75,7 @@ fun ReaderScreen(
     bookId: String,
     bookRepository: BookRepository,
     readingProgressRepository: ReadingProgressRepository,
+    dictionaryRepository: DictionaryRepository,
     vocabularyRepository: VocabularyRepository,
     authRepository: AuthRepository,
     audioPlayer: AudioPlayer,
@@ -82,6 +89,7 @@ fun ReaderScreen(
                 bookId = bookId,
                 bookRepository = bookRepository,
                 readingProgressRepository = readingProgressRepository,
+                dictionaryRepository = dictionaryRepository,
                 vocabularyRepository = vocabularyRepository,
                 authRepository = authRepository,
                 audioPlayer = audioPlayer,
@@ -101,7 +109,7 @@ fun ReaderScreen(
             bookContent = bookContent,
         )
     }
-    val selectedWord = tappableWords.firstOrNull { it.key == uiState.selectedWordId }?.word
+    val selectedWord = uiState.selectedWord
 
     Scaffold(
         topBar = {
@@ -222,7 +230,7 @@ fun ReaderScreen(
                                 IndexedEnglishText(
                                     text = currentPage.englishText,
                                     tappableWords = tappableWords,
-                                    selectedWordId = uiState.selectedWordId,
+                                    selectedWordId = uiState.selectedWordKey,
                                     onWordTap = viewModel::selectWord,
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center,
@@ -240,7 +248,7 @@ fun ReaderScreen(
                                             items = currentWords,
                                             key = { item -> item.ref.wordId },
                                         ) { wordUiModel ->
-                                            val isSelected = wordUiModel.ref.wordId == uiState.selectedWordId
+                                            val isSelected = wordUiModel.ref.wordId == uiState.selectedWordKey
                                             OutlinedButton(
                                                 onClick = { viewModel.selectWord(wordUiModel.ref.wordId) },
                                                 shape = RoundedCornerShape(20.dp),
@@ -289,6 +297,7 @@ fun ReaderScreen(
     if (selectedWord != null) {
         SelectedWordBottomSheet(
             word = selectedWord,
+            isLoading = uiState.isSelectedWordLookupLoading,
             vocabularyMessage = uiState.vocabularyMessage,
             onDismiss = viewModel::dismissSelectedWord,
             onPlay = viewModel::playSelectedWordAudio,
@@ -383,7 +392,7 @@ private fun buildTappableWords(
         val mappedWord = knownWordsByNormalized[normalizedWord] ?: Word(
             id = "token:$normalizedWord:${range.first}:${range.last}",
             text = rawWord,
-            meaningZh = "暂无释义",
+            meaningZh = UNKNOWN_MEANING_PLACEHOLDER,
         )
         val key = mappedWord.id.ifBlank { "token:$normalizedWord:${range.first}:${range.last}" }
         if (!occupiedKeys.add(key)) return@mapNotNull null
@@ -409,15 +418,10 @@ private fun PageWordRef.normalizedRange(textLength: Int): IntRange? {
 }
 
 private fun String.toNormalizedWord(): String {
-    val trimmed = trim()
-    val normalized = trimmed
-        .lowercase(Locale.ROOT)
-        .replace(EDGE_PUNCTUATION_REGEX, "")
-    return normalized.ifBlank { trimmed.lowercase(Locale.ROOT) }
+    return normalizeWord()
 }
 
 private val WORD_TOKEN_REGEX = Regex("[\\p{L}\\p{N}]+(?:['’-][\\p{L}\\p{N}]+)*")
-private val EDGE_PUNCTUATION_REGEX = Regex("^[^\\p{L}\\p{N}]+|[^\\p{L}\\p{N}]+$")
 
 @Composable
 private fun ReaderPageTurnSurface(
@@ -554,6 +558,7 @@ private fun ReaderPageNavigationBar(
 @Composable
 private fun SelectedWordBottomSheet(
     word: Word,
+    isLoading: Boolean,
     vocabularyMessage: String?,
     onDismiss: () -> Unit,
     onPlay: () -> Unit,
@@ -571,6 +576,25 @@ private fun SelectedWordBottomSheet(
                 text = word.text,
                 style = MaterialTheme.typography.headlineSmall,
             )
+            if (isLoading) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Text(
+                            text = "正在查询在线释义...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
             if (!word.phonetic.isNullOrBlank()) {
                 Text(
                     text = word.phonetic,
@@ -599,7 +623,10 @@ private fun SelectedWordBottomSheet(
                 ) {
                     Text("播放单词")
                 }
-                Button(onClick = onAddToVocabulary) {
+                Button(
+                    onClick = onAddToVocabulary,
+                    enabled = !isLoading,
+                ) {
                     Text("加入生词本")
                 }
             }
@@ -616,7 +643,9 @@ private data class ReaderUiState(
     val currentPageIndex: Int = 0,
     val isSentencePlaybackActive: Boolean = false,
     val isSentencePlaybackPaused: Boolean = false,
-    val selectedWordId: String? = null,
+    val selectedWordKey: String? = null,
+    val selectedWord: Word? = null,
+    val isSelectedWordLookupLoading: Boolean = false,
     val hasFinishedBook: Boolean = false,
     val vocabularyMessage: String? = null,
     val errorMessage: String? = null,
@@ -637,6 +666,7 @@ private class ReaderViewModel(
     private val bookId: String,
     private val bookRepository: BookRepository,
     private val readingProgressRepository: ReadingProgressRepository,
+    private val dictionaryRepository: DictionaryRepository,
     private val vocabularyRepository: VocabularyRepository,
     private val authRepository: AuthRepository,
     private val audioPlayer: AudioPlayer,
@@ -646,6 +676,7 @@ private class ReaderViewModel(
     private var currentUserId: String? = null
     private var shouldAutoPlaySentenceOnPageChange: Boolean = false
     private var hasTriggeredInitialAutoPlay: Boolean = false
+    private var selectedWordLookupJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -715,16 +746,54 @@ private class ReaderViewModel(
     fun selectWord(wordId: String) {
         shouldAutoPlaySentenceOnPageChange = false
         audioPlayer.stop()
+        selectedWordLookupJob?.cancel()
+
+        if (uiState.selectedWordKey == wordId) {
+            uiState = uiState.copy(
+                selectedWordKey = null,
+                selectedWord = null,
+                isSelectedWordLookupLoading = false,
+                isSentencePlaybackActive = false,
+                isSentencePlaybackPaused = false,
+                vocabularyMessage = null,
+            )
+            return
+        }
+
+        val baseWord = currentSelectedWordFromPage(wordId) ?: return
+        val shouldLookupRemotely = baseWord.needsLookupFallback()
+
         uiState = uiState.copy(
-            selectedWordId = if (uiState.selectedWordId == wordId) null else wordId,
+            selectedWordKey = wordId,
+            selectedWord = baseWord,
+            isSelectedWordLookupLoading = shouldLookupRemotely,
             isSentencePlaybackActive = false,
             isSentencePlaybackPaused = false,
             vocabularyMessage = null,
         )
+
+        if (!shouldLookupRemotely) return
+
+        selectedWordLookupJob = viewModelScope.launch {
+            val resolvedWord = runCatching {
+                dictionaryRepository.resolveWord(baseWord)
+            }.getOrDefault(baseWord)
+
+            if (uiState.selectedWordKey != wordId) return@launch
+            uiState = uiState.copy(
+                selectedWord = resolvedWord,
+                isSelectedWordLookupLoading = false,
+            )
+        }
     }
 
     fun dismissSelectedWord() {
-        uiState = uiState.copy(selectedWordId = null)
+        selectedWordLookupJob?.cancel()
+        uiState = uiState.copy(
+            selectedWordKey = null,
+            selectedWord = null,
+            isSelectedWordLookupLoading = false,
+        )
     }
 
     fun addSelectedWordToVocabulary() {
@@ -732,10 +801,7 @@ private class ReaderViewModel(
             uiState = uiState.copy(vocabularyMessage = "请先登录后再加入生词本")
             return
         }
-        val selectedWordId = uiState.selectedWordId ?: return
-        val selectedWord = uiState.bookContent?.words?.get(selectedWordId)
-            ?: currentSelectedWordFromPage()
-            ?: return
+        val selectedWord = uiState.selectedWord ?: return
 
         viewModelScope.launch {
             val result = vocabularyRepository.addWord(
@@ -791,12 +857,7 @@ private class ReaderViewModel(
             isSentencePlaybackActive = false,
             isSentencePlaybackPaused = false,
         )
-        val selectedWordId = uiState.selectedWordId ?: return
-        val selectedWord = uiState.bookContent
-            ?.words
-            ?.get(selectedWordId)
-            ?: currentSelectedWordFromPage()
-            ?: return
+        val selectedWord = uiState.selectedWord ?: return
 
         val wordAudioUri = selectedWord.audioUri
         if (wordAudioUri != null) {
@@ -807,13 +868,13 @@ private class ReaderViewModel(
         audioPlayer.speak(selectedWord.text)
     }
 
-    private fun currentSelectedWordFromPage(): Word? {
+    private fun currentSelectedWordFromPage(selectedWordKey: String): Word? {
         val bookContent = uiState.bookContent ?: return null
         val currentPage = bookContent.pages.getOrNull(uiState.currentPageIndex) ?: return null
         return buildTappableWords(
             page = currentPage,
             bookContent = bookContent,
-        ).firstOrNull { it.key == uiState.selectedWordId }?.word
+        ).firstOrNull { it.key == selectedWordKey }?.word
     }
 
     private fun updateCurrentPage(targetPageIndex: Int) {
@@ -825,6 +886,7 @@ private class ReaderViewModel(
 
         val resumeSentencePlayback = shouldAutoPlaySentenceOnPageChange
         audioPlayer.stop()
+        selectedWordLookupJob?.cancel()
 
         val hasFinishedBook = uiState.hasFinishedBook || nextPageIndex == currentContent.pages.lastIndex
         val currentPageNo = currentContent.pages[nextPageIndex].pageNo
@@ -833,7 +895,9 @@ private class ReaderViewModel(
             currentPageIndex = nextPageIndex,
             isSentencePlaybackActive = resumeSentencePlayback,
             isSentencePlaybackPaused = false,
-            selectedWordId = null,
+            selectedWordKey = null,
+            selectedWord = null,
+            isSelectedWordLookupLoading = false,
             hasFinishedBook = hasFinishedBook,
             vocabularyMessage = null,
         )
@@ -888,6 +952,7 @@ private class ReaderViewModel(
     }
 
     override fun onCleared() {
+        selectedWordLookupJob?.cancel()
         audioPlayer.stop()
         super.onCleared()
     }

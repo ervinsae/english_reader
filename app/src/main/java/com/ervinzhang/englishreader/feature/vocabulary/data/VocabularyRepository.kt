@@ -4,7 +4,7 @@ import com.ervinzhang.englishreader.core.database.dao.VocabularyDao
 import com.ervinzhang.englishreader.core.database.entity.VocabularyEntity
 import com.ervinzhang.englishreader.core.model.VocabularyItem
 import com.ervinzhang.englishreader.core.model.Word
-import java.util.Locale
+import com.ervinzhang.englishreader.core.model.normalizeWord
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -29,7 +29,7 @@ class RoomVocabularyRepository(
     }
 
     override suspend fun addWord(userId: String, word: Word): AddVocabularyResult {
-        val normalizedWord = word.text.toNormalizedWord()
+        val normalizedWord = word.text.normalizeWord()
         val inserted = vocabularyDao.insert(
             VocabularyEntity(
                 id = buildVocabularyId(userId = userId, normalizedWord = normalizedWord),
@@ -71,13 +71,3 @@ private fun buildVocabularyId(
 ): String {
     return "$userId::$normalizedWord"
 }
-
-private fun String.toNormalizedWord(): String {
-    val trimmed = trim()
-    val normalized = trimmed
-        .lowercase(Locale.ROOT)
-        .replace(EDGE_PUNCTUATION_REGEX, "")
-    return normalized.ifBlank { trimmed.lowercase(Locale.ROOT) }
-}
-
-private val EDGE_PUNCTUATION_REGEX = Regex("^[^\\p{L}\\p{N}]+|[^\\p{L}\\p{N}]+$")
