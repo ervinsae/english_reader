@@ -36,11 +36,15 @@ class BookPackageSyncManager(
     private val remoteContentCatalogSource: RemoteContentCatalogSource,
     private val bookPackageDownloader: HttpBookPackageDownloader,
 ) {
-    suspend fun sync(): ContentSyncResult = withContext(Dispatchers.IO) {
+    suspend fun sync(
+        onStatus: suspend (String) -> Unit = {},
+    ): ContentSyncResult = withContext(Dispatchers.IO) {
         val issues = mutableListOf<String>()
 
+        onStatus("正在检查本地导入内容包…")
         val installedFromInbox = packageStorage.listInboxArchives()
             .map { archive ->
+                onStatus("正在导入本地内容包：${archive.name}")
                 packageInstaller.installFromArchive(
                     archiveFile = archive,
                     source = SOURCE_INBOX,
@@ -49,6 +53,7 @@ class BookPackageSyncManager(
             }
             .countSuccessful(issues)
 
+        onStatus("正在读取远程目录…")
         val catalog = runCatching { remoteContentCatalogSource.fetchCatalog() }
             .getOrElse {
                 issues += "远程目录读取失败"
@@ -61,12 +66,14 @@ class BookPackageSyncManager(
                 return@forEach
             }
 
+            onStatus("正在下载《${remotePackage.title}》内容包，首次同步可能需要几分钟…")
             val archiveFile = bookPackageDownloader.download(remotePackage)
             if (archiveFile == null) {
                 issues += "远程包 ${remotePackage.bookId} 下载失败"
                 return@forEach
             }
 
+            onStatus("正在安装《${remotePackage.title}》内容包…")
             when (
                 val result = packageInstaller.installFromArchive(
                     archiveFile = archiveFile,
@@ -80,6 +87,7 @@ class BookPackageSyncManager(
         }
 
         if (installedFromInbox > 0 || downloadedFromCatalog > 0) {
+            onStatus("正在刷新书架内容…")
             bookRepository.refresh()
         }
 

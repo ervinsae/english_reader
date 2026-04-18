@@ -51,8 +51,10 @@ import com.ervinzhang.englishreader.core.ui.StorybookPrimaryButton
 import com.ervinzhang.englishreader.core.ui.StorybookSectionTitle
 import com.ervinzhang.englishreader.core.ui.StorybookTag
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -430,8 +432,18 @@ private class BookshelfViewModel(
 
     fun syncContentPackages() {
         viewModelScope.launch {
-            uiState = uiState.copy(isSyncing = true, syncMessage = null, errorMessage = null)
-            val result = runCatching { bookPackageSyncManager.sync() }
+            uiState = uiState.copy(
+                isSyncing = true,
+                syncMessage = "正在准备同步内容…",
+                errorMessage = null,
+            )
+            val result = runCatching {
+                bookPackageSyncManager.sync { status ->
+                    withContext(Dispatchers.Main) {
+                        uiState = uiState.copy(syncMessage = status)
+                    }
+                }
+            }
             result.onSuccess { syncResult ->
                 refreshBooks(syncMessage = syncResult.summary)
             }.onFailure {
