@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,9 +38,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
-import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.content.BookPackageSyncManager
-import com.ervinzhang.englishreader.core.model.Book
+import com.ervinzhang.englishreader.core.content.BookshelfBookOpenStatus
+import com.ervinzhang.englishreader.core.content.BookshelfBookPreview
+import com.ervinzhang.englishreader.core.content.BookshelfRepository
+import com.ervinzhang.englishreader.core.content.EnsureBookOpenableResult
 import com.ervinzhang.englishreader.core.model.BookshelfItem
 import com.ervinzhang.englishreader.core.model.ReadingProgress
 import com.ervinzhang.englishreader.core.reading.ReadingProgressRepository
@@ -60,7 +63,7 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookshelfScreen(
-    bookRepository: BookRepository,
+    bookshelfRepository: BookshelfRepository,
     bookPackageSyncManager: BookPackageSyncManager,
     readingProgressRepository: ReadingProgressRepository,
     authRepository: AuthRepository,
@@ -70,7 +73,7 @@ fun BookshelfScreen(
     val viewModel: BookshelfViewModel = viewModel(
         factory = SimpleViewModelFactory {
             BookshelfViewModel(
-                bookRepository = bookRepository,
+                bookshelfRepository = bookshelfRepository,
                 bookPackageSyncManager = bookPackageSyncManager,
                 readingProgressRepository = readingProgressRepository,
                 authRepository = authRepository,
@@ -79,6 +82,13 @@ fun BookshelfScreen(
     )
     val uiState = viewModel.uiState
     val featuredBook = uiState.recentBooks.firstOrNull() ?: uiState.books.firstOrNull()
+    val isBusyOpening = uiState.openingBookId != null
+
+    LaunchedEffect(uiState.bookToOpen) {
+        val bookId = uiState.bookToOpen ?: return@LaunchedEffect
+        onOpenBook(bookId)
+        viewModel.consumePendingOpen()
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -97,7 +107,7 @@ fun BookshelfScreen(
                 actions = {
                     TextButton(
                         onClick = viewModel::syncContentPackages,
-                        enabled = !uiState.isSyncing,
+                        enabled = !uiState.isSyncing && !isBusyOpening,
                     ) {
                         Text(
                             when {
@@ -108,7 +118,7 @@ fun BookshelfScreen(
                             },
                         )
                     }
-                    TextButton(onClick = onOpenProfile) {
+                    TextButton(onClick = onOpenProfile, enabled = !isBusyOpening) {
                         Text("我的")
                     }
                 },
@@ -122,7 +132,7 @@ fun BookshelfScreen(
         ) {
             when {
                 uiState.isLoading -> {
-                    BookshelfMessageCard(message = "正在加载内置绘本...")
+                    BookshelfMessageCard(message = "正在加载书架...")
                 }
 
                 uiState.errorMessage != null -> {
@@ -152,11 +162,21 @@ fun BookshelfScreen(
                             }
                         }
 
+                        if (!uiState.openFailureMessage.isNullOrBlank()) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                BookshelfInlineMessage(message = uiState.openFailureMessage)
+                            }
+                        }
+
                         if (featuredBook != null) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 FeaturedBookCard(
                                     book = featuredBook,
-                                    onOpenBook = { onOpenBook(featuredBook.bookId) },
+                                    isOpening = uiState.openingBookId == featuredBook.bookId,
+                                    openActionText = buildOpenActionText(featuredBook, uiState),
+                                    statusText = buildBookStatusText(featuredBook, uiState),
+                                    enabled = uiState.openingBookId == null || uiState.openingBookId == featuredBook.bookId,
+                                    onOpenBook = { viewModel.openBook(featuredBook.bookId) },
                                 )
                             }
                         }
@@ -165,7 +185,8 @@ fun BookshelfScreen(
                             item(span = { GridItemSpan(maxLineSpan) }) {
                                 RecentReadingSection(
                                     recentBooks = uiState.recentBooks,
-                                    onOpenBook = onOpenBook,
+                                    onOpenBook = viewModel::openBook,
+                                    openingBookId = uiState.openingBookId,
                                 )
                             }
                         }
@@ -178,7 +199,10 @@ fun BookshelfScreen(
                             BookCard(
                                 book = book,
                                 rotation = if (index % 2 == 0) -2f else 2f,
-                                onClick = { onOpenBook(book.bookId) },
+                                isOpening = uiState.openingBookId == book.bookId,
+                                statusText = buildBookStatusText(book, uiState),
+                                enabled = uiState.openingBookId == null || uiState.openingBookId == book.bookId,
+                                onClick = { viewModel.openBook(book.bookId) },
                             )
                         }
                     }
@@ -211,8 +235,27 @@ private fun BookshelfMessageCard(message: String?) {
 }
 
 @Composable
+private fun BookshelfInlineMessage(message: String?) {
+    StorybookCard(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.6f),
+    ) {
+        Text(
+            text = message.orEmpty(),
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+        )
+    }
+}
+
+@Composable
 private fun FeaturedBookCard(
     book: BookshelfItem,
+    isOpening: Boolean,
+    openActionText: String,
+    statusText: String,
+    enabled: Boolean,
     onOpenBook: () -> Unit,
 ) {
     StorybookCard(
@@ -222,7 +265,7 @@ private fun FeaturedBookCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onOpenBook)
+                .clickable(enabled = enabled, onClick = onOpenBook)
                 .padding(18.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -242,7 +285,12 @@ private fun FeaturedBookCard(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 StorybookTag(
-                    text = if (book.lastReadPage != null) "继续阅读" else "推荐开始",
+                    text = when {
+                        isOpening -> "正在准备"
+                        book.lastReadPage != null -> "继续阅读"
+                        book.isLocalContentReady -> "推荐开始"
+                        else -> "云端可读"
+                    },
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
@@ -258,14 +306,15 @@ private fun FeaturedBookCard(
                 )
                 ProgressCaterpillar(progress = book.readProgress)
                 Text(
-                    text = buildProgressText(book),
+                    text = statusText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 StorybookPrimaryButton(
-                    text = if (book.lastReadPage != null) "继续" else "开始阅读",
+                    text = openActionText,
                     onClick = onOpenBook,
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = enabled,
                 )
             }
         }
@@ -276,12 +325,15 @@ private fun FeaturedBookCard(
 private fun BookCard(
     book: BookshelfItem,
     rotation: Float,
+    isOpening: Boolean,
+    statusText: String,
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     StorybookCard(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .clickable(enabled = enabled, onClick = onClick),
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) {
         Column(
@@ -298,11 +350,20 @@ private fun BookCard(
                     .clip(MaterialTheme.shapes.large),
                 fallbackText = "封面占位",
             )
-            StorybookTag(
-                text = book.level,
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                StorybookTag(
+                    text = book.level,
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                )
+                if (!book.isLocalContentReady) {
+                    StorybookTag(
+                        text = if (isOpening) "下载中" else "云端",
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
+            }
             Text(
                 text = book.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -312,7 +373,7 @@ private fun BookCard(
             )
             ProgressCaterpillar(progress = book.readProgress)
             Text(
-                text = buildProgressText(book),
+                text = statusText,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
@@ -326,6 +387,7 @@ private fun BookCard(
 private fun RecentReadingSection(
     recentBooks: List<BookshelfItem>,
     onOpenBook: (String) -> Unit,
+    openingBookId: String?,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         StorybookSectionTitle(title = "最近阅读")
@@ -333,7 +395,9 @@ private fun RecentReadingSection(
             StorybookCard(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onOpenBook(book.bookId) },
+                    .clickable(
+                        enabled = openingBookId == null || openingBookId == book.bookId,
+                    ) { onOpenBook(book.bookId) },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Row(
@@ -366,7 +430,7 @@ private fun RecentReadingSection(
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            text = buildProgressText(book),
+                            text = buildBookStatusText(book = book, uiState = null),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -387,11 +451,16 @@ private data class BookshelfUiState(
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
+    val openingBookId: String? = null,
+    val openingStageLabel: String? = null,
+    val openingProgressPercent: Int? = null,
+    val bookToOpen: String? = null,
+    val openFailureMessage: String? = null,
     val errorMessage: String? = null,
 )
 
 private class BookshelfViewModel(
-    private val bookRepository: BookRepository,
+    private val bookshelfRepository: BookshelfRepository,
     private val bookPackageSyncManager: BookPackageSyncManager,
     private val readingProgressRepository: ReadingProgressRepository,
     private val authRepository: AuthRepository,
@@ -399,7 +468,7 @@ private class BookshelfViewModel(
     var uiState by mutableStateOf(BookshelfUiState())
         private set
     private var currentUserName: String? = null
-    private var currentBooks: List<Book> = emptyList()
+    private var currentBooks: List<BookshelfBookPreview> = emptyList()
     private var latestProgressList: List<ReadingProgress> = emptyList()
 
     init {
@@ -407,7 +476,7 @@ private class BookshelfViewModel(
             val currentUser = authRepository.getCurrentUser()
             runCatching {
                 currentUserName = currentUser?.nickname
-                refreshBooks()
+                refreshBooks(forceRefresh = true)
                 if (currentUser != null) {
                     readingProgressRepository.observeAll(currentUser.id).collect { progressList ->
                         latestProgressList = progressList
@@ -430,9 +499,9 @@ private class BookshelfViewModel(
                 syncProgressPercent = null,
                 syncSuccess = false,
                 syncUpToDate = false,
-                errorMessage = null,
+                openFailureMessage = null,
             )
-            val result = runCatching {
+            val syncResult = runCatching {
                 bookPackageSyncManager.sync { progress ->
                     withContext(Dispatchers.Main) {
                         uiState = uiState.copy(
@@ -441,22 +510,78 @@ private class BookshelfViewModel(
                         )
                     }
                 }
-            }
-            result.onSuccess {
-                if (it.hasChanges) {
-                    refreshBooks()
+            }.getOrNull()
+
+            if (syncResult != null) {
+                refreshBooks(forceRefresh = true)
+                if (syncResult.hasChanges) {
                     showSyncSuccess()
                 } else {
                     showUpToDateState()
                 }
-            }.onFailure {
+            } else {
                 clearSyncState()
             }
         }
     }
 
-    private suspend fun refreshBooks() {
-        currentBooks = bookRepository.getBooks()
+    fun openBook(bookId: String) {
+        if (uiState.openingBookId != null && uiState.openingBookId != bookId) return
+
+        val targetBook = currentBooks.firstOrNull { it.bookId == bookId }
+        if (targetBook?.isLocalContentReady == true) {
+            uiState = uiState.copy(
+                bookToOpen = bookId,
+                openFailureMessage = null,
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            uiState = uiState.copy(
+                openingBookId = bookId,
+                openingStageLabel = "准备中",
+                openingProgressPercent = null,
+                openFailureMessage = null,
+            )
+            val openResult = runCatching {
+                bookshelfRepository.ensureBookOpenable(bookId) { status ->
+                    withContext(Dispatchers.Main) {
+                        applyOpenStatus(bookId = bookId, status = status)
+                    }
+                }
+            }.getOrElse {
+                EnsureBookOpenableResult.Failure("下载失败，请稍后再试")
+            }
+
+            when (openResult) {
+                EnsureBookOpenableResult.Ready -> {
+                    refreshBooks(forceRefresh = true)
+                    uiState = uiState.copy(
+                        openingBookId = null,
+                        openingStageLabel = null,
+                        openingProgressPercent = null,
+                        bookToOpen = bookId,
+                        openFailureMessage = null,
+                    )
+                }
+
+                is EnsureBookOpenableResult.Failure -> {
+                    showOpenFailure(openResult.message)
+                }
+            }
+        }
+    }
+
+    fun consumePendingOpen() {
+        uiState = uiState.copy(bookToOpen = null)
+    }
+
+    private suspend fun refreshBooks(forceRefresh: Boolean) {
+        if (forceRefresh) {
+            bookshelfRepository.refresh()
+        }
+        currentBooks = bookshelfRepository.getBooks()
         publishUiState()
     }
 
@@ -468,6 +593,33 @@ private class BookshelfViewModel(
             recentBooks = currentBooks.mapRecent(latestProgressList),
             errorMessage = null,
         )
+    }
+
+    private fun applyOpenStatus(
+        bookId: String,
+        status: BookshelfBookOpenStatus,
+    ) {
+        if (uiState.openingBookId != null && uiState.openingBookId != bookId) return
+
+        uiState = when (status) {
+            BookshelfBookOpenStatus.CheckingLocal -> uiState.copy(
+                openingBookId = bookId,
+                openingStageLabel = "准备中",
+                openingProgressPercent = null,
+            )
+
+            is BookshelfBookOpenStatus.Downloading -> uiState.copy(
+                openingBookId = bookId,
+                openingStageLabel = "下载中",
+                openingProgressPercent = status.progressPercent,
+            )
+
+            BookshelfBookOpenStatus.Installing -> uiState.copy(
+                openingBookId = bookId,
+                openingStageLabel = "安装中",
+                openingProgressPercent = null,
+            )
+        }
     }
 
     private suspend fun showSyncSuccess() {
@@ -492,6 +644,19 @@ private class BookshelfViewModel(
         uiState = uiState.copy(syncUpToDate = false)
     }
 
+    private suspend fun showOpenFailure(message: String) {
+        uiState = uiState.copy(
+            openingBookId = null,
+            openingStageLabel = null,
+            openingProgressPercent = null,
+            openFailureMessage = message,
+        )
+        delay(2200)
+        if (uiState.openFailureMessage == message) {
+            uiState = uiState.copy(openFailureMessage = null)
+        }
+    }
+
     private fun clearSyncState() {
         uiState = uiState.copy(
             isSyncing = false,
@@ -502,20 +667,20 @@ private class BookshelfViewModel(
     }
 }
 
-private fun List<Book>.mapWithProgress(progressList: List<ReadingProgress>): List<BookshelfItem> {
+private fun List<BookshelfBookPreview>.mapWithProgress(progressList: List<ReadingProgress>): List<BookshelfItem> {
     val progressByBookId = progressList.associateBy { it.bookId }
-    return map { book -> book.toBookshelfItem(progressByBookId[book.id]) }
+    return map { book -> book.toBookshelfItem(progressByBookId[book.bookId]) }
 }
 
-private fun List<Book>.mapRecent(progressList: List<ReadingProgress>): List<BookshelfItem> {
-    val booksById = associateBy { it.id }
+private fun List<BookshelfBookPreview>.mapRecent(progressList: List<ReadingProgress>): List<BookshelfItem> {
+    val booksById = associateBy { it.bookId }
     return progressList
         .sortedByDescending { it.updatedAt }
         .mapNotNull { progress -> booksById[progress.bookId]?.toBookshelfItem(progress) }
         .take(3)
 }
 
-private fun Book.toBookshelfItem(progress: ReadingProgress?): BookshelfItem {
+private fun BookshelfBookPreview.toBookshelfItem(progress: ReadingProgress?): BookshelfItem {
     val safePageCount = pageCount.coerceAtLeast(1)
     val lastReadPage = progress?.currentPage?.coerceIn(1, safePageCount)
     val readProgress = when {
@@ -525,21 +690,56 @@ private fun Book.toBookshelfItem(progress: ReadingProgress?): BookshelfItem {
     }
 
     return BookshelfItem(
-        bookId = id,
+        bookId = bookId,
         title = title,
         coverUri = coverUri,
         level = level,
         pageCount = pageCount,
+        isLocalContentReady = isLocalContentReady,
         readProgress = readProgress,
         lastReadPage = lastReadPage,
         isFinished = progress?.finished == true,
     )
 }
 
-private fun buildProgressText(book: BookshelfItem): String {
+private fun buildBookStatusText(
+    book: BookshelfItem,
+    uiState: BookshelfUiState?,
+): String {
+    val isOpening = uiState?.openingBookId == book.bookId
+    if (isOpening) {
+        val progress = uiState.openingProgressPercent
+        return if (progress != null) {
+            "下载中 ${progress.coerceIn(0, 100)}%"
+        } else {
+            uiState.openingStageLabel ?: "准备中"
+        }
+    }
+
     return when {
         book.isFinished -> "已读完"
         book.lastReadPage != null -> "读到第 ${book.lastReadPage} / ${book.pageCount} 页"
-        else -> "未开始"
+        book.isLocalContentReady -> "未开始"
+        else -> "云端预览，点开后下载"
+    }
+}
+
+private fun buildOpenActionText(
+    book: BookshelfItem,
+    uiState: BookshelfUiState,
+): String {
+    if (uiState.openingBookId == book.bookId) {
+        val progress = uiState.openingProgressPercent
+        return if (progress != null) {
+            "下载中 ${progress.coerceIn(0, 100)}%"
+        } else {
+            uiState.openingStageLabel ?: "准备中"
+        }
+    }
+
+    return when {
+        book.lastReadPage != null -> "继续"
+        book.isLocalContentReady -> "开始阅读"
+        else -> "下载后打开"
     }
 }

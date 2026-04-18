@@ -1,0 +1,34 @@
+{
+  "books": [
+    {
+      "bookId": "oxford-chinese-adventure-stage-07",
+      "title": "Chinese Adventure",
+      "level": "Stage 07",
+      "pageCount": 32,
+      "coverAsset": "books/oxford-chinese-adventure-stage-07/cover.png",
+      "tags": [
+        "oxford",
+        "stage-07",
+        "picture-book",
+        "adventure"
+      ],
+      "package": {
+        "version": "2026.04.14",
+        "downloadUrl": "https://s3.aqura-tech.com/english-reader/chapter1/package.zip",
+        "sha256": "f90a9746527bc0fa1b6d51d2a48df4b4b087401f0969142736a956d359ffeada"
+      }
+    },
+    {
+      "bookId": "oxford-tree-01",
+      "title": "The Apple",
+      "level": "L1",
+      "pageCount": 3,
+      "coverAsset": "books/oxford-tree-01/cover.png",
+      "tags": [
+        "sample",
+        "family",
+        "fruit"
+      ]
+    }
+  ]
+}

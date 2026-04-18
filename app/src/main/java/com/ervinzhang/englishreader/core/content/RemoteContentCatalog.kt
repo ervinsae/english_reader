@@ -1,6 +1,5 @@
 package com.ervinzhang.englishreader.core.content
 
-import android.content.Context
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -9,11 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
-
-data class RemoteContentCatalogConfig(
-    val catalogUrl: String? = null,
-    val autoSyncOnLaunch: Boolean = false,
-)
 
 data class RemoteBookPackage(
     val bookId: String,
@@ -29,15 +23,13 @@ data class RemoteContentCatalog(
 
 interface RemoteContentCatalogSource {
     suspend fun fetchCatalog(): RemoteContentCatalog?
-    suspend fun loadConfig(): RemoteContentCatalogConfig
+    suspend fun loadConfig(): RemoteContentConfig
 }
 
 class DefaultRemoteContentCatalogSource(
-    context: Context,
-    private val packageStorage: LocalBookPackageStorage,
+    private val configSource: RemoteContentConfigSource,
+    private val remoteAssetReader: RemoteContentAssetReader,
 ) : RemoteContentCatalogSource {
-    private val appContext = context.applicationContext
-
     override suspend fun fetchCatalog(): RemoteContentCatalog? = withContext(Dispatchers.IO) {
         val config = loadConfig()
         val configuredCatalogUrl = config.catalogUrl?.trim().orEmpty()
@@ -49,26 +41,11 @@ class DefaultRemoteContentCatalogSource(
             .getOrElse { loadBundledCatalog() }
     }
 
-    override suspend fun loadConfig(): RemoteContentCatalogConfig = withContext(Dispatchers.IO) {
-        val overrideFile = packageStorage.configFile(CATALOG_CONFIG_FILE_NAME)
-        val rawConfig = when {
-            overrideFile.isFile -> overrideFile.readText()
-            else -> appContext.assets.open("$ASSET_CONTENT_DIRECTORY/$CATALOG_CONFIG_FILE_NAME")
-                .bufferedReader()
-                .use { it.readText() }
-        }
-        val json = JSONObject(rawConfig)
-        RemoteContentCatalogConfig(
-            catalogUrl = json.optString(CATALOG_URL_KEY).takeIf { it.isNotBlank() },
-            autoSyncOnLaunch = json.optBoolean(AUTO_SYNC_ON_LAUNCH_KEY, false),
-        )
-    }
+    override suspend fun loadConfig(): RemoteContentConfig = configSource.loadConfig()
 
     private fun loadBundledCatalog(): RemoteContentCatalog? {
         return runCatching {
-            appContext.assets.open("$ASSET_CONTENT_DIRECTORY/$REMOTE_CATALOG_FILE_NAME")
-                .bufferedReader()
-                .use { reader -> parseCatalog(JSONObject(reader.readText())) }
+            parseCatalog(JSONObject(remoteAssetReader.readBundledAsset(REMOTE_CATALOG_FILE_NAME)))
         }.getOrNull()
     }
 
@@ -108,11 +85,7 @@ class DefaultRemoteContentCatalogSource(
     }
 
     private companion object {
-        const val ASSET_CONTENT_DIRECTORY = "content"
-        const val CATALOG_CONFIG_FILE_NAME = "catalog-config.json"
         const val REMOTE_CATALOG_FILE_NAME = "remote-catalog.json"
-        const val CATALOG_URL_KEY = "catalogUrl"
-        const val AUTO_SYNC_ON_LAUNCH_KEY = "autoSyncOnLaunch"
         const val PACKAGES_KEY = "packages"
         const val BOOK_ID_KEY = "bookId"
         const val TITLE_KEY = "title"

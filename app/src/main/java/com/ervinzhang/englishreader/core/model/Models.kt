@@ -67,6 +67,7 @@ data class BookshelfItem(
     val coverUri: String,
     val level: String,
     val pageCount: Int,
+    val isLocalContentReady: Boolean,
     val readProgress: Int,
     val lastReadPage: Int?,
     val isFinished: Boolean,

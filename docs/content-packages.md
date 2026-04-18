@@ -4,7 +4,7 @@ This app now supports three content sources:
 
 - Bundled asset books in `app/src/main/assets/books/`
 - Installed local packages in the app files directory under `filesDir/book-packages/installed/<book-id>/package/`
-- Optional remote catalog packages downloaded into the same installed location
+- Remote bookshelf previews from `bookshelf.json`, with per-book packages downloaded on demand into the same installed location
 
 The runtime model uses `contentUri` values (`asset://...` or `file://...`), but package JSON can stay relative-path based.
 
@@ -93,19 +93,27 @@ At runtime the app checks these sources in priority order:
 1. Installed local package in `filesDir/book-packages/installed/<book-id>/package/`
 2. Bundled asset package in `app/src/main/assets/books/<book-id>/`
 
-To sideload a package without wiring a remote catalog yet:
+The bookshelf screen separately merges:
+
+1. Local readable books from installed packages and bundled assets
+2. Remote bookshelf preview metadata from `bookshelf.json`
+
+When the user opens a remote-only book, the app downloads its package, installs it locally, refreshes the local repository, and then opens the reader.
+
+To sideload a package:
 
 1. Build a zip with the packaging script below.
 2. Copy the zip into `filesDir/book-packages/inbox/` on the device.
 3. Tap `同步内容` on the bookshelf screen.
 
-The app installs inbox zips first, then optionally downloads missing packages from the configured remote catalog.
+The app installs inbox zips first. Remote package downloads now happen when the user opens a specific remote-only book.
 
-## Remote Catalog Config
+## Remote Content Config
 
 Bundled defaults live in:
 
 - `app/src/main/assets/content/catalog-config.json`
+- `app/src/main/assets/content/bookshelf.json`
 - `app/src/main/assets/content/remote-catalog.json`
 
 You can override the config on-device by writing:
@@ -116,10 +124,38 @@ Config shape:
 
 ```json
 {
+  "bookshelfUrl": "https://example.com/english-reader/bookshelf.json",
   "catalogUrl": "https://example.com/english-reader/catalog.json",
   "autoSyncOnLaunch": false
 }
 ```
+
+Remote bookshelf shape:
+
+```json
+{
+  "books": [
+    {
+      "bookId": "oxford-tree-01",
+      "title": "The Apple",
+      "level": "L1",
+      "pageCount": 3,
+      "coverUri": "https://example.com/books/oxford-tree-01/cover.png",
+      "tags": ["sample"],
+      "package": {
+        "version": "2026.04.13",
+        "downloadUrl": "https://example.com/books/oxford-tree-01/package.zip",
+        "sha256": "..."
+      }
+    }
+  ]
+}
+```
+
+Notes:
+
+- `coverUri` is preferred for remote manifests. Bundled fallback manifests can also use `coverAsset`.
+- `package` is required for remote-only books that should download on tap.
 
 Remote catalog shape:
 
