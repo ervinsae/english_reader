@@ -52,6 +52,7 @@ import com.ervinzhang.englishreader.core.ui.StorybookSectionTitle
 import com.ervinzhang.englishreader.core.ui.StorybookTag
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -99,10 +100,10 @@ fun BookshelfScreen(
                         enabled = !uiState.isSyncing,
                     ) {
                         Text(
-                            if (uiState.isSyncing) {
-                                "同步中：${uiState.syncProgressPercent}%"
-                            } else {
-                                "同步内容"
+                            when {
+                                uiState.syncProgressPercent != null -> "同步中：${uiState.syncProgressPercent}%"
+                                uiState.syncSuccess -> "同步成功"
+                                else -> "同步内容"
                             },
                         )
                     }
@@ -379,7 +380,8 @@ private fun RecentReadingSection(
 private data class BookshelfUiState(
     val isLoading: Boolean = true,
     val isSyncing: Boolean = false,
-    val syncProgressPercent: Int = 0,
+    val syncProgressPercent: Int? = null,
+    val syncSuccess: Boolean = false,
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
@@ -411,9 +413,8 @@ private class BookshelfViewModel(
                     }
                 }
             }.onFailure {
-                uiState = BookshelfUiState(
+                uiState = uiState.copy(
                     isLoading = false,
-                    syncProgressPercent = uiState.syncProgressPercent,
                     errorMessage = "绘本内容加载失败",
                 )
             }
@@ -424,23 +425,29 @@ private class BookshelfViewModel(
         viewModelScope.launch {
             uiState = uiState.copy(
                 isSyncing = true,
-                syncProgressPercent = 0,
+                syncProgressPercent = null,
+                syncSuccess = false,
                 errorMessage = null,
             )
             val result = runCatching {
                 bookPackageSyncManager.sync { progress ->
                     withContext(Dispatchers.Main) {
-                        uiState = uiState.copy(syncProgressPercent = progress.coerceIn(0, 100))
+                        uiState = uiState.copy(
+                            isSyncing = true,
+                            syncProgressPercent = progress.coerceIn(0, 100),
+                        )
                     }
                 }
             }
             result.onSuccess {
-                refreshBooks()
+                if (it.hasChanges) {
+                    refreshBooks()
+                    showSyncSuccess()
+                } else {
+                    clearSyncState()
+                }
             }.onFailure {
-                uiState = uiState.copy(
-                    isSyncing = false,
-                    syncProgressPercent = 0,
-                )
+                clearSyncState()
             }
         }
     }
@@ -451,13 +458,30 @@ private class BookshelfViewModel(
     }
 
     private fun publishUiState() {
-        uiState = BookshelfUiState(
+        uiState = uiState.copy(
             isLoading = false,
-            isSyncing = false,
-            syncProgressPercent = 0,
             userName = currentUserName,
             books = currentBooks.mapWithProgress(latestProgressList),
             recentBooks = currentBooks.mapRecent(latestProgressList),
+            errorMessage = null,
+        )
+    }
+
+    private suspend fun showSyncSuccess() {
+        uiState = uiState.copy(
+            isSyncing = false,
+            syncProgressPercent = null,
+            syncSuccess = true,
+        )
+        delay(1800)
+        uiState = uiState.copy(syncSuccess = false)
+    }
+
+    private fun clearSyncState() {
+        uiState = uiState.copy(
+            isSyncing = false,
+            syncProgressPercent = null,
+            syncSuccess = false,
         )
     }
 }

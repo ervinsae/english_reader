@@ -9,6 +9,9 @@ data class ContentSyncResult(
     val catalogPackagesSeen: Int,
     val issues: List<String> = emptyList(),
 ) {
+    val hasChanges: Boolean
+        get() = installedFromInbox > 0 || downloadedFromCatalog > 0
+
     val summary: String
         get() = buildString {
             append("本地导入 ")
@@ -40,19 +43,7 @@ class BookPackageSyncManager(
         onProgress: suspend (Int) -> Unit = {},
     ): ContentSyncResult = withContext(Dispatchers.IO) {
         val issues = mutableListOf<String>()
-        onProgress(0)
-
-        val installedFromInbox = packageStorage.listInboxArchives()
-            .map { archive ->
-                packageInstaller.installFromArchive(
-                    archiveFile = archive,
-                    source = SOURCE_INBOX,
-                    deleteArchiveOnSuccess = true,
-                )
-            }
-            .countSuccessful(issues)
-
-        onProgress(5)
+        val inboxArchives = packageStorage.listInboxArchives()
         val catalog = runCatching { remoteContentCatalogSource.fetchCatalog() }
             .getOrElse {
                 issues += "远程目录读取失败"
@@ -64,47 +55,76 @@ class BookPackageSyncManager(
                 packageStorage.isInstalled(remotePackage.bookId, remotePackage.version)
             }
 
-        var downloadedFromCatalog = 0
-        if (pendingPackages.isEmpty()) {
-            onProgress(100)
-        } else {
-            val totalPackages = pendingPackages.size
-            pendingPackages.forEachIndexed { index, remotePackage ->
-                val segmentStart = (index * 100) / totalPackages
-                val segmentEnd = ((index + 1) * 100) / totalPackages
-                val downloadStart = maxOf(segmentStart, 5)
-                val downloadEnd = maxOf(downloadStart, segmentStart + ((segmentEnd - segmentStart) * 9 / 10))
-
-                val archiveFile = bookPackageDownloader.download(remotePackage) { percent ->
-                    val mapped = downloadStart + ((downloadEnd - downloadStart) * percent / 100)
-                    onProgress(mapped.coerceIn(0, 99))
-                }
-                if (archiveFile == null) {
-                    issues += "远程包 ${remotePackage.bookId} 下载失败"
-                    return@forEachIndexed
-                }
-
-                onProgress((segmentStart + ((segmentEnd - segmentStart) * 95 / 100)).coerceIn(0, 99))
-                when (
-                    val result = packageInstaller.installFromArchive(
-                        archiveFile = archiveFile,
-                        source = SOURCE_REMOTE,
-                        deleteArchiveOnSuccess = true,
-                    )
-                ) {
-                    is BookPackageInstallResult.Success -> downloadedFromCatalog += 1
-                    is BookPackageInstallResult.Failure -> issues += "远程包 ${result.archiveName} 安装失败"
-                }
-
-                onProgress(segmentEnd.coerceIn(0, 100))
+        val totalWorkUnits = inboxArchives.size + pendingPackages.size
+        var lastReportedProgress = -1
+        suspend fun reportProgress(completedUnits: Int, currentUnitPercent: Int = 0) {
+            if (totalWorkUnits == 0) return
+            val boundedUnitPercent = currentUnitPercent.coerceIn(0, 100)
+            val percent = (((completedUnits * 100) + boundedUnitPercent) / totalWorkUnits)
+                .coerceIn(0, 100)
+            if (percent != lastReportedProgress) {
+                lastReportedProgress = percent
+                onProgress(percent)
             }
+        }
+
+        var installedFromInbox = 0
+        var completedUnits = 0
+        inboxArchives.forEach { archive ->
+            reportProgress(completedUnits)
+            when (
+                val result = packageInstaller.installFromArchive(
+                    archiveFile = archive,
+                    source = SOURCE_INBOX,
+                    deleteArchiveOnSuccess = true,
+                )
+            ) {
+                is BookPackageInstallResult.Success -> installedFromInbox += 1
+                is BookPackageInstallResult.Failure -> issues += "导入包 ${result.archiveName} 安装失败"
+            }
+            completedUnits += 1
+            reportProgress(completedUnits)
+        }
+
+        var downloadedFromCatalog = 0
+        pendingPackages.forEach { remotePackage ->
+            reportProgress(completedUnits)
+            val archiveFile = bookPackageDownloader.download(remotePackage) { percent ->
+                reportProgress(
+                    completedUnits = completedUnits,
+                    currentUnitPercent = (percent.coerceIn(0, 100) * REMOTE_DOWNLOAD_SHARE_PERCENT) / 100,
+                )
+            }
+            if (archiveFile == null) {
+                issues += "远程包 ${remotePackage.bookId} 下载失败"
+                completedUnits += 1
+                reportProgress(completedUnits)
+                return@forEach
+            }
+
+            reportProgress(
+                completedUnits = completedUnits,
+                currentUnitPercent = REMOTE_DOWNLOAD_SHARE_PERCENT,
+            )
+            when (
+                val result = packageInstaller.installFromArchive(
+                    archiveFile = archiveFile,
+                    source = SOURCE_REMOTE,
+                    deleteArchiveOnSuccess = true,
+                )
+            ) {
+                is BookPackageInstallResult.Success -> downloadedFromCatalog += 1
+                is BookPackageInstallResult.Failure -> issues += "远程包 ${result.archiveName} 安装失败"
+            }
+
+            completedUnits += 1
+            reportProgress(completedUnits)
         }
 
         if (installedFromInbox > 0 || downloadedFromCatalog > 0) {
             bookRepository.refresh()
         }
 
-        onProgress(100)
         ContentSyncResult(
             installedFromInbox = installedFromInbox,
             downloadedFromCatalog = downloadedFromCatalog,
@@ -113,19 +133,9 @@ class BookPackageSyncManager(
         )
     }
 
-    private fun List<BookPackageInstallResult>.countSuccessful(issues: MutableList<String>): Int {
-        var successCount = 0
-        forEach { result ->
-            when (result) {
-                is BookPackageInstallResult.Success -> successCount += 1
-                is BookPackageInstallResult.Failure -> issues += "导入包 ${result.archiveName} 安装失败"
-            }
-        }
-        return successCount
-    }
-
     private companion object {
         const val SOURCE_INBOX = "inbox"
         const val SOURCE_REMOTE = "remote"
+        const val REMOTE_DOWNLOAD_SHARE_PERCENT = 90
     }
 }
