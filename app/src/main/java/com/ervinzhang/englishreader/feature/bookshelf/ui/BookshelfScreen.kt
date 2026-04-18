@@ -103,6 +103,7 @@ fun BookshelfScreen(
                             when {
                                 uiState.syncProgressPercent != null -> "同步中：${uiState.syncProgressPercent}%"
                                 uiState.syncSuccess -> "同步成功"
+                                uiState.syncUpToDate -> "已是最新"
                                 else -> "同步内容"
                             },
                         )
@@ -382,6 +383,7 @@ private data class BookshelfUiState(
     val isSyncing: Boolean = false,
     val syncProgressPercent: Int? = null,
     val syncSuccess: Boolean = false,
+    val syncUpToDate: Boolean = false,
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
@@ -427,6 +429,7 @@ private class BookshelfViewModel(
                 isSyncing = true,
                 syncProgressPercent = null,
                 syncSuccess = false,
+                syncUpToDate = false,
                 errorMessage = null,
             )
             val result = runCatching {
@@ -444,7 +447,7 @@ private class BookshelfViewModel(
                     refreshBooks()
                     showSyncSuccess()
                 } else {
-                    clearSyncState()
+                    showUpToDateState()
                 }
             }.onFailure {
                 clearSyncState()
@@ -472,9 +475,21 @@ private class BookshelfViewModel(
             isSyncing = false,
             syncProgressPercent = null,
             syncSuccess = true,
+            syncUpToDate = false,
         )
         delay(1800)
         uiState = uiState.copy(syncSuccess = false)
+    }
+
+    private suspend fun showUpToDateState() {
+        uiState = uiState.copy(
+            isSyncing = false,
+            syncProgressPercent = null,
+            syncSuccess = false,
+            syncUpToDate = true,
+        )
+        delay(1500)
+        uiState = uiState.copy(syncUpToDate = false)
     }
 
     private fun clearSyncState() {
@@ -482,6 +497,7 @@ private class BookshelfViewModel(
             isSyncing = false,
             syncProgressPercent = null,
             syncSuccess = false,
+            syncUpToDate = false,
         )
     }
 }
