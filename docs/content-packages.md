@@ -175,6 +175,14 @@ Remote catalog shape:
 
 ## Packaging Script
 
+To create a new bundled book package from an inbound PDF + MP3, use:
+
+```bash
+python3 scripts/ingest_book.py --pdf /path/to/book.pdf --mp3 /path/to/book.mp3
+```
+
+See `docs/book-ingestion.md` for the full ingestion workflow, page-range review, and alignment placeholders.
+
 Use:
 
 ```bash

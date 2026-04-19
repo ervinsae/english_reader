@@ -10,7 +10,9 @@
 ## 目录
 - `specs/`：需求与架构文档
 - `app/`：Android 应用代码
+- `docs/book-ingestion.md`：PDF + MP3 书籍入库流程
 - `docs/content-packages.md`：内容包规范、目录配置、导入方式
+- `scripts/ingest_book.py`：从 PDF/MP3 生成本地书籍资源目录
 - `tools/package_content_package.py`：标准内容包 zip 打包脚本
 
 ## 当前骨架包含
