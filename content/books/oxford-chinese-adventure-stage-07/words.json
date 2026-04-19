@@ -1,0 +1,478 @@
+[
+  {
+    "id": "gran",
+    "text": "Gran",
+    "meaningZh": "奶奶",
+    "phonetic": "/ɡræn/",
+    "audioAsset": "audio/words/gran.m4a"
+  },
+  {
+    "id": "birthday",
+    "text": "birthday",
+    "meaningZh": "生日",
+    "phonetic": "/ˈbɜːθdeɪ/",
+    "audioAsset": "audio/words/birthday.m4a"
+  },
+  {
+    "id": "present",
+    "text": "present",
+    "meaningZh": "礼物",
+    "phonetic": "/ˈprez(ə)nt/",
+    "audioAsset": "audio/words/present.m4a"
+  },
+  {
+    "id": "funny",
+    "text": "funny",
+    "meaningZh": "有趣的",
+    "phonetic": "/ˈfʌni/",
+    "audioAsset": "audio/words/funny.m4a"
+  },
+  {
+    "id": "shape",
+    "text": "shape",
+    "meaningZh": "形状",
+    "phonetic": "/ʃeɪp/",
+    "audioAsset": "audio/words/shape.m4a"
+  },
+  {
+    "id": "laughed",
+    "text": "laughed",
+    "meaningZh": "笑了",
+    "phonetic": "/lɑːft/",
+    "audioAsset": "audio/words/laughed.m4a"
+  },
+  {
+    "id": "chinese",
+    "text": "Chinese",
+    "meaningZh": "中国的",
+    "phonetic": "/ˌtʃaɪˈniːz/",
+    "audioAsset": "audio/words/chinese.m4a"
+  },
+  {
+    "id": "vase",
+    "text": "vase",
+    "meaningZh": "花瓶",
+    "phonetic": "/vɑːz/",
+    "audioAsset": "audio/words/vase.m4a"
+  },
+  {
+    "id": "safe",
+    "text": "safe",
+    "meaningZh": "安全的",
+    "phonetic": "/seɪf/",
+    "audioAsset": "audio/words/safe.m4a"
+  },
+  {
+    "id": "surprise",
+    "text": "surprise",
+    "meaningZh": "惊喜",
+    "phonetic": "/səˈpraɪz/",
+    "audioAsset": "audio/words/surprise.m4a"
+  },
+  {
+    "id": "fireworks",
+    "text": "fireworks",
+    "meaningZh": "烟花",
+    "phonetic": "/ˈfaɪəwɜːks/",
+    "audioAsset": "audio/words/fireworks.m4a"
+  },
+  {
+    "id": "dangerous",
+    "text": "dangerous",
+    "meaningZh": "危险的",
+    "phonetic": "/ˈdeɪndʒərəs/",
+    "audioAsset": "audio/words/dangerous.m4a"
+  },
+  {
+    "id": "careful",
+    "text": "careful",
+    "meaningZh": "小心的",
+    "phonetic": "/ˈkeəfəl/",
+    "audioAsset": "audio/words/careful.m4a"
+  },
+  {
+    "id": "excited",
+    "text": "excited",
+    "meaningZh": "兴奋的",
+    "phonetic": "/ɪkˈsaɪtɪd/",
+    "audioAsset": "audio/words/excited.m4a"
+  },
+  {
+    "id": "beautiful",
+    "text": "beautiful",
+    "meaningZh": "美丽的",
+    "phonetic": "/ˈbjuːtɪfəl/",
+    "audioAsset": "audio/words/beautiful.m4a"
+  },
+  {
+    "id": "firework",
+    "text": "firework",
+    "meaningZh": "烟花",
+    "phonetic": "/ˈfaɪəwɜːk/",
+    "audioAsset": "audio/words/firework.m4a"
+  },
+  {
+    "id": "floppy",
+    "text": "Floppy",
+    "meaningZh": "弗洛皮",
+    "phonetic": "/ˈflɒpi/",
+    "audioAsset": "audio/words/floppy.m4a"
+  },
+  {
+    "id": "loud_bang",
+    "text": "loud bang",
+    "meaningZh": "巨响",
+    "phonetic": "/laʊd bæŋ/",
+    "audioAsset": "audio/words/loud_bang.m4a"
+  },
+  {
+    "id": "hid",
+    "text": "hid",
+    "meaningZh": "躲藏",
+    "phonetic": "/hɪd/",
+    "audioAsset": "audio/words/hid.m4a"
+  },
+  {
+    "id": "birthday_cake",
+    "text": "birthday cake",
+    "meaningZh": "生日蛋糕",
+    "phonetic": "/ˈbɜːθdeɪ keɪk/",
+    "audioAsset": "audio/words/birthday_cake.m4a"
+  },
+  {
+    "id": "candles",
+    "text": "candles",
+    "meaningZh": "蜡烛",
+    "phonetic": "/ˈkændəlz/",
+    "audioAsset": "audio/words/candles.m4a"
+  },
+  {
+    "id": "broken",
+    "text": "broken",
+    "meaningZh": "打碎的",
+    "phonetic": "/ˈbrəʊkən/",
+    "audioAsset": "audio/words/broken.m4a"
+  },
+  {
+    "id": "floor",
+    "text": "floor",
+    "meaningZh": "地板",
+    "phonetic": "/flɔː/",
+    "audioAsset": "audio/words/floor.m4a"
+  },
+  {
+    "id": "upset",
+    "text": "upset",
+    "meaningZh": "难过的",
+    "phonetic": "/ʌpˈset/",
+    "audioAsset": "audio/words/upset.m4a"
+  },
+  {
+    "id": "mend",
+    "text": "mend",
+    "meaningZh": "修补",
+    "phonetic": "/mend/",
+    "audioAsset": "audio/words/mend.m4a"
+  },
+  {
+    "id": "key",
+    "text": "key",
+    "meaningZh": "钥匙",
+    "phonetic": "/kiː/",
+    "audioAsset": "audio/words/key.m4a"
+  },
+  {
+    "id": "magic",
+    "text": "magic",
+    "meaningZh": "魔法",
+    "phonetic": "/ˈmædʒɪk/",
+    "audioAsset": "audio/words/magic.m4a"
+  },
+  {
+    "id": "adventure",
+    "text": "adventure",
+    "meaningZh": "冒险",
+    "phonetic": "/ədˈventʃə(r)/",
+    "audioAsset": "audio/words/adventure.m4a"
+  },
+  {
+    "id": "china",
+    "text": "China",
+    "meaningZh": "中国",
+    "phonetic": "/ˈtʃaɪnə/",
+    "audioAsset": "audio/words/china.m4a"
+  },
+  {
+    "id": "forbidden_city",
+    "text": "Forbidden City",
+    "meaningZh": "紫禁城",
+    "phonetic": "/fəˌbɪdən ˈsɪti/",
+    "audioAsset": "audio/words/forbidden_city.m4a"
+  },
+  {
+    "id": "emperor",
+    "text": "Emperor",
+    "meaningZh": "皇帝",
+    "phonetic": "/ˈempərə(r)/",
+    "audioAsset": "audio/words/emperor.m4a"
+  },
+  {
+    "id": "allowed",
+    "text": "allowed",
+    "meaningZh": "被允许的",
+    "phonetic": "/əˈlaʊd/",
+    "audioAsset": "audio/words/allowed.m4a"
+  },
+  {
+    "id": "fierce",
+    "text": "fierce",
+    "meaningZh": "凶猛的",
+    "phonetic": "/fɪəs/",
+    "audioAsset": "audio/words/fierce.m4a"
+  },
+  {
+    "id": "growled",
+    "text": "growled",
+    "meaningZh": "低吼",
+    "phonetic": "/ɡraʊld/",
+    "audioAsset": "audio/words/growled.m4a"
+  },
+  {
+    "id": "barked",
+    "text": "barked",
+    "meaningZh": "吠叫",
+    "phonetic": "/bɑːkt/",
+    "audioAsset": "audio/words/barked.m4a"
+  },
+  {
+    "id": "worried",
+    "text": "worried",
+    "meaningZh": "担心的",
+    "phonetic": "/ˈwʌrid/",
+    "audioAsset": "audio/words/worried.m4a"
+  },
+  {
+    "id": "grabbed",
+    "text": "grabbed",
+    "meaningZh": "抓住",
+    "phonetic": "/ɡræbd/",
+    "audioAsset": "audio/words/grabbed.m4a"
+  },
+  {
+    "id": "soldiers",
+    "text": "soldiers",
+    "meaningZh": "士兵",
+    "phonetic": "/ˈsəʊldʒəz/",
+    "audioAsset": "audio/words/soldiers.m4a"
+  },
+  {
+    "id": "prison",
+    "text": "prison",
+    "meaningZh": "监狱",
+    "phonetic": "/ˈprɪzən/",
+    "audioAsset": "audio/words/prison.m4a"
+  },
+  {
+    "id": "twins",
+    "text": "twins",
+    "meaningZh": "双胞胎",
+    "phonetic": "/twɪnz/",
+    "audioAsset": "audio/words/twins.m4a"
+  },
+  {
+    "id": "exactly",
+    "text": "exactly",
+    "meaningZh": "完全一样地",
+    "phonetic": "/ɪɡˈzæktli/",
+    "audioAsset": "audio/words/exactly.m4a"
+  },
+  {
+    "id": "hooray",
+    "text": "Hooray",
+    "meaningZh": "好耶",
+    "phonetic": "/hʊˈreɪ/",
+    "audioAsset": "audio/words/hooray.m4a"
+  },
+  {
+    "id": "football",
+    "text": "football",
+    "meaningZh": "足球",
+    "phonetic": "/ˈfʊtbɔːl/",
+    "audioAsset": "audio/words/football.m4a"
+  },
+  {
+    "id": "kicked",
+    "text": "kicked",
+    "meaningZh": "踢了",
+    "phonetic": "/kɪkt/",
+    "audioAsset": "audio/words/kicked.m4a"
+  },
+  {
+    "id": "leg",
+    "text": "leg",
+    "meaningZh": "腿",
+    "phonetic": "/leɡ/",
+    "audioAsset": "audio/words/leg.m4a"
+  },
+  {
+    "id": "grating",
+    "text": "grating",
+    "meaningZh": "格栅",
+    "phonetic": "/ˈɡreɪtɪŋ/",
+    "audioAsset": "audio/words/grating.m4a"
+  },
+  {
+    "id": "lost",
+    "text": "lost",
+    "meaningZh": "丢失的",
+    "phonetic": "/lɒst/",
+    "audioAsset": "audio/words/lost.m4a"
+  },
+  {
+    "id": "cry",
+    "text": "cry",
+    "meaningZh": "哭",
+    "phonetic": "/kraɪ/",
+    "audioAsset": "audio/words/cry.m4a"
+  },
+  {
+    "id": "steps",
+    "text": "steps",
+    "meaningZh": "台阶",
+    "phonetic": "/steps/",
+    "audioAsset": "audio/words/steps.m4a"
+  },
+  {
+    "id": "cellar",
+    "text": "cellar",
+    "meaningZh": "地窖",
+    "phonetic": "/ˈselə(r)/",
+    "audioAsset": "audio/words/cellar.m4a"
+  },
+  {
+    "id": "cobwebs",
+    "text": "cobwebs",
+    "meaningZh": "蜘蛛网",
+    "phonetic": "/ˈkɒbwebz/",
+    "audioAsset": "audio/words/cobwebs.m4a"
+  },
+  {
+    "id": "dust",
+    "text": "dust",
+    "meaningZh": "灰尘",
+    "phonetic": "/dʌst/",
+    "audioAsset": "audio/words/dust.m4a"
+  },
+  {
+    "id": "giant_vases",
+    "text": "giant vases",
+    "meaningZh": "大花瓶",
+    "phonetic": "/ˈdʒaɪənt ˈvɑːzɪz/",
+    "audioAsset": "audio/words/giant_vases.m4a"
+  },
+  {
+    "id": "giant_vase",
+    "text": "giant vase",
+    "meaningZh": "大花瓶",
+    "phonetic": "/ˈdʒaɪənt vɑːz/",
+    "audioAsset": "audio/words/giant_vase.m4a"
+  },
+  {
+    "id": "servants",
+    "text": "servants",
+    "meaningZh": "仆人",
+    "phonetic": "/ˈsɜːvənts/",
+    "audioAsset": "audio/words/servants.m4a"
+  },
+  {
+    "id": "gunpowder",
+    "text": "gunpowder",
+    "meaningZh": "火药",
+    "phonetic": "/ˈɡʌnˌpaʊdə(r)/",
+    "audioAsset": "audio/words/gunpowder.m4a"
+  },
+  {
+    "id": "palace",
+    "text": "palace",
+    "meaningZh": "宫殿",
+    "phonetic": "/ˈpæləs/",
+    "audioAsset": "audio/words/palace.m4a"
+  },
+  {
+    "id": "frightened",
+    "text": "frightened",
+    "meaningZh": "害怕的",
+    "phonetic": "/ˈfraɪtnd/",
+    "audioAsset": "audio/words/frightened.m4a"
+  },
+  {
+    "id": "blow_up",
+    "text": "blow up",
+    "meaningZh": "炸毁",
+    "phonetic": "/bləʊ ʌp/",
+    "audioAsset": "audio/words/blow_up.m4a"
+  },
+  {
+    "id": "pleased",
+    "text": "pleased",
+    "meaningZh": "高兴的",
+    "phonetic": "/pliːzd/",
+    "audioAsset": "audio/words/pleased.m4a"
+  },
+  {
+    "id": "firework_party",
+    "text": "firework party",
+    "meaningZh": "烟花派对",
+    "phonetic": "/ˈfaɪəwɜːk ˈpɑːti/",
+    "audioAsset": "audio/words/firework_party.m4a"
+  },
+  {
+    "id": "sky",
+    "text": "sky",
+    "meaningZh": "天空",
+    "phonetic": "/skaɪ/",
+    "audioAsset": "audio/words/sky.m4a"
+  },
+  {
+    "id": "gasped",
+    "text": "gasped",
+    "meaningZh": "倒吸一口气",
+    "phonetic": "/ɡɑːspt/",
+    "audioAsset": "audio/words/gasped.m4a"
+  },
+  {
+    "id": "wish",
+    "text": "wish",
+    "meaningZh": "希望",
+    "phonetic": "/wɪʃ/",
+    "audioAsset": "audio/words/wish.m4a"
+  },
+  {
+    "id": "glow",
+    "text": "glow",
+    "meaningZh": "发光",
+    "phonetic": "/ɡləʊ/",
+    "audioAsset": "audio/words/glow.m4a"
+  },
+  {
+    "id": "small",
+    "text": "small",
+    "meaningZh": "小的",
+    "phonetic": "/smɔːl/",
+    "audioAsset": "audio/words/small.m4a"
+  },
+  {
+    "id": "chinese_writing",
+    "text": "Chinese writing",
+    "meaningZh": "中文字样",
+    "phonetic": "/ˌtʃaɪˈniːz ˈraɪtɪŋ/",
+    "audioAsset": "audio/words/chinese_writing.m4a"
+  },
+  {
+    "id": "notice",
+    "text": "notice",
+    "meaningZh": "注意到",
+    "phonetic": "/ˈnəʊtɪs/",
+    "audioAsset": "audio/words/notice.m4a"
+  }
+]

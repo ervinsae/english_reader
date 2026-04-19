@@ -15,7 +15,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
-BOOKS_DIR = ROOT / "app" / "src" / "main" / "assets" / "books"
+BOOKS_DIR = ROOT / "content" / "books"
 CONTENT_DIR = ROOT / "app" / "src" / "main" / "assets" / "content"
 DIST_DIR = ROOT / "dist"
 MINIO_DIST_DIR = DIST_DIR / "minio"

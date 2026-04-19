@@ -1,6 +1,6 @@
 # Book Ingestion Workflow
 
-Use `scripts/ingest_book.py` to turn an inbound PDF plus full-book MP3 into a bundled asset package under `app/src/main/assets/books/<book-id>/`.
+Use `scripts/ingest_book.py` to turn an inbound PDF plus full-book MP3 into a source content package under `content/books/<book-id>/`.
 
 The script is designed for the current macOS environment:
 
@@ -46,7 +46,7 @@ Important flags:
 
 - `--book-id`: override the derived id before normalization
 - `--reading-pages`: zero-based PDF page indices or ranges such as `2-15` or `1,2,4-8`
-- `--overwrite`: replace an existing `assets/books/<bookId>/` directory
+- `--overwrite`: replace an existing `content/books/<bookId>/` directory
 - `--render-max-dimension`: control rendered page PNG size
 
 ## Id Rules
@@ -80,10 +80,10 @@ For PDFs with front matter, contents pages, copyright pages, or back covers, pas
 Validate the generated package before publishing:
 
 ```bash
-python3 tools/package_content_package.py app/src/main/assets/books/<book-id>
+python3 tools/package_content_package.py content/books/<book-id>
 ```
 
-Publish remains a separate step through `scripts/publish_content.py`.
+Publish remains a separate step through `scripts/publish_content.py`, which now packages books directly from `content/books/` for remote distribution.
 
 Do not commit generated upload artifacts such as:
 

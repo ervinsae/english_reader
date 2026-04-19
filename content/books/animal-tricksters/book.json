@@ -1,0 +1,15 @@
+{
+  "id": "animal-tricksters",
+  "title": "Animal Tricksters",
+  "level": "Stage 10",
+  "coverAsset": "cover.png",
+  "pageCount": 14,
+  "version": "2026.04.19",
+  "tags": [
+    "treetops",
+    "myths-and-legends",
+    "stage-10",
+    "folktale"
+  ],
+  "enabled": true
+}

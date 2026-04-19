@@ -1,12 +1,11 @@
 # Content Packages
 
-This app now supports three content sources:
+This app now uses a remote-first content model with two runtime sources:
 
-- Bundled asset books in `app/src/main/assets/books/`
 - Installed local packages in the app files directory under `filesDir/book-packages/installed/<book-id>/package/`
 - Remote bookshelf previews from `bookshelf.json`, with per-book packages downloaded on demand into the same installed location
 
-The runtime model uses `contentUri` values (`asset://...` or `file://...`), but package JSON can stay relative-path based.
+Authoring and publishing source packages now live in `content/books/` inside the repo. Package JSON can stay relative-path based.
 
 ## Standard Package Layout
 
@@ -88,25 +87,16 @@ Notes:
 
 ## Local Installation Flow
 
-At runtime the app checks these sources in priority order:
-
-1. Installed local package in `filesDir/book-packages/installed/<book-id>/package/`
-2. Bundled asset package in `app/src/main/assets/books/<book-id>/`
+At runtime the app checks installed local packages in `filesDir/book-packages/installed/<book-id>/package/`.
 
 The bookshelf screen separately merges:
 
-1. Local readable books from installed packages and bundled assets
+1. Local readable books from installed packages
 2. Remote bookshelf preview metadata from `bookshelf.json`
 
 When the user opens a remote-only book, the app downloads its package, installs it locally, refreshes the local repository, and then opens the reader.
 
-To sideload a package:
-
-1. Build a zip with the packaging script below.
-2. Copy the zip into `filesDir/book-packages/inbox/` on the device.
-3. Tap `同步内容` on the bookshelf screen.
-
-The app installs inbox zips first. Remote package downloads now happen when the user opens a specific remote-only book.
+The bookshelf action now refreshes remote bookshelf metadata only. It no longer installs inbox zips or downloads book content proactively.
 
 ## Remote Content Config
 
@@ -154,7 +144,7 @@ Remote bookshelf shape:
 
 Notes:
 
-- `coverUri` is preferred for remote manifests. Bundled fallback manifests can also use `coverAsset`.
+- `coverUri` is preferred for remote manifests.
 - `package` is required for remote-only books that should download on tap.
 
 Remote catalog shape:
@@ -175,7 +165,7 @@ Remote catalog shape:
 
 ## Packaging Script
 
-To create a new bundled book package from an inbound PDF + MP3, use:
+To create a new source book package from an inbound PDF + MP3, use:
 
 ```bash
 python3 scripts/ingest_book.py --pdf /path/to/book.pdf --mp3 /path/to/book.mp3

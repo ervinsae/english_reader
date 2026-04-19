@@ -230,23 +230,26 @@ data class PageWordRef(
 - `pages.json`
 - `words.json`
 
-### Step 7：放入 assets 并验证
+### Step 7：发布远程书架并验证
+- 发布 `bookshelf.json` 与对应 `package.zip`
 - 启动 App 检查书架是否可见
-- 打开某书检查翻页、点词、播放是否正常
+- 点开某书检查按需下载、翻页、点词、播放是否正常
 
 ---
 
 ## 9. App 侧加载流程
 ### 9.1 启动时
-1. 扫描 `assets/books/`
-2. 读取每本书的 `book.json`
-3. 建立书架索引
+1. 拉取远程 `bookshelf.json`
+2. 合并本地已安装内容包索引
+3. 建立书架预览列表
 
 ### 9.2 打开某本书时
-1. 读取 `pages.json`
-2. 读取 `words.json`
-3. 构建页面数据
-4. 进入阅读器
+1. 若本地未安装则下载对应 `package.zip`
+2. 安装到本地内容目录
+3. 读取 `pages.json`
+4. 读取 `words.json`
+5. 构建页面数据
+6. 进入阅读器
 
 ---
 

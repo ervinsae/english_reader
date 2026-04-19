@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rug",
+    "text": "rug",
+    "meaningZh": "地毯",
+    "phonetic": "/rʌɡ/"
+  },
+  {
+    "id": "sheet",
+    "text": "sheet",
+    "meaningZh": "床单",
+    "phonetic": "/ʃiːt/"
+  },
+  {
+    "id": "big",
+    "text": "big",
+    "meaningZh": "大的",
+    "phonetic": "/bɪɡ/"
+  },
+  {
+    "id": "box",
+    "text": "box",
+    "meaningZh": "盒子",
+    "phonetic": "/bɒks/"
+  },
+  {
+    "id": "little",
+    "text": "little",
+    "meaningZh": "小的",
+    "phonetic": "/ˈlɪt(ə)l/"
+  },
+  {
+    "id": "kipper",
+    "text": "Kipper",
+    "meaningZh": "奇普的弟弟 Kipper",
+    "phonetic": "/ˈkɪpə(r)/"
+  }
+]

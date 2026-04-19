@@ -235,8 +235,10 @@ app/
 - `updateNickname(nickname)`
 
 ## 8.2 Content 数据源
-- `AssetBookDataSource`
-- 从 `assets/books/` 加载 `book.json / pages.json / words.json`
+- `LocalBookPackageDataSource`
+- 从 `filesDir/book-packages/installed/<book-id>/package/` 加载 `book.json / pages.json / words.json`
+- `RemoteBookshelfManifestSource`
+- 从远程 `bookshelf.json` 加载书架预览，点书时再按需下载内容包
 
 ## 8.3 Reader / Vocabulary 数据源
 - `ReadingProgressLocalDataSource` -> Room

@@ -1,0 +1,854 @@
+[
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 1,
+    "imageAsset": "pages-reader/001.png",
+    "englishText": "It was Gran's birthday, so she had come to stay. The children gave Gran a present. \"Happy birthday,\" they said. \"Thank you,\" said Gran.",
+    "words": [
+      {
+        "wordId": "gran",
+        "text": "Gran",
+        "startIndex": 7,
+        "endIndex": 11
+      },
+      {
+        "wordId": "birthday",
+        "text": "birthday",
+        "startIndex": 14,
+        "endIndex": 22
+      },
+      {
+        "wordId": "present",
+        "text": "present",
+        "startIndex": 74,
+        "endIndex": 81
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/001.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 2,
+    "imageAsset": "pages-reader/002.png",
+    "englishText": "Dad and Mum gave Gran a present. \"It's a funny shape!\" said Gran. \"I can't think what it can be.\" The children laughed. \"We can,\" said Kipper.",
+    "words": [
+      {
+        "wordId": "funny",
+        "text": "funny",
+        "startIndex": 41,
+        "endIndex": 46
+      },
+      {
+        "wordId": "shape",
+        "text": "shape",
+        "startIndex": 47,
+        "endIndex": 52
+      },
+      {
+        "wordId": "laughed",
+        "text": "laughed",
+        "startIndex": 111,
+        "endIndex": 118
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/002.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 3,
+    "imageAsset": "pages-reader/003.png",
+    "englishText": "Gran was pleased with the present. It was a Chinese vase. \"I hope you like it,\" said Mum. \"It's beautiful,\" said Gran. \"Thank you.\" \"Put it in a safe place,\" said Dad.",
+    "words": [
+      {
+        "wordId": "chinese",
+        "text": "Chinese",
+        "startIndex": 44,
+        "endIndex": 51
+      },
+      {
+        "wordId": "vase",
+        "text": "vase",
+        "startIndex": 52,
+        "endIndex": 56
+      },
+      {
+        "wordId": "safe",
+        "text": "safe",
+        "startIndex": 145,
+        "endIndex": 149
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/003.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 4,
+    "imageAsset": "pages-reader/004.png",
+    "englishText": "Gran had a surprise for everyone. She had a box of fireworks. She wanted a firework party. \"But I thought fireworks were dangerous,\" said Biff.",
+    "words": [
+      {
+        "wordId": "surprise",
+        "text": "surprise",
+        "startIndex": 11,
+        "endIndex": 19
+      },
+      {
+        "wordId": "fireworks",
+        "text": "fireworks",
+        "startIndex": 51,
+        "endIndex": 60
+      },
+      {
+        "wordId": "dangerous",
+        "text": "dangerous",
+        "startIndex": 121,
+        "endIndex": 130
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/004.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 5,
+    "imageAsset": "pages-reader/005.png",
+    "englishText": "\"Fireworks are dangerous,\" said Gran, \"so children mustn't play with them.\" Mum and Gran got the fireworks ready. They were very careful. The children stayed out of the way.",
+    "words": [
+      {
+        "wordId": "fireworks",
+        "text": "fireworks",
+        "startIndex": 97,
+        "endIndex": 106
+      },
+      {
+        "wordId": "careful",
+        "text": "careful",
+        "startIndex": 129,
+        "endIndex": 136
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/005.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 6,
+    "imageAsset": "pages-reader/006.png",
+    "englishText": "Nadim and Anneena came to the party. Everyone was excited. Gran let off a big firework. \"Oooh!\" said everyone. \"What a beautiful firework!\" said Chip.",
+    "words": [
+      {
+        "wordId": "excited",
+        "text": "excited",
+        "startIndex": 50,
+        "endIndex": 57
+      },
+      {
+        "wordId": "beautiful",
+        "text": "beautiful",
+        "startIndex": 119,
+        "endIndex": 128
+      },
+      {
+        "wordId": "firework",
+        "text": "firework",
+        "startIndex": 78,
+        "endIndex": 86
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/006.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 7,
+    "imageAsset": "pages-reader/007.png",
+    "englishText": "Dogs don't like fireworks, so Floppy stayed inside the house. Suddenly, a firework made a loud bang. \"I don't like this,\" thought Floppy, so he hid under a little table.",
+    "words": [
+      {
+        "wordId": "floppy",
+        "text": "Floppy",
+        "startIndex": 30,
+        "endIndex": 36
+      },
+      {
+        "wordId": "loud_bang",
+        "text": "loud bang",
+        "startIndex": 90,
+        "endIndex": 99
+      },
+      {
+        "wordId": "hid",
+        "text": "hid",
+        "startIndex": 144,
+        "endIndex": 147
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/007.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 8,
+    "imageAsset": "pages-reader/008.png",
+    "englishText": "It was time to have tea. Mum had a surprise for Gran. She had a birthday cake with lots of candles. \"Happy birthday, Gran,\" said everyone.",
+    "words": [
+      {
+        "wordId": "surprise",
+        "text": "surprise",
+        "startIndex": 35,
+        "endIndex": 43
+      },
+      {
+        "wordId": "birthday_cake",
+        "text": "birthday cake",
+        "startIndex": 64,
+        "endIndex": 77
+      },
+      {
+        "wordId": "candles",
+        "text": "candles",
+        "startIndex": 91,
+        "endIndex": 98
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/008.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 9,
+    "imageAsset": "pages-reader/009.png",
+    "englishText": "Biff went into the front room to get her camera. She saw Gran's vase on the floor. The vase was broken. \"Oh no!\" said Biff.",
+    "words": [
+      {
+        "wordId": "vase",
+        "text": "vase",
+        "startIndex": 64,
+        "endIndex": 68
+      },
+      {
+        "wordId": "floor",
+        "text": "floor",
+        "startIndex": 76,
+        "endIndex": 81
+      },
+      {
+        "wordId": "broken",
+        "text": "broken",
+        "startIndex": 96,
+        "endIndex": 102
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/009.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 10,
+    "imageAsset": "pages-reader/010.png",
+    "englishText": "The children went to Biff's room. Biff showed them the broken vase. \"Gran will be upset,\" said Chip, \"and so will Mum and Dad.\" \"I hope we can mend it,\" said Biff.",
+    "words": [
+      {
+        "wordId": "broken",
+        "text": "broken",
+        "startIndex": 55,
+        "endIndex": 61
+      },
+      {
+        "wordId": "upset",
+        "text": "upset",
+        "startIndex": 82,
+        "endIndex": 87
+      },
+      {
+        "wordId": "mend",
+        "text": "mend",
+        "startIndex": 143,
+        "endIndex": 147
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/010.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 11,
+    "imageAsset": "pages-reader/011.png",
+    "englishText": "Suddenly, the key began to glow. The magic took the children into a new adventure. \"Oh no!\" said Biff. \"I wanted to put the vase back downstairs!\"",
+    "words": [
+      {
+        "wordId": "key",
+        "text": "key",
+        "startIndex": 14,
+        "endIndex": 17
+      },
+      {
+        "wordId": "magic",
+        "text": "magic",
+        "startIndex": 37,
+        "endIndex": 42
+      },
+      {
+        "wordId": "adventure",
+        "text": "adventure",
+        "startIndex": 72,
+        "endIndex": 81
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/011.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 12,
+    "imageAsset": "pages-reader/012.png",
+    "englishText": "The magic took the children back in time. It took them to China long ago. Nadim knew where they were. \"We are in the Forbidden City,\" he said. \"Why is it called that?\" asked Chip.",
+    "words": [
+      {
+        "wordId": "china",
+        "text": "China",
+        "startIndex": 58,
+        "endIndex": 63
+      },
+      {
+        "wordId": "forbidden_city",
+        "text": "Forbidden City",
+        "startIndex": 117,
+        "endIndex": 131
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/012.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 13,
+    "imageAsset": "pages-reader/013.png",
+    "englishText": "\"The Emperor lives here,\" said Nadim. \"He lives here with his family. Other people are not allowed to come here. That is why it is called the Forbidden City.\"",
+    "words": [
+      {
+        "wordId": "emperor",
+        "text": "Emperor",
+        "startIndex": 5,
+        "endIndex": 12
+      },
+      {
+        "wordId": "allowed",
+        "text": "allowed",
+        "startIndex": 91,
+        "endIndex": 98
+      },
+      {
+        "wordId": "forbidden_city",
+        "text": "Forbidden City",
+        "startIndex": 142,
+        "endIndex": 156
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/013.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 14,
+    "imageAsset": "pages-reader/014.png",
+    "englishText": "There was a fierce dog in the Forbidden City. It didn't like Floppy. The fierce dog growled and barked, but Floppy didn't want to fight.",
+    "words": [
+      {
+        "wordId": "fierce",
+        "text": "fierce",
+        "startIndex": 12,
+        "endIndex": 18
+      },
+      {
+        "wordId": "growled",
+        "text": "growled",
+        "startIndex": 84,
+        "endIndex": 91
+      },
+      {
+        "wordId": "barked",
+        "text": "barked",
+        "startIndex": 96,
+        "endIndex": 102
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/014.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 15,
+    "imageAsset": "pages-reader/015.png",
+    "englishText": "\"Stop it!\" shouted Chip. Some women ran up and grabbed the dogs. The children were worried. \"Oh help!\" said Chip.",
+    "words": [
+      {
+        "wordId": "grabbed",
+        "text": "grabbed",
+        "startIndex": 47,
+        "endIndex": 54
+      },
+      {
+        "wordId": "worried",
+        "text": "worried",
+        "startIndex": 83,
+        "endIndex": 90
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/015.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 16,
+    "imageAsset": "pages-reader/016.png",
+    "englishText": "The women took the children and Floppy to the Emperor. \"What are you doing in the Forbidden City?\" he shouted. \"People are not allowed in here.\"",
+    "words": [
+      {
+        "wordId": "emperor",
+        "text": "Emperor",
+        "startIndex": 46,
+        "endIndex": 53
+      },
+      {
+        "wordId": "forbidden_city",
+        "text": "Forbidden City",
+        "startIndex": 82,
+        "endIndex": 96
+      },
+      {
+        "wordId": "allowed",
+        "text": "allowed",
+        "startIndex": 127,
+        "endIndex": 134
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/016.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 17,
+    "imageAsset": "pages-reader/017.png",
+    "englishText": "The Emperor called his soldiers. \"Put them in prison!\" he shouted. \"That will teach them to come to the Forbidden City.\" \"I think we've upset him,\" said Biff.",
+    "words": [
+      {
+        "wordId": "soldiers",
+        "text": "soldiers",
+        "startIndex": 23,
+        "endIndex": 31
+      },
+      {
+        "wordId": "prison",
+        "text": "prison",
+        "startIndex": 46,
+        "endIndex": 52
+      },
+      {
+        "wordId": "upset",
+        "text": "upset",
+        "startIndex": 136,
+        "endIndex": 141
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/017.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 18,
+    "imageAsset": "pages-reader/018.png",
+    "englishText": "The Emperor had two children. They were twins and they looked exactly the same. The twins spoke to the Emperor. One of them pointed to the children.",
+    "words": [
+      {
+        "wordId": "twins",
+        "text": "twins",
+        "startIndex": 40,
+        "endIndex": 45
+      },
+      {
+        "wordId": "exactly",
+        "text": "exactly",
+        "startIndex": 62,
+        "endIndex": 69
+      },
+      {
+        "wordId": "emperor",
+        "text": "Emperor",
+        "startIndex": 4,
+        "endIndex": 11
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/018.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 19,
+    "imageAsset": "pages-reader/019.png",
+    "englishText": "The twins wanted to play with Kipper. \"I will put you in prison tomorrow,\" said the Emperor. \"Today you can play with the twins.\" \"Hooray,\" said the twins.",
+    "words": [
+      {
+        "wordId": "prison",
+        "text": "prison",
+        "startIndex": 57,
+        "endIndex": 63
+      },
+      {
+        "wordId": "twins",
+        "text": "twins",
+        "startIndex": 4,
+        "endIndex": 9
+      },
+      {
+        "wordId": "hooray",
+        "text": "Hooray",
+        "startIndex": 131,
+        "endIndex": 137
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/019.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 20,
+    "imageAsset": "pages-reader/020.png",
+    "englishText": "The twins had never played with other children. They didn't know how to play football. One of the twins kicked Nadim. \"Ow!\" said Nadim. \"That was my leg.\"",
+    "words": [
+      {
+        "wordId": "football",
+        "text": "football",
+        "startIndex": 77,
+        "endIndex": 85
+      },
+      {
+        "wordId": "kicked",
+        "text": "kicked",
+        "startIndex": 104,
+        "endIndex": 110
+      },
+      {
+        "wordId": "leg",
+        "text": "leg",
+        "startIndex": 149,
+        "endIndex": 152
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/020.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 21,
+    "imageAsset": "pages-reader/021.png",
+    "englishText": "Suddenly, the ball rolled away and fell down a grating. \"Oh no!\" said the twins. \"Now the ball is lost.\" Both the twins began to cry.",
+    "words": [
+      {
+        "wordId": "grating",
+        "text": "grating",
+        "startIndex": 47,
+        "endIndex": 54
+      },
+      {
+        "wordId": "lost",
+        "text": "lost",
+        "startIndex": 98,
+        "endIndex": 102
+      },
+      {
+        "wordId": "cry",
+        "text": "cry",
+        "startIndex": 129,
+        "endIndex": 132
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/021.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 22,
+    "imageAsset": "pages-reader/022.png",
+    "englishText": "Biff and Chip pulled up the grating. Nadim could see some steps. He began to go down them. \"Hurry up,\" said Biff. \"We don't want the Emperor to put us in prison.\"",
+    "words": [
+      {
+        "wordId": "grating",
+        "text": "grating",
+        "startIndex": 28,
+        "endIndex": 35
+      },
+      {
+        "wordId": "steps",
+        "text": "steps",
+        "startIndex": 58,
+        "endIndex": 63
+      },
+      {
+        "wordId": "prison",
+        "text": "prison",
+        "startIndex": 154,
+        "endIndex": 160
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/022.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 23,
+    "imageAsset": "pages-reader/023.png",
+    "englishText": "Nadim went into a big cellar. It was full of cobwebs and dust. Nadim called the others. \"Look at these giant vases,\" he said. \"They look like Gran's vase.\"",
+    "words": [
+      {
+        "wordId": "cellar",
+        "text": "cellar",
+        "startIndex": 22,
+        "endIndex": 28
+      },
+      {
+        "wordId": "cobwebs",
+        "text": "cobwebs",
+        "startIndex": 45,
+        "endIndex": 52
+      },
+      {
+        "wordId": "dust",
+        "text": "dust",
+        "startIndex": 57,
+        "endIndex": 61
+      },
+      {
+        "wordId": "giant_vases",
+        "text": "giant vases",
+        "startIndex": 103,
+        "endIndex": 114
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/023.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 24,
+    "imageAsset": "pages-reader/024.png",
+    "englishText": "Some people came into the cellar. They were the Emperor's servants. They didn't like the Emperor. They had barrels of gunpowder, because they wanted to blow up the palace.",
+    "words": [
+      {
+        "wordId": "cellar",
+        "text": "cellar",
+        "startIndex": 26,
+        "endIndex": 32
+      },
+      {
+        "wordId": "servants",
+        "text": "servants",
+        "startIndex": 58,
+        "endIndex": 66
+      },
+      {
+        "wordId": "gunpowder",
+        "text": "gunpowder",
+        "startIndex": 118,
+        "endIndex": 127
+      },
+      {
+        "wordId": "palace",
+        "text": "palace",
+        "startIndex": 164,
+        "endIndex": 170
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/024.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 25,
+    "imageAsset": "pages-reader/025.png",
+    "englishText": "The children were frightened. They hid inside the vases. The people didn't see them. \"We'll come back and blow up the palace tonight,\" said a man.",
+    "words": [
+      {
+        "wordId": "frightened",
+        "text": "frightened",
+        "startIndex": 18,
+        "endIndex": 28
+      },
+      {
+        "wordId": "hid",
+        "text": "hid",
+        "startIndex": 35,
+        "endIndex": 38
+      },
+      {
+        "wordId": "blow_up",
+        "text": "blow up",
+        "startIndex": 106,
+        "endIndex": 113
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/025.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 26,
+    "imageAsset": "pages-reader/026.png",
+    "englishText": "The children ran to the Emperor. They told him about the gunpowder under the palace. \"Some people want to blow up the palace tonight,\" they said.",
+    "words": [
+      {
+        "wordId": "gunpowder",
+        "text": "gunpowder",
+        "startIndex": 57,
+        "endIndex": 66
+      },
+      {
+        "wordId": "palace",
+        "text": "palace",
+        "startIndex": 77,
+        "endIndex": 83
+      },
+      {
+        "wordId": "blow_up",
+        "text": "blow up",
+        "startIndex": 106,
+        "endIndex": 113
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/026.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 27,
+    "imageAsset": "pages-reader/027.png",
+    "englishText": "That night, the people came back. The Emperor's soldiers were waiting. The Emperor was pleased with the children. \"I won't put you in prison now,\" he said.",
+    "words": [
+      {
+        "wordId": "soldiers",
+        "text": "soldiers",
+        "startIndex": 48,
+        "endIndex": 56
+      },
+      {
+        "wordId": "pleased",
+        "text": "pleased",
+        "startIndex": 87,
+        "endIndex": 94
+      },
+      {
+        "wordId": "prison",
+        "text": "prison",
+        "startIndex": 134,
+        "endIndex": 140
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/027.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 28,
+    "imageAsset": "pages-reader/028.png",
+    "englishText": "The Emperor had a big firework party. There were lots and lots of fireworks. They lit up the sky. Everyone gasped when the fireworks went off.",
+    "words": [
+      {
+        "wordId": "firework_party",
+        "text": "firework party",
+        "startIndex": 22,
+        "endIndex": 36
+      },
+      {
+        "wordId": "sky",
+        "text": "sky",
+        "startIndex": 93,
+        "endIndex": 96
+      },
+      {
+        "wordId": "gasped",
+        "text": "gasped",
+        "startIndex": 107,
+        "endIndex": 113
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/028.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 29,
+    "imageAsset": "pages-reader/029.png",
+    "englishText": "Biff thought of Gran. \"I wish she was here,\" she thought. \"Gran would love all these fireworks. She'd love this adventure.\"",
+    "words": [
+      {
+        "wordId": "wish",
+        "text": "wish",
+        "startIndex": 25,
+        "endIndex": 29
+      },
+      {
+        "wordId": "fireworks",
+        "text": "fireworks",
+        "startIndex": 85,
+        "endIndex": 94
+      },
+      {
+        "wordId": "adventure",
+        "text": "adventure",
+        "startIndex": 112,
+        "endIndex": 121
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/029.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 30,
+    "imageAsset": "pages-reader/030.png",
+    "englishText": "The Emperor wanted to give the children a present. Biff had a good idea. She asked for one of the big vases. Suddenly, the magic key began to glow.",
+    "words": [
+      {
+        "wordId": "present",
+        "text": "present",
+        "startIndex": 42,
+        "endIndex": 49
+      },
+      {
+        "wordId": "magic",
+        "text": "magic",
+        "startIndex": 123,
+        "endIndex": 128
+      },
+      {
+        "wordId": "glow",
+        "text": "glow",
+        "startIndex": 142,
+        "endIndex": 146
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/030.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 31,
+    "imageAsset": "pages-reader/031.png",
+    "englishText": "The magic took the children home. It took the giant vase, too. But now the vase was quite small. \"It looks exactly the same as Gran's vase,\" said Chip.",
+    "words": [
+      {
+        "wordId": "giant_vase",
+        "text": "giant vase",
+        "startIndex": 46,
+        "endIndex": 56
+      },
+      {
+        "wordId": "small",
+        "text": "small",
+        "startIndex": 90,
+        "endIndex": 95
+      },
+      {
+        "wordId": "exactly",
+        "text": "exactly",
+        "startIndex": 107,
+        "endIndex": 114
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/031.m4a"
+  },
+  {
+    "bookId": "oxford-chinese-adventure-stage-07",
+    "pageNo": 32,
+    "imageAsset": "pages-reader/032.png",
+    "englishText": "The children looked at the vases. \"Oh no!\" said Biff. \"They aren't quite the same after all. The new vase has Chinese writing on it. Do you think Gran will notice?\"",
+    "words": [
+      {
+        "wordId": "chinese_writing",
+        "text": "Chinese writing",
+        "startIndex": 110,
+        "endIndex": 125
+      },
+      {
+        "wordId": "notice",
+        "text": "notice",
+        "startIndex": 156,
+        "endIndex": 162
+      }
+    ],
+    "sentenceAudioAsset": "audio/original-sentences/032.m4a"
+  }
+]

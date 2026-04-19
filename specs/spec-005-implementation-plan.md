@@ -83,20 +83,21 @@
 - `spec-002-content-bundle-and-import.md`
 
 ### 目标
-让 App 能识别并展示内置绘本资源。
+让 App 能识别并展示远程书架资源，并支持本地已安装内容包阅读。
 
 ### 包含内容
-- 约定 `assets/books/` 目录
-- 解析 `book.json / pages.json / words.json`
-- 构建书籍索引
-- 能加载至少 1 本样例书
+- 约定 `content/books/` 作为内容源目录
+- 发布远程 `bookshelf.json / catalog.json / package.zip`
+- 解析本地安装包中的 `book.json / pages.json / words.json`
+- 构建远程书架预览与本地阅读索引
 
 ### 交付物
-- 内置样例绘本资源
-- 书籍数据读取逻辑
+- 可发布的样例绘本内容包
+- 远程书架与本地安装包读取逻辑
 
 ### 验收标准
-- App 启动后能看到书籍列表数据
+- App 启动后能看到远程书架列表数据
+- 点开未安装书籍时能按需下载并打开
 - 打开某本书时能读取页面与单词数据
 
 ---

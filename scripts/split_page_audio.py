@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
-BOOKS_DIR = ROOT / "app" / "src" / "main" / "assets" / "books"
+BOOKS_DIR = ROOT / "content" / "books"
 DEFAULT_FFMPEG = "/Users/ervinzhang/Downloads/ffmpeg/bin/ffmpeg"
 
 
@@ -29,7 +29,7 @@ def run(cmd: list[str]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("book_id", help="Book id under app/src/main/assets/books/")
+    parser.add_argument("book_id", help="Book id under content/books/")
     parser.add_argument("--ffmpeg", default=DEFAULT_FFMPEG, help=f"ffmpeg binary path (default: {DEFAULT_FFMPEG})")
     parser.add_argument("--force", action="store_true", help="Overwrite existing page sentence clips")
     args = parser.parse_args()

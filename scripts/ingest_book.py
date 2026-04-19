@@ -15,7 +15,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUTPUT_ROOT = ROOT / "app" / "src" / "main" / "assets" / "books"
+DEFAULT_OUTPUT_ROOT = ROOT / "content" / "books"
 RENDERER_SOURCE = ROOT / "scripts" / "pdf_book_renderer.m"
 RENDERER_BINARY = ROOT / "dist" / "tools" / "pdf_book_renderer"
 UUID_STEM_RE = re.compile(
@@ -312,7 +312,7 @@ def parse_args() -> argparse.Namespace:
         "--output-root",
         type=Path,
         default=DEFAULT_OUTPUT_ROOT,
-        help="Root directory where app book assets live",
+        help="Root directory where source book packages live",
     )
     parser.add_argument(
         "--render-max-dimension",
@@ -328,7 +328,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--overwrite",
         action="store_true",
-        help="Replace an existing app/src/main/assets/books/<bookId> directory",
+        help="Replace an existing content/books/<bookId> directory",
     )
     return parser.parse_args()
 
