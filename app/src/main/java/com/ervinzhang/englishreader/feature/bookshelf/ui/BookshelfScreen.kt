@@ -179,6 +179,7 @@ fun BookshelfScreen(
                                     FeaturedBookCard(
                                         book = featuredBook,
                                         isOpening = uiState.openingBookId == featuredBook.bookId,
+                                        isOpenFailed = uiState.isOpenFailed && uiState.openingBookId == featuredBook.bookId,
                                         openActionText = buildOpenActionText(featuredBook, uiState),
                                         statusText = buildBookStatusText(featuredBook, uiState),
                                         enabled = uiState.openingBookId == null || uiState.openingBookId == featuredBook.bookId,
@@ -206,6 +207,7 @@ fun BookshelfScreen(
                                     book = book,
                                     rotation = if (index % 2 == 0) -2f else 2f,
                                     isOpening = uiState.openingBookId == book.bookId,
+                                    isOpenFailed = uiState.isOpenFailed && uiState.openingBookId == book.bookId,
                                     statusText = buildBookStatusText(book, uiState),
                                     enabled = uiState.openingBookId == null || uiState.openingBookId == book.bookId,
                                     onClick = { viewModel.openBook(book.bookId) },
@@ -221,6 +223,10 @@ fun BookshelfScreen(
                     book = openingBook,
                     stageLabel = uiState.openingStageLabel,
                     progressPercent = uiState.openingProgressPercent,
+                    isFailed = uiState.isOpenFailed,
+                    failureMessage = uiState.openFailureMessage,
+                    onRetry = { viewModel.openBook(openingBook.bookId) },
+                    onDismiss = viewModel::dismissOpenDialog,
                 )
             }
         }
@@ -269,12 +275,20 @@ private fun BookDownloadProgressDialog(
     book: BookshelfItem,
     stageLabel: String?,
     progressPercent: Int?,
+    isFailed: Boolean,
+    failureMessage: String?,
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
     Dialog(
-        onDismissRequest = {},
+        onDismissRequest = {
+            if (isFailed) {
+                onDismiss()
+            }
+        },
         properties = DialogProperties(
-            dismissOnBackPress = false,
-            dismissOnClickOutside = false,
+            dismissOnBackPress = isFailed,
+            dismissOnClickOutside = isFailed,
         ),
     ) {
         StorybookCard(
@@ -288,7 +302,7 @@ private fun BookDownloadProgressDialog(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
             ) {
                 Text(
-                    text = "正在准备绘本",
+                    text = if (isFailed) "下载失败" else "正在准备绘本",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -297,29 +311,48 @@ private fun BookDownloadProgressDialog(
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                    text = when {
-                        progressPercent != null -> "${stageLabel ?: "下载中"} ${progressPercent.coerceIn(0, 100)}%"
-                        else -> stageLabel ?: "准备中"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                if (progressPercent != null) {
-                    LinearProgressIndicator(
-                        progress = { progressPercent.coerceIn(0, 100) / 100f },
+                if (isFailed) {
+                    Text(
+                        text = failureMessage ?: "这本书暂时下载失败，请重试。",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    StorybookPrimaryButton(
+                        text = "重试下载",
+                        onClick = onRetry,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.align(Alignment.End),
+                    ) {
+                        Text("稍后再试")
+                    }
                 } else {
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Text(
+                        text = when {
+                            progressPercent != null -> "${stageLabel ?: "下载中"} ${progressPercent.coerceIn(0, 100)}%"
+                            else -> stageLabel ?: "准备中"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    if (progressPercent != null) {
+                        LinearProgressIndicator(
+                            progress = { progressPercent.coerceIn(0, 100) / 100f },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    } else {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+                    Text(
+                        text = "下载完成后会自动打开阅读页，请稍等。",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                 }
-                Text(
-                    text = "下载完成后会自动打开阅读页，请稍等。",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         }
     }
@@ -329,6 +362,7 @@ private fun BookDownloadProgressDialog(
 private fun FeaturedBookCard(
     book: BookshelfItem,
     isOpening: Boolean,
+    isOpenFailed: Boolean,
     openActionText: String,
     statusText: String,
     enabled: Boolean,
@@ -362,6 +396,7 @@ private fun FeaturedBookCard(
             ) {
                 StorybookTag(
                     text = when {
+                        isOpenFailed -> "下载失败"
                         isOpening -> "正在准备"
                         book.lastReadPage != null -> "继续阅读"
                         book.isLocalContentReady -> "推荐开始"
@@ -402,6 +437,7 @@ private fun BookCard(
     book: BookshelfItem,
     rotation: Float,
     isOpening: Boolean,
+    isOpenFailed: Boolean,
     statusText: String,
     enabled: Boolean,
     onClick: () -> Unit,
@@ -434,7 +470,11 @@ private fun BookCard(
                 )
                 if (!book.isLocalContentReady) {
                     StorybookTag(
-                        text = if (isOpening) "下载中" else "云端",
+                        text = when {
+                            isOpenFailed -> "失败"
+                            isOpening -> "下载中"
+                            else -> "云端"
+                        },
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                     )
@@ -529,6 +569,7 @@ private data class BookshelfUiState(
     val openingBookId: String? = null,
     val openingStageLabel: String? = null,
     val openingProgressPercent: Int? = null,
+    val isOpenFailed: Boolean = false,
     val bookToOpen: String? = null,
     val openFailureMessage: String? = null,
     val errorMessage: String? = null,
@@ -612,6 +653,7 @@ private class BookshelfViewModel(
                 openingBookId = bookId,
                 openingStageLabel = "准备中",
                 openingProgressPercent = null,
+                isOpenFailed = false,
                 openFailureMessage = null,
             )
             val openResult = runCatching {
@@ -631,6 +673,7 @@ private class BookshelfViewModel(
                         openingBookId = null,
                         openingStageLabel = null,
                         openingProgressPercent = null,
+                        isOpenFailed = false,
                         bookToOpen = bookId,
                         openFailureMessage = null,
                     )
@@ -645,6 +688,16 @@ private class BookshelfViewModel(
 
     fun consumePendingOpen() {
         uiState = uiState.copy(bookToOpen = null)
+    }
+
+    fun dismissOpenDialog() {
+        uiState = uiState.copy(
+            openingBookId = null,
+            openingStageLabel = null,
+            openingProgressPercent = null,
+            isOpenFailed = false,
+            openFailureMessage = null,
+        )
     }
 
     private suspend fun refreshBooks(forceRefresh: Boolean) {
@@ -676,18 +729,21 @@ private class BookshelfViewModel(
                 openingBookId = bookId,
                 openingStageLabel = "准备中",
                 openingProgressPercent = null,
+                isOpenFailed = false,
             )
 
             is BookshelfBookOpenStatus.Downloading -> uiState.copy(
                 openingBookId = bookId,
                 openingStageLabel = "下载中",
                 openingProgressPercent = status.progressPercent,
+                isOpenFailed = false,
             )
 
             BookshelfBookOpenStatus.Installing -> uiState.copy(
                 openingBookId = bookId,
                 openingStageLabel = "安装中",
                 openingProgressPercent = null,
+                isOpenFailed = false,
             )
         }
     }
@@ -712,17 +768,13 @@ private class BookshelfViewModel(
         uiState = uiState.copy(refreshUpToDate = false)
     }
 
-    private suspend fun showOpenFailure(message: String) {
+    private fun showOpenFailure(message: String) {
         uiState = uiState.copy(
-            openingBookId = null,
-            openingStageLabel = null,
+            openingStageLabel = "下载失败",
             openingProgressPercent = null,
+            isOpenFailed = true,
             openFailureMessage = message,
         )
-        delay(2200)
-        if (uiState.openFailureMessage == message) {
-            uiState = uiState.copy(openFailureMessage = null)
-        }
     }
 
     private fun clearRefreshState() {
@@ -775,11 +827,14 @@ private fun buildBookStatusText(
 ): String {
     val isOpening = uiState?.openingBookId == book.bookId
     if (isOpening) {
-        val progress = uiState.openingProgressPercent
+        if (uiState?.isOpenFailed == true) {
+            return uiState.openFailureMessage ?: "下载失败，请重试"
+        }
+        val progress = uiState?.openingProgressPercent
         return if (progress != null) {
             "下载中 ${progress.coerceIn(0, 100)}%"
         } else {
-            uiState.openingStageLabel ?: "准备中"
+            uiState?.openingStageLabel ?: "准备中"
         }
     }
 
@@ -796,6 +851,9 @@ private fun buildOpenActionText(
     uiState: BookshelfUiState,
 ): String {
     if (uiState.openingBookId == book.bookId) {
+        if (uiState.isOpenFailed) {
+            return "重试下载"
+        }
         val progress = uiState.openingProgressPercent
         return if (progress != null) {
             "下载中 ${progress.coerceIn(0, 100)}%"
