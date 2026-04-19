@@ -2,32 +2,67 @@
   {
     "bookId": "oxford-tree-01",
     "pageNo": 1,
-    "imageAsset": "pages/001.png",
+    "imageAsset": "pages/001.webp",
     "englishText": "Dad has an apple.",
     "words": [
-      { "wordId": "dad", "text": "Dad", "startIndex": 0, "endIndex": 3 },
-      { "wordId": "apple", "text": "apple", "startIndex": 11, "endIndex": 16 }
+      {
+        "wordId": "dad",
+        "text": "Dad",
+        "startIndex": 0,
+        "endIndex": 3
+      },
+      {
+        "wordId": "apple",
+        "text": "apple",
+        "startIndex": 11,
+        "endIndex": 16
+      }
     ]
   },
   {
     "bookId": "oxford-tree-01",
     "pageNo": 2,
-    "imageAsset": "pages/002.png",
+    "imageAsset": "pages/002.webp",
     "englishText": "Mum has a red apple.",
     "words": [
-      { "wordId": "mum", "text": "Mum", "startIndex": 0, "endIndex": 3 },
-      { "wordId": "red", "text": "red", "startIndex": 10, "endIndex": 13 },
-      { "wordId": "apple", "text": "apple", "startIndex": 14, "endIndex": 19 }
+      {
+        "wordId": "mum",
+        "text": "Mum",
+        "startIndex": 0,
+        "endIndex": 3
+      },
+      {
+        "wordId": "red",
+        "text": "red",
+        "startIndex": 10,
+        "endIndex": 13
+      },
+      {
+        "wordId": "apple",
+        "text": "apple",
+        "startIndex": 14,
+        "endIndex": 19
+      }
     ]
   },
   {
     "bookId": "oxford-tree-01",
     "pageNo": 3,
-    "imageAsset": "pages/003.png",
+    "imageAsset": "pages/003.webp",
     "englishText": "The apple is on the box.",
     "words": [
-      { "wordId": "apple", "text": "apple", "startIndex": 4, "endIndex": 9 },
-      { "wordId": "box", "text": "box", "startIndex": 20, "endIndex": 23 }
+      {
+        "wordId": "apple",
+        "text": "apple",
+        "startIndex": 4,
+        "endIndex": 9
+      },
+      {
+        "wordId": "box",
+        "text": "box",
+        "startIndex": 20,
+        "endIndex": 23
+      }
     ]
   }
 ]

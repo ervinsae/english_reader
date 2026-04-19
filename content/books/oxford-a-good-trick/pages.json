@@ -2,7 +2,7 @@
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 1,
-    "imageAsset": "pages/001.png",
+    "imageAsset": "pages/001.webp",
     "englishText": "A rug,",
     "words": [
       {
@@ -16,7 +16,7 @@
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 2,
-    "imageAsset": "pages/002.png",
+    "imageAsset": "pages/002.webp",
     "englishText": "a sheet,",
     "words": [
       {
@@ -30,14 +30,14 @@
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 3,
-    "imageAsset": "pages/003.png",
+    "imageAsset": "pages/003.webp",
     "englishText": "",
     "words": []
   },
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 4,
-    "imageAsset": "pages/004.png",
+    "imageAsset": "pages/004.webp",
     "englishText": "a big box,",
     "words": [
       {
@@ -57,14 +57,14 @@
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 5,
-    "imageAsset": "pages/005.png",
+    "imageAsset": "pages/005.webp",
     "englishText": "",
     "words": []
   },
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 6,
-    "imageAsset": "pages/006.png",
+    "imageAsset": "pages/006.webp",
     "englishText": "a little box,",
     "words": [
       {
@@ -84,14 +84,14 @@
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 7,
-    "imageAsset": "pages/007.png",
+    "imageAsset": "pages/007.webp",
     "englishText": "",
     "words": []
   },
   {
     "bookId": "oxford-a-good-trick",
     "pageNo": 8,
-    "imageAsset": "pages/008.png",
+    "imageAsset": "pages/008.webp",
     "englishText": "Kipper.",
     "words": [
       {
