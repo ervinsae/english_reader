@@ -8,7 +8,6 @@ import org.json.JSONObject
 data class RemoteContentConfig(
     val catalogUrl: String? = null,
     val bookshelfUrl: String? = null,
-    val autoSyncOnLaunch: Boolean = false,
 )
 
 interface RemoteContentConfigSource {
@@ -33,7 +32,6 @@ class DefaultRemoteContentConfigSource(
         RemoteContentConfig(
             catalogUrl = json.optString(CATALOG_URL_KEY).takeIf { it.isNotBlank() },
             bookshelfUrl = json.optString(BOOKSHELF_URL_KEY).takeIf { it.isNotBlank() },
-            autoSyncOnLaunch = json.optBoolean(AUTO_SYNC_ON_LAUNCH_KEY, false),
         )
     }
 
@@ -42,6 +40,5 @@ class DefaultRemoteContentConfigSource(
         const val CATALOG_CONFIG_FILE_NAME = "catalog-config.json"
         const val CATALOG_URL_KEY = "catalogUrl"
         const val BOOKSHELF_URL_KEY = "bookshelfUrl"
-        const val AUTO_SYNC_ON_LAUNCH_KEY = "autoSyncOnLaunch"
     }
 }

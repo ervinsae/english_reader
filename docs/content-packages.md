@@ -104,7 +104,6 @@ Bundled defaults live in:
 
 - `app/src/main/assets/content/catalog-config.json`
 - `app/src/main/assets/content/bookshelf.json`
-- `app/src/main/assets/content/remote-catalog.json`
 
 You can override the config on-device by writing:
 
@@ -115,8 +114,7 @@ Config shape:
 ```json
 {
   "bookshelfUrl": "https://example.com/english-reader/bookshelf.json",
-  "catalogUrl": "https://example.com/english-reader/catalog.json",
-  "autoSyncOnLaunch": false
+  "catalogUrl": "https://example.com/english-reader/catalog.json"
 }
 ```
 
@@ -146,22 +144,6 @@ Notes:
 
 - `coverUri` is preferred for remote manifests.
 - `package` is required for remote-only books that should download on tap.
-
-Remote catalog shape:
-
-```json
-{
-  "packages": [
-    {
-      "bookId": "oxford-tree-01",
-      "title": "The Apple",
-      "version": "2026.04.13",
-      "downloadUrl": "https://example.com/packages/oxford-tree-01.zip",
-      "sha256": "..."
-    }
-  ]
-}
-```
 
 ## Packaging Script
 

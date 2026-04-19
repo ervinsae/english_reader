@@ -6,8 +6,6 @@ import java.net.URL
 import java.security.MessageDigest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
 
 data class RemoteBookPackage(
     val bookId: String,
@@ -16,85 +14,6 @@ data class RemoteBookPackage(
     val downloadUrl: String,
     val sha256: String? = null,
 )
-
-data class RemoteContentCatalog(
-    val packages: List<RemoteBookPackage>,
-)
-
-interface RemoteContentCatalogSource {
-    suspend fun fetchCatalog(): RemoteContentCatalog?
-    suspend fun loadConfig(): RemoteContentConfig
-}
-
-class DefaultRemoteContentCatalogSource(
-    private val configSource: RemoteContentConfigSource,
-    private val remoteAssetReader: RemoteContentAssetReader,
-) : RemoteContentCatalogSource {
-    override suspend fun fetchCatalog(): RemoteContentCatalog? = withContext(Dispatchers.IO) {
-        val config = loadConfig()
-        val configuredCatalogUrl = config.catalogUrl?.trim().orEmpty()
-        if (configuredCatalogUrl.isBlank()) {
-            return@withContext loadBundledCatalog()
-        }
-
-        runCatching { fetchCatalogFromUrl(configuredCatalogUrl) }
-            .getOrElse { loadBundledCatalog() }
-    }
-
-    override suspend fun loadConfig(): RemoteContentConfig = configSource.loadConfig()
-
-    private fun loadBundledCatalog(): RemoteContentCatalog? {
-        return runCatching {
-            parseCatalog(JSONObject(remoteAssetReader.readBundledAsset(REMOTE_CATALOG_FILE_NAME)))
-        }.getOrNull()
-    }
-
-    private fun fetchCatalogFromUrl(catalogUrl: String): RemoteContentCatalog {
-        val connection = URL(catalogUrl).openConnection() as HttpURLConnection
-        connection.connectTimeout = NETWORK_TIMEOUT_MS
-        connection.readTimeout = NETWORK_TIMEOUT_MS
-        connection.instanceFollowRedirects = true
-
-        return connection.inputStream.bufferedReader().use { reader ->
-            parseCatalog(JSONObject(reader.readText()))
-        }
-    }
-
-    private fun parseCatalog(json: JSONObject): RemoteContentCatalog {
-        val packagesJson = json.optJSONArray(PACKAGES_KEY) ?: JSONArray()
-        val packages = buildList {
-            for (index in 0 until packagesJson.length()) {
-                val packageJson = packagesJson.getJSONObject(index)
-                val bookId = packageJson.optString(BOOK_ID_KEY).trim()
-                val title = packageJson.optString(TITLE_KEY).trim()
-                val downloadUrl = packageJson.optString(DOWNLOAD_URL_KEY).trim()
-                if (bookId.isBlank() || title.isBlank() || downloadUrl.isBlank()) continue
-
-                add(
-                    RemoteBookPackage(
-                        bookId = bookId,
-                        title = title,
-                        version = packageJson.optString(VERSION_KEY).takeIf { it.isNotBlank() },
-                        downloadUrl = downloadUrl,
-                        sha256 = packageJson.optString(SHA256_KEY).takeIf { it.isNotBlank() },
-                    ),
-                )
-            }
-        }
-        return RemoteContentCatalog(packages = packages)
-    }
-
-    private companion object {
-        const val REMOTE_CATALOG_FILE_NAME = "remote-catalog.json"
-        const val PACKAGES_KEY = "packages"
-        const val BOOK_ID_KEY = "bookId"
-        const val TITLE_KEY = "title"
-        const val VERSION_KEY = "version"
-        const val DOWNLOAD_URL_KEY = "downloadUrl"
-        const val SHA256_KEY = "sha256"
-        const val NETWORK_TIMEOUT_MS = 15_000
-    }
-}
 
 class HttpBookPackageDownloader(
     private val packageStorage: LocalBookPackageStorage,

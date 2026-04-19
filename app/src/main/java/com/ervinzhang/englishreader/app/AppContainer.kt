@@ -10,7 +10,6 @@ import com.ervinzhang.englishreader.core.content.BookshelfRefreshManager
 import com.ervinzhang.englishreader.core.content.DefaultBookshelfRepository
 import com.ervinzhang.englishreader.core.content.DefaultRemoteBookshelfManifestSource
 import com.ervinzhang.englishreader.core.content.DefaultRemoteContentConfigSource
-import com.ervinzhang.englishreader.core.content.DefaultRemoteContentCatalogSource
 import com.ervinzhang.englishreader.core.content.HttpBookPackageDownloader
 import com.ervinzhang.englishreader.core.content.LocalBookPackageDataSource
 import com.ervinzhang.englishreader.core.content.LocalBookPackageInstaller
@@ -56,10 +55,6 @@ class AppContainer(
         packageStorage = localBookPackageStorage,
     )
     val remoteContentAssetReader: RemoteContentAssetReader = RemoteContentAssetReader(application)
-    val remoteContentCatalogSource: DefaultRemoteContentCatalogSource = DefaultRemoteContentCatalogSource(
-        configSource = remoteContentConfigSource,
-        remoteAssetReader = remoteContentAssetReader,
-    )
     val remoteBookshelfManifestSource: DefaultRemoteBookshelfManifestSource = DefaultRemoteBookshelfManifestSource(
         configSource = remoteContentConfigSource,
         remoteAssetReader = remoteContentAssetReader,
