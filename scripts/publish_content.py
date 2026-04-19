@@ -54,11 +54,11 @@ def run(cmd: list[str], *, dry_run: bool = False, capture_output: bool = False) 
     )
 
 
-def bucket_base_url_from_catalog(catalog_url: str) -> str:
-    marker = "/catalog/catalog.json"
-    if not catalog_url.endswith(marker):
-        raise ValueError(f"catalogUrl does not end with {marker}: {catalog_url}")
-    return catalog_url[: -len(marker)]
+def bucket_base_url_from_bookshelf(bookshelf_url: str) -> str:
+    marker = "/catalog/bookshelf.json"
+    if not bookshelf_url.endswith(marker):
+        raise ValueError(f"bookshelfUrl does not end with {marker}: {bookshelf_url}")
+    return bookshelf_url[: -len(marker)]
 
 
 def ensure_tool_exists(name: str) -> None:
@@ -113,7 +113,7 @@ def build_remote_book_entry(book_dir: Path, bucket_base_url: str) -> tuple[dict[
 
 def build_global_files(selected_book_ids: list[str]) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]], str]:
     config = read_json(CONTENT_DIR / "catalog-config.json")
-    bucket_base_url = bucket_base_url_from_catalog(config["catalogUrl"])
+    bucket_base_url = bucket_base_url_from_bookshelf(config["bookshelfUrl"])
     local_bookshelf = read_json(CONTENT_DIR / "bookshelf.json")
     existing_books = list(local_bookshelf.get("books") or [])
     existing_by_id = {str(item["bookId"]): item for item in existing_books}
@@ -236,8 +236,9 @@ def verify_remote(books: list[dict[str, Any]], selected_book_ids: list[str], *, 
     if skip_verify:
         return
     config = read_json(CONTENT_DIR / "catalog-config.json")
-    verify_url(config["bookshelfUrl"])
-    verify_url(config["catalogUrl"])
+    bookshelf_url = config["bookshelfUrl"]
+    verify_url(bookshelf_url)
+    verify_url(bookshelf_url.rsplit("/", 1)[0] + "/catalog.json")
 
     books_by_id = {item["bookId"]: item for item in books}
     for book_id in selected_book_ids:

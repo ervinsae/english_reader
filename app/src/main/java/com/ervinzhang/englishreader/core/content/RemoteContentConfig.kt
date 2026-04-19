@@ -6,7 +6,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 data class RemoteContentConfig(
-    val catalogUrl: String? = null,
     val bookshelfUrl: String? = null,
 )
 
@@ -30,7 +29,6 @@ class DefaultRemoteContentConfigSource(
         }
         val json = JSONObject(rawConfig)
         RemoteContentConfig(
-            catalogUrl = json.optString(CATALOG_URL_KEY).takeIf { it.isNotBlank() },
             bookshelfUrl = json.optString(BOOKSHELF_URL_KEY).takeIf { it.isNotBlank() },
         )
     }
@@ -38,7 +36,6 @@ class DefaultRemoteContentConfigSource(
     companion object {
         const val ASSET_CONTENT_DIRECTORY = "content"
         const val CATALOG_CONFIG_FILE_NAME = "catalog-config.json"
-        const val CATALOG_URL_KEY = "catalogUrl"
         const val BOOKSHELF_URL_KEY = "bookshelfUrl"
     }
 }

@@ -113,8 +113,7 @@ Config shape:
 
 ```json
 {
-  "bookshelfUrl": "https://example.com/english-reader/bookshelf.json",
-  "catalogUrl": "https://example.com/english-reader/catalog.json"
+  "bookshelfUrl": "https://example.com/english-reader/catalog/bookshelf.json"
 }
 ```
 
