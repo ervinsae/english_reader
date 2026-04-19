@@ -1,0 +1,488 @@
+{
+  "workflowVersion": 1,
+  "createdAtUtc": "2026-04-19T11:56:39Z",
+  "book": {
+    "id": "dexter-s-dinosaurs-stage-10",
+    "idSource": "argument",
+    "idIsProvisional": false,
+    "title": "Dexter's Dinosaurs",
+    "titleSource": "argument",
+    "level": "Stage 10",
+    "tags": []
+  },
+  "sourceFiles": {
+    "pdfFilename": "575eef7d-afb7-4f0a-afb7-084dc94919c8.pdf",
+    "mp3Filename": "9f49fc68-fcf4-44d7-829b-10798cd48092.mp3"
+  },
+  "pdf": {
+    "pageCount": 31,
+    "documentTitle": "",
+    "coverPageIndex": 0,
+    "readingPageIndices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "readingPageSelection": "auto-all-non-cover-pages",
+    "skippedPageIndices": []
+  },
+  "audio": {
+    "fullBookAsset": "audio/full-book.mp3",
+    "durationSec": 596.761067,
+    "pageSentenceAssetsPattern": "audio/sentences/{pageNo}.m4a",
+    "pageSentenceAlignmentStatus": "pending"
+  },
+  "pageAudioAlignment": [
+    {
+      "pageNo": 1,
+      "sourcePdfPageIndex": 1,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/001.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 2,
+      "sourcePdfPageIndex": 2,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/002.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 3,
+      "sourcePdfPageIndex": 3,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/003.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 4,
+      "sourcePdfPageIndex": 4,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/004.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 5,
+      "sourcePdfPageIndex": 5,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/005.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 6,
+      "sourcePdfPageIndex": 6,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/006.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 7,
+      "sourcePdfPageIndex": 7,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/007.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 8,
+      "sourcePdfPageIndex": 8,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/008.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 9,
+      "sourcePdfPageIndex": 9,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/009.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 10,
+      "sourcePdfPageIndex": 10,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/010.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 11,
+      "sourcePdfPageIndex": 11,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/011.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 12,
+      "sourcePdfPageIndex": 12,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/012.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 13,
+      "sourcePdfPageIndex": 13,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/013.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 14,
+      "sourcePdfPageIndex": 14,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/014.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 15,
+      "sourcePdfPageIndex": 15,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/015.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 16,
+      "sourcePdfPageIndex": 16,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/016.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 17,
+      "sourcePdfPageIndex": 17,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/017.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 18,
+      "sourcePdfPageIndex": 18,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/018.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 19,
+      "sourcePdfPageIndex": 19,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/019.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 20,
+      "sourcePdfPageIndex": 20,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/020.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 21,
+      "sourcePdfPageIndex": 21,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/021.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 22,
+      "sourcePdfPageIndex": 22,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/022.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 23,
+      "sourcePdfPageIndex": 23,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/023.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 24,
+      "sourcePdfPageIndex": 24,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/024.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 25,
+      "sourcePdfPageIndex": 25,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/025.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 26,
+      "sourcePdfPageIndex": 26,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/026.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 27,
+      "sourcePdfPageIndex": 27,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/027.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 28,
+      "sourcePdfPageIndex": 28,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/028.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 29,
+      "sourcePdfPageIndex": 29,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/029.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    },
+    {
+      "pageNo": 30,
+      "sourcePdfPageIndex": 30,
+      "fullBookAudioStartSec": null,
+      "fullBookAudioEndSec": null,
+      "transcriptText": "",
+      "transcriptStatus": "pending",
+      "sentenceAudioAsset": "audio/sentences/030.m4a",
+      "sentenceAudioStatus": "pending",
+      "notes": [
+        "Fill timings from transcript alignment or turn-page cue detection.",
+        "Keep englishText in pages.json consistent with the final transcript text."
+      ]
+    }
+  ],
+  "notes": [
+    "This metadata is for ingestion and manual review. The app runtime ignores this file.",
+    "If the inbound PDF filename was UUID-renamed, the book id should be treated as provisional until cross-checked with the original source filename or catalog naming rules."
+  ]
+}
