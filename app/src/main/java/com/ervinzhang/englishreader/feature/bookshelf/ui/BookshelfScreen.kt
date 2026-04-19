@@ -58,7 +58,9 @@ import com.ervinzhang.englishreader.core.ui.StorybookPrimaryButton
 import com.ervinzhang.englishreader.core.ui.StorybookSectionTitle
 import com.ervinzhang.englishreader.core.ui.StorybookTag
 import com.ervinzhang.englishreader.feature.auth.domain.AuthRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -226,6 +228,7 @@ fun BookshelfScreen(
                     isFailed = uiState.isOpenFailed,
                     failureMessage = uiState.openFailureMessage,
                     onRetry = { viewModel.openBook(openingBook.bookId) },
+                    onCancel = viewModel::cancelOpeningBook,
                     onDismiss = viewModel::dismissOpenDialog,
                 )
             }
@@ -278,6 +281,7 @@ private fun BookDownloadProgressDialog(
     isFailed: Boolean,
     failureMessage: String?,
     onRetry: () -> Unit,
+    onCancel: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     Dialog(
@@ -352,6 +356,12 @@ private fun BookDownloadProgressDialog(
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    TextButton(
+                        onClick = onCancel,
+                        modifier = Modifier.align(Alignment.End),
+                    ) {
+                        Text("取消下载")
+                    }
                 }
             }
         }
@@ -586,6 +596,7 @@ private class BookshelfViewModel(
     private var currentUserName: String? = null
     private var currentBooks: List<BookshelfBookPreview> = emptyList()
     private var latestProgressList: List<ReadingProgress> = emptyList()
+    private var openBookJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -648,7 +659,8 @@ private class BookshelfViewModel(
             return
         }
 
-        viewModelScope.launch {
+        openBookJob?.cancel()
+        openBookJob = viewModelScope.launch {
             uiState = uiState.copy(
                 openingBookId = bookId,
                 openingStageLabel = "准备中",
@@ -656,19 +668,22 @@ private class BookshelfViewModel(
                 isOpenFailed = false,
                 openFailureMessage = null,
             )
-            val openResult = runCatching {
+            val openResult = try {
                 bookshelfRepository.ensureBookOpenable(bookId) { status ->
                     withContext(Dispatchers.Main) {
                         applyOpenStatus(bookId = bookId, status = status)
                     }
                 }
-            }.getOrElse {
+            } catch (_: CancellationException) {
+                return@launch
+            } catch (_: Exception) {
                 EnsureBookOpenableResult.Failure("下载失败，请稍后再试")
             }
 
             when (openResult) {
                 EnsureBookOpenableResult.Ready -> {
                     refreshBooks(forceRefresh = true)
+                    openBookJob = null
                     uiState = uiState.copy(
                         openingBookId = null,
                         openingStageLabel = null,
@@ -690,7 +705,14 @@ private class BookshelfViewModel(
         uiState = uiState.copy(bookToOpen = null)
     }
 
+    fun cancelOpeningBook() {
+        openBookJob?.cancel()
+        openBookJob = null
+        dismissOpenDialog()
+    }
+
     fun dismissOpenDialog() {
+        openBookJob = null
         uiState = uiState.copy(
             openingBookId = null,
             openingStageLabel = null,
@@ -769,6 +791,7 @@ private class BookshelfViewModel(
     }
 
     private fun showOpenFailure(message: String) {
+        openBookJob = null
         uiState = uiState.copy(
             openingStageLabel = "下载失败",
             openingProgressPercent = null,

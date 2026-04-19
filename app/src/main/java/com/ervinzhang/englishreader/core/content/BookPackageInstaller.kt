@@ -2,7 +2,10 @@ package com.ervinzhang.englishreader.core.content
 
 import java.io.File
 import java.util.zip.ZipFile
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -34,7 +37,7 @@ class LocalBookPackageInstaller(
 
         val stagingDirectory = packageStorage.createStagingDirectory(archiveFile.nameWithoutExtension)
 
-        runCatching {
+        try {
             unzipArchive(archiveFile = archiveFile, targetDirectory = stagingDirectory)
             val packageDirectory = locatePackageRoot(stagingDirectory)
             validatePackageDirectory(packageDirectory)
@@ -55,7 +58,11 @@ class LocalBookPackageInstaller(
                 archiveFile.delete()
             }
             BookPackageInstallResult.Success(record)
-        }.getOrElse { error ->
+        } catch (error: CancellationException) {
+            stagingDirectory.deleteRecursively()
+            archiveFile.delete()
+            throw error
+        } catch (error: Exception) {
             stagingDirectory.deleteRecursively()
             BookPackageInstallResult.Failure(
                 archiveName = archiveFile.name,
@@ -64,12 +71,14 @@ class LocalBookPackageInstaller(
         }
     }
 
-    private fun unzipArchive(
+    private suspend fun unzipArchive(
         archiveFile: File,
         targetDirectory: File,
     ) {
+        val coroutineContext = currentCoroutineContext()
         ZipFile(archiveFile).use { zipFile ->
             zipFile.entries().asSequence().forEach { entry ->
+                coroutineContext.ensureActive()
                 val targetFile = File(targetDirectory, entry.name)
                 val normalizedTargetPath = targetFile.canonicalPath
                 if (!normalizedTargetPath.startsWith(targetDirectory.canonicalPath)) {
@@ -81,7 +90,16 @@ class LocalBookPackageInstaller(
                 } else {
                     targetFile.parentFile?.mkdirs()
                     zipFile.getInputStream(entry).use { input ->
-                        targetFile.outputStream().use { output -> input.copyTo(output) }
+                        targetFile.outputStream().use { output ->
+                            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                            while (true) {
+                                coroutineContext.ensureActive()
+                                val bytesRead = input.read(buffer)
+                                if (bytesRead <= 0) break
+                                output.write(buffer, 0, bytesRead)
+                            }
+                            output.flush()
+                        }
                     }
                 }
             }

@@ -4,7 +4,11 @@ import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import java.security.MessageDigest
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 
 data class RemoteBookPackage(
@@ -34,7 +38,15 @@ class HttpBookPackageDownloader(
         connection.readTimeout = NETWORK_TIMEOUT_MS
         connection.instanceFollowRedirects = true
 
-        runCatching {
+        val coroutineContext = currentCoroutineContext()
+        val cancellationHandle = coroutineContext.job.invokeOnCompletion { cause: Throwable? ->
+            if (cause is CancellationException) {
+                runCatching { connection.disconnect() }
+                runCatching { targetFile.delete() }
+            }
+        }
+
+        try {
             val contentLength = connection.contentLengthLong.takeIf { it > 0L }
             var downloadedBytes = 0L
             var lastPercent = -1
@@ -44,6 +56,7 @@ class HttpBookPackageDownloader(
                 targetFile.outputStream().use { output ->
                     val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
                     while (true) {
+                        coroutineContext.ensureActive()
                         val bytesRead = input.read(buffer)
                         if (bytesRead <= 0) break
                         output.write(buffer, 0, bytesRead)
@@ -62,6 +75,7 @@ class HttpBookPackageDownloader(
                 }
             }
 
+            coroutineContext.ensureActive()
             if (contentLength == null) {
                 onProgress(100)
             }
@@ -70,12 +84,19 @@ class HttpBookPackageDownloader(
                 val actualChecksum = targetFile.sha256()
                 if (!actualChecksum.equals(remoteBookPackage.sha256, ignoreCase = true)) {
                     targetFile.delete()
-                    return@runCatching null
+                    return@withContext null
                 }
             }
 
             targetFile
-        }.getOrNull().also {
+        } catch (error: CancellationException) {
+            targetFile.delete()
+            throw error
+        } catch (_: Exception) {
+            targetFile.delete()
+            null
+        } finally {
+            cancellationHandle.dispose()
             connection.disconnect()
         }
     }
