@@ -75,12 +75,26 @@ def validate_package(package_dir: Path) -> list[str]:
     return errors
 
 
+def build_package_file_list(package_dir: Path) -> list[Path]:
+    referenced_files = collect_referenced_paths(package_dir)
+    package_files = [package_dir / name for name in REQUIRED_FILES]
+
+    deduped: list[Path] = []
+    seen: set[Path] = set()
+    for path in [*package_files, *referenced_files]:
+        resolved = path.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        deduped.append(path)
+    return deduped
+
+
 def write_zip(package_dir: Path, output_zip: Path) -> None:
     output_zip.parent.mkdir(parents=True, exist_ok=True)
+    files_to_package = build_package_file_list(package_dir)
     with zipfile.ZipFile(output_zip, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        for path in sorted(package_dir.rglob("*")):
-            if path.is_dir():
-                continue
+        for path in files_to_package:
             archive.write(path, path.relative_to(package_dir).as_posix())
 
 
