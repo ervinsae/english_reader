@@ -56,13 +56,14 @@
     {
       "pageNo": 1,
       "sourcePdfPageIndex": 2,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 7.57,
+      "fullBookAudioEndSec": 38.59,
       "transcriptText": "Monkey and Mango Island. (A folk tale from the Philippines.) It was said that Mango Island had the sweetest mangoes in the world. But Mango Island was in the middle of the world's deepest river ... and in the river lived the world's meanest crocodiles. Twenty of them. No one could reach the delicious mangoes. What a waste!",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/001.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.973.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -71,13 +72,14 @@
     {
       "pageNo": 2,
       "sourcePdfPageIndex": 3,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 39.28,
+      "fullBookAudioEndSec": 56.98,
       "transcriptText": "One day, Monkey came to the riverbank with a big basket. The crocodiles sniggered among themselves and snapped their jaws. 'What is the basket for, little one?' the biggest crocodile asked.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/002.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.952.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -86,13 +88,14 @@
     {
       "pageNo": 3,
       "sourcePdfPageIndex": 4,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 58.45,
+      "fullBookAudioEndSec": 81.86,
       "transcriptText": "'I am off to gather mangoes on Mango Island,' Monkey replied. 'Ha!' said the biggest crocodile. 'If you try to cross the river, we twenty crocodiles will eat you up!' 'Twenty?' Monkey looked confused. 'There are only ten of you.'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-needs-review",
       "sentenceAudioAsset": "audio/sentences/003.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.833.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -101,13 +104,14 @@
     {
       "pageNo": 4,
       "sourcePdfPageIndex": 5,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 80.75,
+      "fullBookAudioEndSec": 150.74,
       "transcriptText": "'Stupid monkey!' the biggest crocodile roared. 'Can't you see there are twenty of us?' Monkey shook his head. 'I don't know what you mean. I can only count ten.' 'We are the meanest crocodiles in the world!' the biggest crocodile yelled. 'And there are twenty of us!' 'Look,' Monkey said. 'Why don't you line up and let me count you?' The crocodiles lined up side by side. There were so many of them that they stretched all the way from the riverbank to Mango Island. Monkey began to count. 'One, two, three, four, five ...' As he counted, Monkey stepped on the back of each crocodile, basket in hand. '... eighteen, nineteen, twenty!'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/004.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.864.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -116,13 +120,14 @@
     {
       "pageNo": 5,
       "sourcePdfPageIndex": 6,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 151.25,
+      "fullBookAudioEndSec": 154.32,
       "transcriptText": "'One ... two ... three ... four ...'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-needs-review",
       "sentenceAudioAsset": "audio/sentences/005.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.750.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -131,13 +136,14 @@
     {
       "pageNo": 6,
       "sourcePdfPageIndex": 7,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 155.63,
+      "fullBookAudioEndSec": 172.78,
       "transcriptText": "He hopped off the last one onto Mango Island. 'It is true, there are twenty of you!' he called as he scrambled up to the tops of the mango trees. 'Thank you! Now I can gather mangoes!'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/006.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.921.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -146,13 +152,14 @@
     {
       "pageNo": 7,
       "sourcePdfPageIndex": 8,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 174.39,
+      "fullBookAudioEndSec": 196.28,
       "transcriptText": "The crocodiles realised that they had been tricked. 'You think you're so clever!' the biggest crocodile growled. 'But remember, you still have to go back to the riverbank. We'll be waiting for you.'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/007.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.912.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -161,13 +168,14 @@
     {
       "pageNo": 8,
       "sourcePdfPageIndex": 9,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 195.95,
+      "fullBookAudioEndSec": 225.4,
       "transcriptText": "With that, the crocodiles started to swim around the island waiting for Monkey to finish gathering his mangoes. By the time Monkey had filled his basket full of mangoes, the crocodiles had missed lunch and were very hungry. 'Mmm,' the biggest crocodile said, 'I can't wait to eat his liver. Monkey liver is my favourite food.'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/008.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.947.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -176,13 +184,14 @@
     {
       "pageNo": 9,
       "sourcePdfPageIndex": 10,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 227.45,
+      "fullBookAudioEndSec": 252.18,
       "transcriptText": "'My liver?' Monkey said. 'Oh, I'm sorry. I left my liver on the riverbank, on the Liver Tree!' 'What Liver Tree?' the biggest crocodile said. 'All monkeys hang their livers up to dry on the Liver Tree,' Monkey said. 'Do you want me to show you where that is?'",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/009.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.863.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -191,13 +200,14 @@
     {
       "pageNo": 10,
       "sourcePdfPageIndex": 11,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 253.97,
+      "fullBookAudioEndSec": 277.59,
       "transcriptText": "'Oh yes, please,' the biggest crocodile said, licking his lips. He was pleased with himself. If Monkey took them to the Liver Tree, there would be more liver for all the crocodiles. 'If you let me ride on your back, we can get there more quickly,' Monkey said.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/010.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.939.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -206,13 +216,14 @@
     {
       "pageNo": 11,
       "sourcePdfPageIndex": 12,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 278.56,
+      "fullBookAudioEndSec": 285.81,
       "transcriptText": "The biggest crocodile held still while Monkey climbed onto his back with his basket of mangoes.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/011.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=1.000.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -221,13 +232,14 @@
     {
       "pageNo": 12,
       "sourcePdfPageIndex": 13,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 286.26,
+      "fullBookAudioEndSec": 311.91,
       "transcriptText": "'Just over there,' Monkey pointed to the riverbank. The biggest crocodile swam to the riverbank and his crocodile brothers followed, smacking their lips at the thought of lunch at last. But when they got to the riverbank, Monkey leaped off the biggest crocodile's back and scampered up a tall coconut tree.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/012.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.951.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -236,13 +248,14 @@
     {
       "pageNo": 13,
       "sourcePdfPageIndex": 14,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 313.58,
+      "fullBookAudioEndSec": 338.97,
       "transcriptText": "The crocodiles realised that they had been tricked again. They crawled out of the water to the coconut tree, snapping their jaws in anger. At that moment, Monkey's brothers and sisters peered through the leaves high up in the other coconut trees. They laughed and threw coconuts at the crocodiles until the crocodiles were forced back into the water.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/013.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=1.000.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
@@ -251,13 +264,14 @@
     {
       "pageNo": 14,
       "sourcePdfPageIndex": 15,
-      "fullBookAudioStartSec": null,
-      "fullBookAudioEndSec": null,
+      "fullBookAudioStartSec": 338.12,
+      "fullBookAudioEndSec": 365.39,
       "transcriptText": "'You're not going to get away with this!' the biggest crocodile roared as he swam away. 'We'll be waiting for you.' Monkey didn't care. He and his brothers and sisters were busy eating mangoes. And it was true. The mangoes of Mango Island were the sweetest in the world.",
-      "transcriptStatus": "ocr-text-ready",
+      "transcriptStatus": "timing-candidate-ready",
       "sentenceAudioAsset": "audio/sentences/014.m4a",
-      "sentenceAudioStatus": "pending",
+      "sentenceAudioStatus": "generated",
       "notes": [
+        "Auto-aligned from faster-whisper transcript, ratio=0.922.",
         "OCR-derived text should be reviewed against the page image before final audio alignment.",
         "Fill timings from transcript alignment or turn-page cue detection.",
         "Keep englishText in pages.json consistent with the final transcript text."
