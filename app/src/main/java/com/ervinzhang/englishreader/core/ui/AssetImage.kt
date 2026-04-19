@@ -19,6 +19,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
+import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
 import com.ervinzhang.englishreader.core.content.ContentUri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,6 +38,30 @@ fun ContentImage(
     fallbackText: String = "图片加载失败",
 ) {
     val context = LocalContext.current
+    val remoteUrl = ContentUri.asRemoteUrl(contentUri)
+
+    if (remoteUrl != null) {
+        SubcomposeAsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(remoteUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = contentDescription,
+            modifier = modifier,
+            contentScale = contentScale,
+            filterQuality = filterQuality,
+        ) {
+            when (painter.state) {
+                is AsyncImagePainter.State.Success -> SubcomposeAsyncImageContent()
+                else -> FallbackImageBox(
+                    modifier = Modifier.matchParentSize(),
+                    fallbackText = fallbackText,
+                )
+            }
+        }
+        return
+    }
+
     val imageBitmap = produceState<ImageBitmap?>(initialValue = null, contentUri, context) {
         value = withContext(Dispatchers.IO) {
             runCatching {
@@ -65,16 +93,10 @@ fun ContentImage(
             filterQuality = filterQuality,
         )
     } else {
-        Box(
-            modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = fallbackText,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(12.dp),
-            )
-        }
+        FallbackImageBox(
+            modifier = modifier,
+            fallbackText = fallbackText,
+        )
     }
 }
 
@@ -97,4 +119,21 @@ fun AssetImage(
         filterQuality = filterQuality,
         fallbackText = fallbackText,
     )
+}
+
+@Composable
+private fun FallbackImageBox(
+    modifier: Modifier,
+    fallbackText: String,
+) {
+    Box(
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = fallbackText,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(12.dp),
+        )
+    }
 }
