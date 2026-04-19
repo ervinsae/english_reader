@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.room.Room
 import com.ervinzhang.englishreader.core.audio.AndroidAudioPlayer
 import com.ervinzhang.englishreader.core.audio.AudioPlayer
-import com.ervinzhang.englishreader.core.content.AssetBookDataSource
 import com.ervinzhang.englishreader.core.content.BookshelfRepository
 import com.ervinzhang.englishreader.core.content.BookRepository
 import com.ervinzhang.englishreader.core.content.BookshelfRefreshManager
@@ -43,12 +42,11 @@ class AppContainer(
     ).fallbackToDestructiveMigration().build()
 
     val localBookPackageStorage: LocalBookPackageStorage = LocalBookPackageStorage(application)
-    val assetBookDataSource: AssetBookDataSource = AssetBookDataSource(application)
     val localBookPackageDataSource: LocalBookPackageDataSource = LocalBookPackageDataSource(
         packageStorage = localBookPackageStorage,
     )
     val bookRepository: BookRepository = OfflineBookRepository(
-        contentSources = listOf(localBookPackageDataSource, assetBookDataSource),
+        contentSources = listOf(localBookPackageDataSource),
     )
     val bookPackageInstaller: LocalBookPackageInstaller = LocalBookPackageInstaller(
         packageStorage = localBookPackageStorage,
