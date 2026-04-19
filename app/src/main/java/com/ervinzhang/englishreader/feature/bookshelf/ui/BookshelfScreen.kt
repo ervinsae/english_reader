@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,8 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -82,6 +86,7 @@ fun BookshelfScreen(
     )
     val uiState = viewModel.uiState
     val featuredBook = uiState.recentBooks.firstOrNull() ?: uiState.books.firstOrNull()
+    val openingBook = uiState.books.firstOrNull { it.bookId == uiState.openingBookId }
     val isBusyOpening = uiState.openingBookId != null
 
     LaunchedEffect(uiState.bookToOpen) {
@@ -125,88 +130,98 @@ fun BookshelfScreen(
             )
         },
     ) { innerPadding ->
-        StorybookBackdrop(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            when {
-                uiState.isLoading -> {
-                    BookshelfMessageCard(message = "正在加载书架...")
-                }
+        Box(modifier = Modifier.fillMaxSize()) {
+            StorybookBackdrop(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+            ) {
+                when {
+                    uiState.isLoading -> {
+                        BookshelfMessageCard(message = "正在加载书架...")
+                    }
 
-                uiState.errorMessage != null -> {
-                    BookshelfMessageCard(message = uiState.errorMessage)
-                }
+                    uiState.errorMessage != null -> {
+                        BookshelfMessageCard(message = uiState.errorMessage)
+                    }
 
-                else -> {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(14.dp),
-                        verticalArrangement = Arrangement.spacedBy(18.dp),
-                    ) {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                StorybookTag(
-                                    text = "Home Screen",
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                )
-                                Text(
-                                    text = "把今天的阅读安排得像翻阅一张温暖的故事地图。",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                )
-                            }
-                        }
-
-                        if (!uiState.openFailureMessage.isNullOrBlank()) {
+                    else -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(18.dp),
+                        ) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
-                                BookshelfInlineMessage(message = uiState.openFailureMessage)
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    StorybookTag(
+                                        text = "Home Screen",
+                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    )
+                                    Text(
+                                        text = "把今天的阅读安排得像翻阅一张温暖的故事地图。",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    )
+                                }
                             }
-                        }
 
-                        if (featuredBook != null) {
+                            if (!uiState.openFailureMessage.isNullOrBlank()) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    BookshelfInlineMessage(message = uiState.openFailureMessage)
+                                }
+                            }
+
+                            if (featuredBook != null) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    FeaturedBookCard(
+                                        book = featuredBook,
+                                        isOpening = uiState.openingBookId == featuredBook.bookId,
+                                        openActionText = buildOpenActionText(featuredBook, uiState),
+                                        statusText = buildBookStatusText(featuredBook, uiState),
+                                        enabled = uiState.openingBookId == null || uiState.openingBookId == featuredBook.bookId,
+                                        onOpenBook = { viewModel.openBook(featuredBook.bookId) },
+                                    )
+                                }
+                            }
+
+                            if (uiState.recentBooks.isNotEmpty()) {
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    RecentReadingSection(
+                                        recentBooks = uiState.recentBooks,
+                                        onOpenBook = viewModel::openBook,
+                                        openingBookId = uiState.openingBookId,
+                                    )
+                                }
+                            }
+
                             item(span = { GridItemSpan(maxLineSpan) }) {
-                                FeaturedBookCard(
-                                    book = featuredBook,
-                                    isOpening = uiState.openingBookId == featuredBook.bookId,
-                                    openActionText = buildOpenActionText(featuredBook, uiState),
-                                    statusText = buildBookStatusText(featuredBook, uiState),
-                                    enabled = uiState.openingBookId == null || uiState.openingBookId == featuredBook.bookId,
-                                    onOpenBook = { viewModel.openBook(featuredBook.bookId) },
+                                StorybookSectionTitle(title = "绘本书架")
+                            }
+
+                            itemsIndexed(uiState.books, key = { _, book -> book.bookId }) { index, book ->
+                                BookCard(
+                                    book = book,
+                                    rotation = if (index % 2 == 0) -2f else 2f,
+                                    isOpening = uiState.openingBookId == book.bookId,
+                                    statusText = buildBookStatusText(book, uiState),
+                                    enabled = uiState.openingBookId == null || uiState.openingBookId == book.bookId,
+                                    onClick = { viewModel.openBook(book.bookId) },
                                 )
                             }
-                        }
-
-                        if (uiState.recentBooks.isNotEmpty()) {
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                RecentReadingSection(
-                                    recentBooks = uiState.recentBooks,
-                                    onOpenBook = viewModel::openBook,
-                                    openingBookId = uiState.openingBookId,
-                                )
-                            }
-                        }
-
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            StorybookSectionTitle(title = "绘本书架")
-                        }
-
-                        itemsIndexed(uiState.books, key = { _, book -> book.bookId }) { index, book ->
-                            BookCard(
-                                book = book,
-                                rotation = if (index % 2 == 0) -2f else 2f,
-                                isOpening = uiState.openingBookId == book.bookId,
-                                statusText = buildBookStatusText(book, uiState),
-                                enabled = uiState.openingBookId == null || uiState.openingBookId == book.bookId,
-                                onClick = { viewModel.openBook(book.bookId) },
-                            )
                         }
                     }
                 }
+            }
+
+            if (openingBook != null && uiState.openingBookId != null) {
+                BookDownloadProgressDialog(
+                    book = openingBook,
+                    stageLabel = uiState.openingStageLabel,
+                    progressPercent = uiState.openingProgressPercent,
+                )
             }
         }
     }
@@ -246,6 +261,67 @@ private fun BookshelfInlineMessage(message: String?) {
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onErrorContainer,
         )
+    }
+}
+
+@Composable
+private fun BookDownloadProgressDialog(
+    book: BookshelfItem,
+    stageLabel: String?,
+    progressPercent: Int?,
+) {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+        ),
+    ) {
+        StorybookCard(
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 22.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                Text(
+                    text = "正在准备绘本",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = book.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = when {
+                        progressPercent != null -> "${stageLabel ?: "下载中"} ${progressPercent.coerceIn(0, 100)}%"
+                        else -> stageLabel ?: "准备中"
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                if (progressPercent != null) {
+                    LinearProgressIndicator(
+                        progress = { progressPercent.coerceIn(0, 100) / 100f },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                } else {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+                Text(
+                    text = "下载完成后会自动打开阅读页，请稍等。",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
     }
 }
 
