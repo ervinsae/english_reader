@@ -6,8 +6,8 @@ import com.ervinzhang.englishreader.core.audio.AndroidAudioPlayer
 import com.ervinzhang.englishreader.core.audio.AudioPlayer
 import com.ervinzhang.englishreader.core.content.AssetBookDataSource
 import com.ervinzhang.englishreader.core.content.BookshelfRepository
-import com.ervinzhang.englishreader.core.content.BookPackageSyncManager
 import com.ervinzhang.englishreader.core.content.BookRepository
+import com.ervinzhang.englishreader.core.content.BookshelfRefreshManager
 import com.ervinzhang.englishreader.core.content.DefaultBookshelfRepository
 import com.ervinzhang.englishreader.core.content.DefaultRemoteBookshelfManifestSource
 import com.ervinzhang.englishreader.core.content.DefaultRemoteContentConfigSource
@@ -76,11 +76,8 @@ class AppContainer(
         bookPackageDownloader = bookPackageDownloader,
         packageInstaller = bookPackageInstaller,
     )
-    val bookPackageSyncManager: BookPackageSyncManager = BookPackageSyncManager(
-        bookRepository = bookRepository,
-        packageStorage = localBookPackageStorage,
-        packageInstaller = bookPackageInstaller,
-        remoteBookshelfManifestSource = remoteBookshelfManifestSource,
+    val bookshelfRefreshManager: BookshelfRefreshManager = BookshelfRefreshManager(
+        bookshelfRepository = bookshelfRepository,
     )
     val readingProgressRepository: ReadingProgressRepository = RoomReadingProgressRepository(
         database.readingProgressDao(),

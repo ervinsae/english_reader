@@ -38,9 +38,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ervinzhang.englishreader.app.SimpleViewModelFactory
-import com.ervinzhang.englishreader.core.content.BookPackageSyncManager
 import com.ervinzhang.englishreader.core.content.BookshelfBookOpenStatus
 import com.ervinzhang.englishreader.core.content.BookshelfBookPreview
+import com.ervinzhang.englishreader.core.content.BookshelfRefreshManager
 import com.ervinzhang.englishreader.core.content.BookshelfRepository
 import com.ervinzhang.englishreader.core.content.EnsureBookOpenableResult
 import com.ervinzhang.englishreader.core.model.BookshelfItem
@@ -64,7 +64,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun BookshelfScreen(
     bookshelfRepository: BookshelfRepository,
-    bookPackageSyncManager: BookPackageSyncManager,
+    bookshelfRefreshManager: BookshelfRefreshManager,
     readingProgressRepository: ReadingProgressRepository,
     authRepository: AuthRepository,
     onOpenBook: (String) -> Unit,
@@ -74,7 +74,7 @@ fun BookshelfScreen(
         factory = SimpleViewModelFactory {
             BookshelfViewModel(
                 bookshelfRepository = bookshelfRepository,
-                bookPackageSyncManager = bookPackageSyncManager,
+                bookshelfRefreshManager = bookshelfRefreshManager,
                 readingProgressRepository = readingProgressRepository,
                 authRepository = authRepository,
             )
@@ -106,15 +106,15 @@ fun BookshelfScreen(
                 },
                 actions = {
                     TextButton(
-                        onClick = viewModel::syncContentPackages,
-                        enabled = !uiState.isSyncing && !isBusyOpening,
+                        onClick = viewModel::refreshBookshelf,
+                        enabled = !uiState.isRefreshing && !isBusyOpening,
                     ) {
                         Text(
                             when {
-                                uiState.syncProgressPercent != null -> "同步中：${uiState.syncProgressPercent}%"
-                                uiState.syncSuccess -> "同步成功"
-                                uiState.syncUpToDate -> "已是最新"
-                                else -> "同步内容"
+                                uiState.isRefreshing -> "刷新中"
+                                uiState.refreshSuccess -> "已更新"
+                                uiState.refreshUpToDate -> "已是最新"
+                                else -> "刷新书架"
                             },
                         )
                     }
@@ -444,10 +444,9 @@ private fun RecentReadingSection(
 
 private data class BookshelfUiState(
     val isLoading: Boolean = true,
-    val isSyncing: Boolean = false,
-    val syncProgressPercent: Int? = null,
-    val syncSuccess: Boolean = false,
-    val syncUpToDate: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val refreshSuccess: Boolean = false,
+    val refreshUpToDate: Boolean = false,
     val userName: String? = null,
     val books: List<BookshelfItem> = emptyList(),
     val recentBooks: List<BookshelfItem> = emptyList(),
@@ -461,7 +460,7 @@ private data class BookshelfUiState(
 
 private class BookshelfViewModel(
     private val bookshelfRepository: BookshelfRepository,
-    private val bookPackageSyncManager: BookPackageSyncManager,
+    private val bookshelfRefreshManager: BookshelfRefreshManager,
     private val readingProgressRepository: ReadingProgressRepository,
     private val authRepository: AuthRepository,
 ) : ViewModel() {
@@ -486,41 +485,36 @@ private class BookshelfViewModel(
             }.onFailure {
                 uiState = uiState.copy(
                     isLoading = false,
+                    isRefreshing = false,
                     errorMessage = "绘本内容加载失败",
                 )
             }
         }
     }
 
-    fun syncContentPackages() {
+    fun refreshBookshelf() {
         viewModelScope.launch {
             uiState = uiState.copy(
-                isSyncing = true,
-                syncProgressPercent = null,
-                syncSuccess = false,
-                syncUpToDate = false,
+                isRefreshing = true,
+                refreshSuccess = false,
+                refreshUpToDate = false,
                 openFailureMessage = null,
             )
-            val syncResult = runCatching {
-                bookPackageSyncManager.sync { progress ->
-                    withContext(Dispatchers.Main) {
-                        uiState = uiState.copy(
-                            isSyncing = true,
-                            syncProgressPercent = progress.coerceIn(0, 100),
-                        )
-                    }
-                }
+
+            val refreshResult = runCatching {
+                bookshelfRefreshManager.refresh(previousBooks = currentBooks)
             }.getOrNull()
 
-            if (syncResult != null) {
-                refreshBooks(forceRefresh = true)
-                if (syncResult.hasChanges) {
-                    showSyncSuccess()
+            if (refreshResult != null) {
+                currentBooks = refreshResult.refreshedBooks
+                publishUiState()
+                if (refreshResult.hasChanges) {
+                    showRefreshSuccess()
                 } else {
-                    showUpToDateState()
+                    showRefreshUpToDateState()
                 }
             } else {
-                clearSyncState()
+                clearRefreshState()
             }
         }
     }
@@ -622,26 +616,24 @@ private class BookshelfViewModel(
         }
     }
 
-    private suspend fun showSyncSuccess() {
+    private suspend fun showRefreshSuccess() {
         uiState = uiState.copy(
-            isSyncing = false,
-            syncProgressPercent = null,
-            syncSuccess = true,
-            syncUpToDate = false,
+            isRefreshing = false,
+            refreshSuccess = true,
+            refreshUpToDate = false,
         )
         delay(1800)
-        uiState = uiState.copy(syncSuccess = false)
+        uiState = uiState.copy(refreshSuccess = false)
     }
 
-    private suspend fun showUpToDateState() {
+    private suspend fun showRefreshUpToDateState() {
         uiState = uiState.copy(
-            isSyncing = false,
-            syncProgressPercent = null,
-            syncSuccess = false,
-            syncUpToDate = true,
+            isRefreshing = false,
+            refreshSuccess = false,
+            refreshUpToDate = true,
         )
         delay(1500)
-        uiState = uiState.copy(syncUpToDate = false)
+        uiState = uiState.copy(refreshUpToDate = false)
     }
 
     private suspend fun showOpenFailure(message: String) {
@@ -657,12 +649,11 @@ private class BookshelfViewModel(
         }
     }
 
-    private fun clearSyncState() {
+    private fun clearRefreshState() {
         uiState = uiState.copy(
-            isSyncing = false,
-            syncProgressPercent = null,
-            syncSuccess = false,
-            syncUpToDate = false,
+            isRefreshing = false,
+            refreshSuccess = false,
+            refreshUpToDate = false,
         )
     }
 }
